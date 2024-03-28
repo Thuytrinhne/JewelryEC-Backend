@@ -1,6 +1,11 @@
 using FluentValidation.WebApi;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Filters;
+using JewelryEC_Backend.Models.Auths;
+using JewelryEC_Backend.Models.Auths.Entities;
+using JewelryEC_Backend.Service;
+using JewelryEC_Backend.Service.IService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +16,13 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 {
     option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
 
 builder.Services.AddControllers(options =>
 {
@@ -42,6 +54,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

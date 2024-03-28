@@ -7,6 +7,7 @@ using JewelryEC_Backend.Models.Catalogs.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 
@@ -30,11 +31,27 @@ namespace JewelryEC_Backend.Controllers
 
         [HttpGet]
         // theem query param
-        public async Task<ActionResult<ResponseDto>> Get()
+        public async Task<ActionResult<ResponseDto>> Get([FromQuery] Guid ? parentId, [FromQuery] string ? name)
         {
             try
             {
-                IEnumerable<Catalog> objList = _db.Catalogs.ToList();
+                IEnumerable<Catalog> objList;
+                if (parentId.HasValue && !string.IsNullOrEmpty(name))
+                {
+                    objList = await _db.Catalogs.Where(c => c.ParentId == parentId && c.Name == name.Trim()).ToListAsync();
+                }
+                else if (parentId.HasValue)
+                {
+                     objList = await _db.Catalogs.Where(c => c.ParentId == parentId).ToListAsync();
+                }
+                else if (!string.IsNullOrEmpty(name))
+                {
+                    objList = await _db.Catalogs.Where(c => c.Name == name.Trim()).ToListAsync();
+                }
+                else
+                {
+                    objList = _db.Catalogs.ToList();
+                }
                 _response.Result = _mapper.Map<IEnumerable<GetCatalogResponseDto>>(objList);
                 return Ok(_response);
 
@@ -43,11 +60,11 @@ namespace JewelryEC_Backend.Controllers
             {
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
+                return StatusCode(500, _response);
+
             }
-            return _response;
         }
         [HttpGet("{id:Guid}", Name = "GetCatalogById")]
-  
         public async Task<ActionResult<ResponseDto>> Get(Guid id)
         {
             try
@@ -70,7 +87,7 @@ namespace JewelryEC_Backend.Controllers
             return _response;
         }
        
-        // fn f2
+     
         //global exception filter in .net core web api (try catch )
         [HttpPost]
         [ValidateModel]
