@@ -1,5 +1,6 @@
 using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Auths.Dto;
+using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,13 +10,15 @@ namespace JewelryEC_Backend.Controllers
     [ApiController]
     public class AuthAPIController : Controller
     {
+        private readonly IEmailSender _emailSender;
         private readonly IAuthService _authService;
         private ResponseDto _response;
 
-        public AuthAPIController(IAuthService authService)
+        public AuthAPIController(IAuthService authService, IEmailSender emailSender)
         {
             _authService = authService;
             _response = new ResponseDto();
+            _emailSender = emailSender;
         }
 
         [HttpPost("register")]
@@ -47,7 +50,7 @@ namespace JewelryEC_Backend.Controllers
 
         }
         [HttpPost("AssignRole")]
-        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto model)
+        public async Task<IActionResult> assignRole([FromBody] AssignRoleDto model)
         {
             var assignRoleSuccessful = await _authService.AssignRole(model.Email, model.Role.ToUpper());
             if (!assignRoleSuccessful)
@@ -59,5 +62,14 @@ namespace JewelryEC_Backend.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("SendingOTP")]
+        public async Task<IActionResult> sendingOTP(string email, string subject, string message)
+        {
+            await _emailSender.SendEmailAsync(email, subject, message);
+            return Ok(_response);
+
+        }
+
+
     }
 }
