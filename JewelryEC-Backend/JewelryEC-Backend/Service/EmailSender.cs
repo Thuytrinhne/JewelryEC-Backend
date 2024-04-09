@@ -12,7 +12,7 @@ namespace JewelryEC_Backend.Service
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("mongthitrinhtkp@gmail.com", "your-password-here")
+                Credentials = new NetworkCredential("mongthitrinhtkp@gmail.com", "[your password]")
             };
 
             return client.SendMailAsync(

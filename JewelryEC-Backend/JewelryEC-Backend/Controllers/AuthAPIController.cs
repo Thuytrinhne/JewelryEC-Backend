@@ -50,9 +50,9 @@ namespace JewelryEC_Backend.Controllers
 
         }
         [HttpPost("AssignRole")]
-        public async Task<IActionResult> assignRole([FromBody] AssignRoleDto model)
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto model)
         {
-            var assignRoleSuccessful = await _authService.AssignRole(model.Email, model.Role.ToUpper());
+            var assignRoleSuccessful = await _authService.AssignRole(model.Id, model.Role.ToUpper());
             if (!assignRoleSuccessful)
             {
                 _response.IsSuccess = false;
@@ -63,13 +63,18 @@ namespace JewelryEC_Backend.Controllers
 
         }
         [HttpPost("SendingOTP")]
-        public async Task<IActionResult> sendingOTP(string email, string subject, string message)
+        public async Task<IActionResult> sendingOTP(string email)
         {
+            Random random = new Random();
+            string otp = random.Next(100000, 999999).ToString();
+            string subject = "Sending OTP";
+            string message = "Your OTP is "+ otp;
             await _emailSender.SendEmailAsync(email, subject, message);
             return Ok(_response);
 
         }
-
+        // forgot password
+        // làm riêng 1 cái cập nhật khách hàng 
 
     }
 }

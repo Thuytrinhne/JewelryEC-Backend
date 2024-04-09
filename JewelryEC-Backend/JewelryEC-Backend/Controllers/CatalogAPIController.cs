@@ -15,6 +15,7 @@ namespace JewelryEC_Backend.Controllers
 {
     [Route("api/catalog")]
     [ApiController]
+    [Authorize]
     public class CatalogAPIController : ControllerBase
     {
         private readonly AppDbContext _db;
@@ -30,7 +31,7 @@ namespace JewelryEC_Backend.Controllers
 
 
         [HttpGet]
-        // theem query param
+       
         public async Task<ActionResult<ResponseDto>> Get([FromQuery] Guid ? parentId, [FromQuery] string ? name)
         {
             try
@@ -90,7 +91,7 @@ namespace JewelryEC_Backend.Controllers
      
         //global exception filter in .net core web api (try catch )
         [HttpPost]
-        [ValidateModel]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Post([FromBody] CreateCatalogDto CreateCatalogDto)
         {
             try
@@ -112,6 +113,7 @@ namespace JewelryEC_Backend.Controllers
             return _response;
         }
         [HttpPut]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Put([FromBody] UpdateCatalogDto updateCatalogDto)
         {
             try
@@ -133,6 +135,7 @@ namespace JewelryEC_Backend.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Delete(Guid id)
         {
             try

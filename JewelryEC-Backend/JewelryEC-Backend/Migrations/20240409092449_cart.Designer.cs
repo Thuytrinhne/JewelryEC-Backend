@@ -3,6 +3,7 @@ using System;
 using JewelryEC_Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JewelryEC_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240409092449_cart")]
+    partial class cart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,28 +117,6 @@ namespace JewelryEC_Backend.Migrations
                     b.ToTable("EmailVerifications");
                 });
 
-            modelBuilder.Entity("JewelryEC_Backend.Models.CartItems.Entities.CartItem", b =>
-                {
-                    b.Property<Guid>("CartItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CartId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("CartItemId");
-
-                    b.HasIndex("CartId");
-
-                    b.ToTable("CartItems");
-                });
-
             modelBuilder.Entity("JewelryEC_Backend.Models.Carts.Entities.Cart", b =>
                 {
                     b.Property<Guid>("Id")
@@ -152,9 +133,12 @@ namespace JewelryEC_Backend.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Carts");
                 });
@@ -314,15 +298,15 @@ namespace JewelryEC_Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("JewelryEC_Backend.Models.CartItems.Entities.CartItem", b =>
+            modelBuilder.Entity("JewelryEC_Backend.Models.Carts.Entities.Cart", b =>
                 {
-                    b.HasOne("JewelryEC_Backend.Models.Carts.Entities.Cart", "Cart")
+                    b.HasOne("JewelryEC_Backend.Models.Auths.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("CartId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Cart");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

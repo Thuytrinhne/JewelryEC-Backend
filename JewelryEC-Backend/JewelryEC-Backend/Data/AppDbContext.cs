@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using JewelryEC_Backend.Models.Auths.Entities;
+using JewelryEC_Backend.Models.Carts.Entities;
+using JewelryEC_Backend.Models.CartItems.Entities;
 
 namespace JewelryEC_Backend.Data
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
+
         protected readonly IConfiguration _configuration;
         public AppDbContext(IConfiguration configuration)
         {
@@ -20,7 +23,9 @@ namespace JewelryEC_Backend.Data
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
-
+        public DbSet<EmailVerification> EmailVerifications { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
     }
 }
