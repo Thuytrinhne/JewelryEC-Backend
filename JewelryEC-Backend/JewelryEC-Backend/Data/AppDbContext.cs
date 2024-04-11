@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using JewelryEC_Backend.Models.Auths.Entities;
+using JewelryEC_Backend.Models.Products;
 
 namespace JewelryEC_Backend.Data
 {

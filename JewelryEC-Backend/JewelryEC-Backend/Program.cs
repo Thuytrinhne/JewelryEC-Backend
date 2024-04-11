@@ -1,5 +1,7 @@
 using FluentValidation.WebApi;
 using JewelryEC_Backend.Data;
+using JewelryEC_Backend.DataAccess.Abstract;
+using JewelryEC_Backend.DataAccess.Concrete;
 using JewelryEC_Backend.Filters;
 using JewelryEC_Backend.Models.Auths;
 using JewelryEC_Backend.Models.Auths.Entities;
@@ -20,17 +22,17 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSett
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<ICategoryDal, EfCategoryDal>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-
+builder.Services.AddTransient<ICategoryService, CategoryService>();
 
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new ValidateModelAttribute());
 });
-
-
 
 
 builder.Services.AddControllers();
@@ -41,9 +43,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
 var app = builder.Build();
-
-
 
 
 // Configure the HTTP request pipeline.

@@ -1,83 +1,76 @@
-﻿//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using JewelryEC_Backend.Models.Categories;
+using JewelryEC_Backend.Service.IService;
+using Microsoft.AspNetCore.Mvc;
 
-//namespace JewelryEC_Backend.Controllers
-//{
-//    public class CategoryController : Controller
-//    {
-//        // GET: CategoryController
-//        public ActionResult Index()
-//        {
-//            return View();
-//        }
+namespace JewelryEC_Backend.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CategoriesController : ControllerBase
+    {
+        private ICategoryService _categoryService;
 
-//        // GET: CategoryController/Details/5
-//        public ActionResult Details(int id)
-//        {
-//            return View();
-//        }
+        public CategoriesController(ICategoryService categoryService)
+        {
+            _categoryService = categoryService;
+        }
 
-//        // GET: CategoryController/Create
-//        public ActionResult Create()
-//        {
-//            return View();
-//        }
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _categoryService.GetAll();
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
 
-//        // POST: CategoryController/Create
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public ActionResult Create(IFormCollection collection)
-//        {
-//            try
-//            {
-//                return RedirectToAction(nameof(Index));
-//            }
-//            catch
-//            {
-//                return View();
-//            }
-//        }
+            return BadRequest(result);
+        }
+        [HttpPost("add")]
+        public async Task<IActionResult> Add(Category category)
+        {
+            var result = await _categoryService.Add(category);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
 
-//        // GET: CategoryController/Edit/5
-//        public ActionResult Edit(int id)
-//        {
-//            return View();
-//        }
+            return BadRequest(result);
+        }
+        [HttpPost("multiadd")]
+        public async Task<IActionResult> MultiAdd(Category[] categories)
+        {
+            var result = await _categoryService.MultiAdd(categories);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
 
-//        // POST: CategoryController/Edit/5
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public ActionResult Edit(int id, IFormCollection collection)
-//        {
-//            try
-//            {
-//                return RedirectToAction(nameof(Index));
-//            }
-//            catch
-//            {
-//                return View();
-//            }
-//        }
+            return BadRequest(result);
+        }
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete(Category category)
+        {
+            var result = await _categoryService.Delete(category);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
 
-//        // GET: CategoryController/Delete/5
-//        public ActionResult Delete(int id)
-//        {
-//            return View();
-//        }
+            return BadRequest(result);
+        }
+        [HttpPost("update")]
+        public async Task<IActionResult> Update(Category category)
+        {
+            var result = await _categoryService.Update(category);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
 
-//        // POST: CategoryController/Delete/5
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public ActionResult Delete(int id, IFormCollection collection)
-//        {
-//            try
-//            {
-//                return RedirectToAction(nameof(Index));
-//            }
-//            catch
-//            {
-//                return View();
-//            }
-//        }
-//    }
-//}
+            return BadRequest(result);
+        }
+
+    }
+}

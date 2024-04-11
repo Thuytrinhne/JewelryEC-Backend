@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JewelryEC_Backend.Models.Products.Dto
+namespace JewelryEC_Backend.Models.Categories.Dto
 {
-    public class CreateNewCategory
+    public class CreateNewCategoryDto
     {
         [Required]
         public string? Name { get; set; }

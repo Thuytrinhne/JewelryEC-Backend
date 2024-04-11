@@ -1,6 +1,6 @@
-﻿namespace JewelryEC_Backend.Models.Products
+﻿namespace JewelryEC_Backend.Models.Products.Dto
 {
-    public class Product
+    public class ProductItemResponseDto
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }
@@ -10,6 +10,5 @@
         public Guid CategoryId { get; set; }
         public DateTime Created_at { get; set; }
         public DateTime Updated_at { get; set; }
-        public ICollection<ProductItem> Items { get; set; }
     }
 }

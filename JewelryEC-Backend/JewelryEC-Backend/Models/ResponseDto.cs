@@ -9,6 +9,14 @@ namespace JewelryEC_Backend.Models
         {
             ErrorMessages = new List<string>();
         }
-
+        public ResponseDto(bool isSuccess, List<string> errorMessages)
+        {
+            IsSuccess = isSuccess;
+            ErrorMessages = errorMessages;
+        }
+        public ResponseDto(bool isSuccess)
+        {
+            IsSuccess = isSuccess;
+        }
     }
 }
