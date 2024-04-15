@@ -1,133 +1,82 @@
 ﻿using AutoMapper;
-using JewelryEC_Backend.Data;
-using JewelryEC_Backend.Filters;
-using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Products.Dto;
-using JewelryEC_Backend.Models.Products;
 using Microsoft.AspNetCore.Mvc;
+using JewelryEC_Backend.Service.IService;
 
 
 namespace JewelryEC_Backend.Controllers
 {
-    [Route("api/product")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ProductApiController : ControllerBase
     {
-        private readonly AppDbContext _db;
-        private ResponseDto _response;
-        private IMapper _mapper;
+        private readonly IProductService _productService;
 
-        public ProductApiController(AppDbContext db, IMapper mapper)
+        public ProductApiController(IProductService productService)
         {
-            _db = db;
-            _mapper = mapper;
-            _response = new ResponseDto();
+            _productService = productService;
         }
 
-
-        [HttpGet]
-        // theem query param
-        public async Task<ActionResult<ResponseDto>> Get()
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAll()
         {
-            try
+            var result = await _productService.GetAll();
+            if (result.IsSuccess)
             {
-                IEnumerable<Product> objList = _db.Products.ToList();
-                _response.Result = _mapper.Map<IEnumerable<ProductItemResponseDto>>(objList);
-                return Ok(_response);
+                return Ok(result);
+            }
 
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return _response;
-        }
-        [HttpGet("{id:Guid}", Name = "GetProductById")]
-
-        public async Task<ActionResult<ResponseDto>> Get(Guid id)
-        {
-            try
-            {
-                Product? obj = _db.Products.FirstOrDefault(u => u.Id == id);
-                if (obj == null)
-                {
-                    _response.IsSuccess = false;
-                    return NotFound(_response);
-                }
-                _response.Result = _mapper.Map<ProductItemResponseDto>(obj);
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return _response;
+            return BadRequest(result);
         }
 
-        // fn f2
-        //global exception filter in .net core web api (try catch )
-        [HttpPost]
-        [ValidateModel]
-        public async Task<ActionResult<ResponseDto>>Post([FromBody] CreateProductItemDto CreateProductDto)
+        [HttpGet("getbyid/{id}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
-            try
+            var result = await _productService.GetById(id);
+            if (result.IsSuccess)
             {
-                Product obj = _mapper.Map<Product>(CreateProductDto);
-                obj.Id = Guid.NewGuid();
-                _db.Products.Add(obj);
-                _db.SaveChanges();
-                _response.Result = _mapper.Map<ProductItemResponseDto>(obj);
-                return CreatedAtRoute("GetProductById", new { id = obj.Id }, _response);
+                return Ok(result);
+            }
 
-
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return _response;
-        }
-        [HttpPut]
-        public async Task<ActionResult<ResponseDto>> Put([FromBody] UpdateProductItemDto updateProductDto)
-        {
-            try
-            {
-                Product obj = _mapper.Map<Product>(updateProductDto);
-                _db.Products.Update(obj);
-                _db.SaveChanges();
-                _response.Result = _mapper.Map<ProductItemResponseDto>(obj);
-                return Ok(_response);
-
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() }; ;
-            }
-            return _response;
+            return BadRequest(result);
         }
 
-        [HttpDelete]
-        [Route("{id:Guid}")]
-        public async Task<ActionResult<ResponseDto>> Delete(Guid id)
+        [HttpPost("add")]
+        public async Task<IActionResult> Add([FromBody] CreateProductDto productDto)
         {
-            try
+            var result = await _productService.Add(productDto);
+            if (result.IsSuccess)
             {
-                Product obj = _db.Products.First(u => u.Id == id);
-                _db.Products.Remove(obj);
-                _db.SaveChanges();
-                return Ok(_response);
+                return Ok(result);
             }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return _response;
+
+            return BadRequest(result);
         }
 
-    }
+        [HttpPost("update")]
+        public async Task<IActionResult> Update(
+            [FromBody] UpdateProductDto productDto)
+        {
+            var result = await _productService.Update( productDto);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpPost("delete/{productId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid productId)
+        {
+            var result = await _productService.Delete(productId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+    }   
+
 }

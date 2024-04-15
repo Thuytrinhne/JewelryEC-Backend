@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Models.Products;
+using JewelryEC_Backend.Models.Orders;
+using JewelryEC_Backend.Models.Categories;
+using JewelryEC_Backend.Models.OrderItems;
 
 namespace JewelryEC_Backend.Data
 {
@@ -21,8 +24,7 @@ namespace JewelryEC_Backend.Data
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Product> Products { get; set; }
-
-
-
+        public DbSet<ProductItem> ProductItems { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
     }
 }

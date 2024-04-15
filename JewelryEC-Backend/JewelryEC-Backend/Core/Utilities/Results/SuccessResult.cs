@@ -6,13 +6,22 @@ namespace JewelryEC_Backend.Core.Utilities.Results
     {
         public SuccessResult(string message) : base(true)
         {
-            base.ErrorMessages.Add(message);
+            base.Message = message;
         }
 
+        public SuccessResult(string message, object result) : base(true)
+        {
+            base.Result = result;
+            base.Message = message;
+        }
+        public SuccessResult( object result) : base(true)
+        {
+            base.Message = "Request successfully";
+            base.Result = result;
+        }
         public SuccessResult() : base(true)
         {
-
+            base.Result = "Request successfully";
         }
-
     }
 }

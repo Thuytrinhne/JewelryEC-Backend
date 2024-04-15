@@ -2,11 +2,11 @@
 
 namespace JewelryEC_Backend.Models.Categories.Dto
 {
-    public class CreateNewCategoryDto
+    public class UpdateCategoryDto
     {
         [Required]
         public string? Name { get; set; }
         [Required]
-        public string? ImageUrl { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

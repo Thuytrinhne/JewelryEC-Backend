@@ -15,5 +15,7 @@ namespace JewelryEC_Backend.Core.DataAccess
         Task Update(T entity);
         Task Delete(T entity);
         Task MultiAddAsync(T[] entities);
+        Task SaveChangeAsync();
+         
     }
 }

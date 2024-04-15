@@ -50,6 +50,7 @@ namespace JewelryEC_Backend.Core.DataAccess.EntityFramework
         public async Task AddAsync(TEntity entity)
         {
             await context.AddAsync(entity);
+            context.SaveChanges();
         }
 
         public async Task Delete(TEntity entity)
@@ -64,6 +65,11 @@ namespace JewelryEC_Backend.Core.DataAccess.EntityFramework
         public async Task Update(TEntity entity)
         {
             context.Update(entity);
+        }
+
+        public async Task SaveChangeAsync()
+        {
+            //context.SaveChangesAsync();
         }
     }
 }
