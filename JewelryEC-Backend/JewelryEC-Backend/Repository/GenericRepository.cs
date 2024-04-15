@@ -28,7 +28,7 @@ namespace JewelryEC_Backend.Repository
         {
             return _context.Set<TEntity>().ToList();
         }
-        public TEntity GetById(int id)
+        public TEntity GetById(Guid id)
         {
             return  _context.Set<TEntity>().Find(id);
         }
@@ -39,6 +39,10 @@ namespace JewelryEC_Backend.Repository
         public void RemoveRange(IEnumerable<TEntity> entities)
         {
             _context.Set<TEntity>().RemoveRange(entities);
+        }
+        public void Update(TEntity entities)
+        {
+            _context.Set<TEntity>().Update(entities);
         }
 
     }
