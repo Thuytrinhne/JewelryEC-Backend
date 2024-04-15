@@ -18,13 +18,13 @@ namespace JewelryEC_Backend.Controllers
     [ApiController]
     public class CartAPIController : Controller
     {
-        private readonly ICacheService _cacheService;
+        private readonly IRedisShoppingCartService _cacheService;
         private readonly AppDbContext _appDbContext;
         private readonly IMapper _mapper;
         private ResponseDto _response;
 
 
-        public CartAPIController(ICacheService cacheService, AppDbContext appDbContext, IMapper mapper)
+        public CartAPIController(IRedisShoppingCartService cacheService, AppDbContext appDbContext, IMapper mapper)
         {
             _cacheService = cacheService;
             _appDbContext = appDbContext;
@@ -38,22 +38,47 @@ namespace JewelryEC_Backend.Controllers
         {
             try
             {
+              
                 // check cache data
-                var cacheData = _cacheService.GetData<Cart>("cart:user-"+id);
-                if (cacheData != null)
+                var cacheData = _cacheService.GetData(id);
+                if (cacheData != null && cacheData.Count >0 )
                 {
-                    _response.Result = _mapper.Map<GetCartDto>(cacheData);
+                    GetCartDto getCart = new GetCartDto();
+                    getCart.UserId = id;
+                    //getCart.Items = cacheData;
+                    getCart.Items = new List<GetCartItemDto>();
+                    foreach (var item in cacheData)
+                    {
+                        getCart.Items.Add(new GetCartItemDto { ProductId = item.Key, Count = item.Value });
+                    }
+
+                    _response.Result = getCart;
                     
                 }
                 else
                 {
-                    cacheData = _appDbContext.Carts
-                               .Where(c => c.UserId == id)  // Lọc theo UserId
-                               .OrderBy(c => c.CreatedAt)   // Sắp xếp theo CreatedAt tăng dần
-                               .FirstOrDefault();
-                    // set expiry time
-                    var expiryTime = DateTimeOffset.Now.AddSeconds(30);
-                    _cacheService.SetData("cart:user-" + id, cacheData, expiryTime);
+                           var CartFrmDb =_appDbContext.Carts
+                                   .Where(c => c.UserId == id && c.IsPayed == 0) 
+                                   .FirstOrDefault();
+                    
+                           var  CartItems =  _appDbContext.CartItems
+                                            .Where(c => c.CartId == CartFrmDb.Id)
+                                            .ToList();
+
+                    // set CACHE
+                    if (CartItems.Count == 0)
+                    {
+                        // set null
+                    }
+                    else
+                    {
+                        foreach (var item in CartItems)
+                        {
+                            _cacheService.SetData(id, item.ProductId, item.Count);
+                        }
+                    }
+                    //var expiryTime = DateTimeOffset.Now.AddSeconds(30);
+
                 }
                 return Ok(_response);
             }
@@ -72,7 +97,8 @@ namespace JewelryEC_Backend.Controllers
         [HttpPost("CartUpsert")]
         public async Task<ActionResult<ResponseDto>> CartUpsert(CreateCartDto cartDto)
         {
-            GetCartItemDto cartItemDto = new GetCartItemDto();
+            CartItem cartItem = _mapper.Map<CartItem>(cartDto.CartItemDto);
+
             try
             {
                 var cartFromDb = await _appDbContext.Carts.AsNoTracking()
@@ -84,13 +110,13 @@ namespace JewelryEC_Backend.Controllers
                     cart.Id = Guid.NewGuid();
                     _appDbContext.Carts.Add(cart);
                     await _appDbContext.SaveChangesAsync();
-                    // create cart item
-                    cartItemDto.Id= Guid.NewGuid();
-                    cartItemDto.CartId = cart.Id;
-                    cartItemDto.ProductId = cartDto.CartItemDto.ProductId;
-                    cartItemDto.Count  = cartDto.CartItemDto.Count;
-                    _appDbContext.CartItems.Add(_mapper.Map<CartItem>(cartItemDto));
+                    // create cart item     
+                    cartItem.CartId = cartFromDb.Id;
+                    cartItem.Id = Guid.NewGuid();
+                    _appDbContext.CartItems.Add(cartItem);
                     await _appDbContext.SaveChangesAsync();
+                    // set data into cache
+                    _cacheService.SetData(cartDto.UserId, cartItem.ProductId, cartItem.Count);
                 }
                 else
                 {
@@ -102,26 +128,26 @@ namespace JewelryEC_Backend.Controllers
                     if (cartDetailsFromDb == null)
                     {
                         //create cartdetails
-                        cartItemDto.Id = Guid.NewGuid();
-                        cartItemDto.CartId = cartFromDb.Id;
-                        cartItemDto.ProductId = cartDto.CartItemDto.ProductId;
-                        cartItemDto.Count = cartDto.CartItemDto.Count;
-                        _appDbContext.CartItems.Add(_mapper.Map<CartItem>(cartItemDto));
+                        cartItem.CartId = cartFromDb.Id;
+                        cartItem.Id = Guid.NewGuid();   
+                        _appDbContext.CartItems.Add(cartItem);
                         await _appDbContext.SaveChangesAsync();
+                        _cacheService.SetData(cartDto.UserId, cartItem.ProductId, cartItem.Count);
                     }
                     else
                     {
                         //update count in cart details
-                        cartItemDto.Id = Guid.NewGuid();
-                        cartItemDto.CartId = cartFromDb.Id;
-                        cartItemDto.ProductId = cartDto.CartItemDto.ProductId;
-                        cartItemDto.Count += cartDto.CartItemDto.Count;
-                      
-                        _appDbContext.CartItems.Update(_mapper.Map<CartItem>(cartItemDto));
+                        cartDetailsFromDb.Count += cartDto.CartItemDto.Count;
+                        _appDbContext.CartItems.Update(cartDetailsFromDb);
                         await _appDbContext.SaveChangesAsync();
+                        _cacheService.SetData(cartDto.UserId, cartDetailsFromDb.ProductId, cartItem.Count);
+                        cartItem.Count = cartDetailsFromDb.Count;
                     }
+
+
                 }
-                _response.Result = cartItemDto;
+
+                _response.Result = _mapper.Map<CreateCartItemResponseDto>(cartItem);
                 return _response;
             }
             catch (Exception ex)

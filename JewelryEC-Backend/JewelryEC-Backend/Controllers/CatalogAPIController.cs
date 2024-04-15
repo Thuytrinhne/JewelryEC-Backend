@@ -102,8 +102,6 @@ namespace JewelryEC_Backend.Controllers
                 _db.SaveChanges();
                 _response.Result = _mapper.Map<CreateCatalogResponseDto>(obj);
                 return CreatedAtRoute("GetCatalogById", new { id = obj.Id }, _response);
-
-
             }
             catch (Exception ex)
             {

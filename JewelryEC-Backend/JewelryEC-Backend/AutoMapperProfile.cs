@@ -28,6 +28,8 @@ namespace JewelryEC_Backend
             CreateMap<CreateCartDto, Cart>().ReverseMap();
             // cart item 
             CreateMap<CartItem, GetCartItemDto>().ReverseMap();
+            CreateMap<CartItem, CreateCartItemDto>().ReverseMap();
+            CreateMap<CartItem, CreateCartItemResponseDto>().ReverseMap();
 
 
         }

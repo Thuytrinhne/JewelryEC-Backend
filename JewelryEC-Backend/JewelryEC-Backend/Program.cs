@@ -29,7 +29,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFramework
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
-builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IRedisShoppingCartService, RedisShoppingCartService>();
 
 builder.Services.AddControllers(options =>
 {

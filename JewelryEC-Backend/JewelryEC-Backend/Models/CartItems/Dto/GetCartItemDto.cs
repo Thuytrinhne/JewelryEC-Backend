@@ -6,13 +6,12 @@ namespace JewelryEC_Backend.Models.CartItems.Dto
 {
     public class GetCartItemDto
     {
-        [Key]
+
         public Guid Id { get; set; }
-        public Guid CartId { get; set; }
-        [ForeignKey("CartId")]
-        public Cart Cart { get; set; }
         public Guid ProductId { get; set; }
-        [Required]
         public int Count { get; set; }
+        public string NameProduct { get; set; }
+        public string DescriptionProduct { get; set; }
+        public float  SalePrice { get; set; }
     }
 }
