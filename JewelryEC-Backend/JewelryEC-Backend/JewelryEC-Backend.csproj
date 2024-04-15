@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Repository\NewFolder\" />
     <Folder Include="Service\" />
   </ItemGroup>
 
