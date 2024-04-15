@@ -40,6 +40,10 @@ namespace JewelryEC_Backend.Repository
         {
             _context.Set<TEntity>().RemoveRange(entities);
         }
+         public void Update(TEntity entities)
+        {
+            _context.Set<TEntity>().Update(entities);
+        }
 
     }
 }
