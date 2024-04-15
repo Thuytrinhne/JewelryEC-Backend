@@ -8,6 +8,9 @@ using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Orders;
 using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Models.OrderItems;
+using JewelryEC_Backend.Models.Shippings;
+using JewelryEC_Backend.Models.Addresses;
+using JewelryEC_Backend.Models.Deliveries;
 
 namespace JewelryEC_Backend.Data
 {
@@ -26,5 +29,11 @@ namespace JewelryEC_Backend.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductItem> ProductItems { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Shipping> Shippings { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Delivery> Deliveries { get; set; }
+
     }
 }
