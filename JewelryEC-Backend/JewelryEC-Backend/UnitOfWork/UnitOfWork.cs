@@ -8,10 +8,17 @@ namespace JewelryEC_Backend.UnitOfWork
     {
         private readonly AppDbContext _context;
         public ICatalogRepository Catalogs { get; private set; }
+        public IOrderRepository Orders { get; private set; }
+        public IProductRepository Products { get; private set; }
+        public IShippingRepository Shippings { get; private set; }
+
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
             Catalogs = new CatalogRepository(_context);
+            Orders = new OrderRepository(_context);
+            Products = new ProductRepository(_context);
+            Shippings = new ShippingRepository(_context);
         }
      
 

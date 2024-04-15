@@ -1,11 +1,11 @@
-﻿using JewelryEC_Backend.Core.DataAccess;
+﻿using JewelryEC_Backend.Core.Repository;
 using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Models.Orders;
 using System.Linq.Expressions;
 
-namespace JewelryEC_Backend.DataAccess.Abstract
+namespace JewelryEC_Backend.Repository.IRepository
 {
-    public interface IOrderDal: IEntityRepository<Order>
+    public interface IOrderRepository : IGenericRepository<Order>
     {
         Task<List<Order>> GetOrders(Expression<Func<Order, bool>> filter = null);
         Task<Order> GetOrder(Expression<Func<Order, bool>> filter);

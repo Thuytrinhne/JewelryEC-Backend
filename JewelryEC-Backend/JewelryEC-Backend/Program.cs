@@ -1,7 +1,5 @@
 using FluentValidation.WebApi;
 using JewelryEC_Backend.Data;
-using JewelryEC_Backend.DataAccess.Abstract;
-using JewelryEC_Backend.DataAccess.Concrete;
 using JewelryEC_Backend.Filters;
 using JewelryEC_Backend.Models.Auths;
 using JewelryEC_Backend.Models.Auths.Entities;
@@ -12,6 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using JewelryEC_Backend.UnitOfWork;
+using JewelryEC_Backend.Repository;
+using JewelryEC_Backend.Repository.IRepository;
+using JewelryEC_Backend.Core.Repository;
+using JewelryEC_Backend.Core.Repository.EntityFramework;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,14 +26,12 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSett
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<IProductDal, EfProductDal>();
-builder.Services.AddScoped<IOrderDal, EfOrderDal>();
-builder.Services.AddScoped<IShippingDal, EfShippingDal>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 
 builder.Services.AddControllers(options =>
 {

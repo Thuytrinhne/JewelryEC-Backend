@@ -1,22 +1,23 @@
 ﻿using AutoMapper;
 using JewelryEC_Backend.Core.Utilities.Results;
-using JewelryEC_Backend.DataAccess.Abstract;
 using JewelryEC_Backend.Mapper;
 using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Products.Dto;
+using JewelryEC_Backend.Repository.IRepository;
 using JewelryEC_Backend.Service.IService;
+using JewelryEC_Backend.UnitOfWork;
 using NuGet.Protocol;
 
 namespace JewelryEC_Backend.Service
 {
     public class ProductService: IProductService
     {
-        private IProductDal _productDal;
+        private IProductRepository _productDal;
 
-        public ProductService(IProductDal productDal)
+        public ProductService(IUnitOfWork unitOfWork)
         {
-            _productDal = productDal;
+            _productDal = unitOfWork.Products;
         }
         public async Task<ResponseDto> GetAll()
         {
@@ -51,7 +52,7 @@ namespace JewelryEC_Backend.Service
         {
             Product updateProduct = ProductMapper.ProductFromUpdateProductDto(productDto);
             Console.Write(updateProduct);
-            await _productDal.Update(updateProduct);
+            _productDal.Update(updateProduct);
             return new SuccessResult();
         }
 

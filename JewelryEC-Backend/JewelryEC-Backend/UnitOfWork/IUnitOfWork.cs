@@ -5,6 +5,10 @@ namespace JewelryEC_Backend.UnitOfWork
     public interface IUnitOfWork : IDisposable
     {
         ICatalogRepository Catalogs { get; }
+        IProductRepository Products { get; }
+        IOrderRepository Orders { get; }
+        IShippingRepository Shippings { get; }
+
         int Save();
     }
 }
