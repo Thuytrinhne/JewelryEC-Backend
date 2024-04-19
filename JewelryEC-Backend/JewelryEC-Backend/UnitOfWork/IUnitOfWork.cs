@@ -8,7 +8,7 @@ namespace JewelryEC_Backend.UnitOfWork
         IProductRepository Products { get; }
         IOrderRepository Orders { get; }
         IShippingRepository Shippings { get; }
-
+        IProductCouponRepository ProductCoupons { get; }
         int Save();
     }
 }

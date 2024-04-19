@@ -11,6 +11,7 @@ namespace JewelryEC_Backend.UnitOfWork
         public IOrderRepository Orders { get; private set; }
         public IProductRepository Products { get; private set; }
         public IShippingRepository Shippings { get; private set; }
+        public IProductCouponRepository ProductCoupons { get; private set; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -19,6 +20,7 @@ namespace JewelryEC_Backend.UnitOfWork
             Orders = new OrderRepository(_context);
             Products = new ProductRepository(_context);
             Shippings = new ShippingRepository(_context);
+            ProductCoupons = new ProductCouponRepository(_context);
         }
      
 

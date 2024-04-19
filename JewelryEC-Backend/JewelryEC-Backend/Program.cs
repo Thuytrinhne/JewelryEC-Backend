@@ -31,7 +31,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-
+builder.Services.AddTransient<IProductCouponService, ProductCouponService>();
 
 builder.Services.AddControllers(options =>
 {

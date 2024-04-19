@@ -11,6 +11,7 @@ using JewelryEC_Backend.Models.OrderItems;
 using JewelryEC_Backend.Models.Shippings;
 using JewelryEC_Backend.Models.Addresses;
 using JewelryEC_Backend.Models.Deliveries;
+using JewelryEC_Backend.Models.Coupon;
 
 namespace JewelryEC_Backend.Data
 {
@@ -34,6 +35,7 @@ namespace JewelryEC_Backend.Data
         public DbSet<Shipping> Shippings { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Delivery> Deliveries { get; set; }
-
+        public DbSet<CatalogCoupon> CatalogCoupons { get; set; }
+        public DbSet<ProductCoupon> ProductCoupons { get; set; }
     }
 }

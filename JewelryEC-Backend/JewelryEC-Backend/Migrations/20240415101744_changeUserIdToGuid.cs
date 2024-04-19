@@ -11,9 +11,9 @@ namespace JewelryEC_Backend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "AddressId",
-                table: "Orders");
+            //migrationBuilder.DropColumn(
+            //    name: "AddressId",
+            //    table: "Orders");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "expectationShippingDate",
@@ -47,13 +47,13 @@ namespace JewelryEC_Backend.Migrations
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
 
-            migrationBuilder.AlterColumn<Guid>(
-                name: "UserId",
-                table: "Orders",
-                type: "uuid",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "integer");
+            //migrationBuilder.AlterColumn<Guid>(
+            //    name: "UserId",
+            //    table: "Orders",
+            //    type: "uuid",
+            //    nullable: false,
+            //    oldClrType: typeof(int),
+            //    oldType: "integer");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
