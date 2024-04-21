@@ -1,3 +1,4 @@
+using JewelryEC_Backend.Core.Repository.EntityFramework;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Repository.IRepository;

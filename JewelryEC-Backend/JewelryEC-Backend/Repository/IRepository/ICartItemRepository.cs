@@ -1,3 +1,4 @@
+using JewelryEC_Backend.Core.Repository;
 using JewelryEC_Backend.Models.CartItems.Entities;
 
 namespace JewelryEC_Backend.Repository.IRepository

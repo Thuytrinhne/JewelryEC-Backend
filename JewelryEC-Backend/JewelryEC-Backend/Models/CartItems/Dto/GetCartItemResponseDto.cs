@@ -4,7 +4,7 @@ using JewelryEC_Backend.Models.Carts.Entities;
 
 namespace JewelryEC_Backend.Models.CartItems.Dto
 {
-    public class GetCartItemDto
+    public class GetCartItemResponseDto
     {
 
         public Guid Id { get; set; }

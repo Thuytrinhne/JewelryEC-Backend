@@ -1,4 +1,6 @@
+using JewelryEC_Backend.Models.Auths.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using static JewelryEC_Backend.Utility.SD;
 
 namespace JewelryEC_Backend.Models.Auths.Dto
@@ -10,5 +12,8 @@ namespace JewelryEC_Backend.Models.Auths.Dto
         
         [Required(ErrorMessage = "Role is required.")]
         public string ?RoleId { get; set; }
+
+  
+    
     }
 }

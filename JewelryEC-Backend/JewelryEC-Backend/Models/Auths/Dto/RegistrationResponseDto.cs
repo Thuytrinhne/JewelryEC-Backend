@@ -2,6 +2,7 @@ namespace JewelryEC_Backend.Models.Auths.Dto
 {
     public class RegistrationResponseDto
     {
+
         public string Id { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }

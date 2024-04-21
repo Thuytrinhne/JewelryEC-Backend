@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using JewelryEC_Backend.Models.Products.Dto;
 using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Service.IService;

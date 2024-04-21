@@ -34,10 +34,10 @@ namespace JewelryEC_Backend.Mapper
             CreateMap<ApplicationUser, RegistrationResponseDto>().ReverseMap();
             CreateMap<ApplicationUser, UserDto>().ReverseMap();
             // cart
-            CreateMap<GetCartDto, Cart>().ReverseMap();
+            CreateMap<GetCartResponseDto, Cart>().ReverseMap();
             CreateMap<CreateCartItemDto, Cart>().ReverseMap();
             // cart item 
-            CreateMap<CartItem, GetCartItemDto>().ReverseMap();
+            CreateMap<CartItem, GetCartItemResponseDto>().ReverseMap();
             CreateMap<CartItem, CreateCartItemDto>().ReverseMap();
             CreateMap<CartItem, CreateCartItemResponseDto>().ReverseMap();
             //user

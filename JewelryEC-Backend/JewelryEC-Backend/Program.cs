@@ -70,6 +70,7 @@ builder.Services.AddScoped<ICatalogService, CatalogService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -88,7 +89,8 @@ builder.Services.AddControllers();
 
 
 #region Repositories
-builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddTransient(typeof(IGenericRepository<>),
+    typeof(GenericRepository<>));
 builder.Services.AddTransient<ICatalogRepository, CatalogRepository>(); // don't need if use UOW
 #endregion
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();

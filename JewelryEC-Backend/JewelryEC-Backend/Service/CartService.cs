@@ -21,52 +21,69 @@ namespace JewelryEC_Backend.Service
 
         public CartItem CartUpSert(Guid userId, CartItem cartItem)
         {
-            var cartFromDb = _unitOfWork.Carts.GetCartHeader(userId);
-            if (cartFromDb == null)
+            if (isUserExist(userId) && isProductExist(cartItem.ProductId))
             {
-                //create cart new and details 
-                Cart cart = new Cart();
-                cart.Id = Guid.NewGuid();
-                cart.UserId = userId;
-                _unitOfWork.Carts.Add(cart);
-                _unitOfWork.Save();
-                // create additional for cart item
-                cartItem.CartId = cart.Id;
-                cartItem.Id = Guid.NewGuid();
-                _unitOfWork.CartItems.Add(cartItem);
-                _unitOfWork.Save(); 
-                // set data into cache
-                _cacheService.SetData(userId, cartItem.ProductId, cartItem.Count);
-            }
-            else
-            {
-                //if header is not null
-                //check if details has same product
-                var cartDetailsFromDb = _unitOfWork.CartItems.GetCartItem(cartItem.ProductId, cartFromDb.Id);
-                if (cartDetailsFromDb == null)
+                var cartFromDb = _unitOfWork.Carts.GetCartHeader(userId);
+                if (cartFromDb == null)
                 {
-                    //create cartdetails
-                    cartItem.CartId = cartFromDb.Id;
+                    //create cart new and details 
+                    Cart cart = new Cart();
+                    cart.Id = Guid.NewGuid();
+                    cart.UserId = userId;
+                    _unitOfWork.Carts.Add(cart);
+                    _unitOfWork.Save();
+                    // create additional for cart item
+                    cartItem.CartId = cart.Id;
                     cartItem.Id = Guid.NewGuid();
                     _unitOfWork.CartItems.Add(cartItem);
                     _unitOfWork.Save();
-                    // set data into cache 
+                    // set data into cache
                     _cacheService.SetData(userId, cartItem.ProductId, cartItem.Count);
                 }
                 else
                 {
-                    //update count in cart details
-                    cartDetailsFromDb.Count += cartItem.Count;
-                    _unitOfWork.CartItems.Update(cartDetailsFromDb);
-                    _unitOfWork.Save();
-                    // set data into cache 
-                    _cacheService.SetData(userId, cartItem.ProductId, cartItem.Count);
-                    cartItem.Count = cartDetailsFromDb.Count;
+                    //if header is not null
+                    //check if details has same product
+                    var cartDetailsFromDb = _unitOfWork.CartItems.GetCartItem(cartItem.ProductId, cartFromDb.Id);
+                    if (cartDetailsFromDb == null)
+                    {
+                        //create cartdetails
+                        cartItem.CartId = cartFromDb.Id;
+                        cartItem.Id = Guid.NewGuid();
+                        _unitOfWork.CartItems.Add(cartItem);
+                        _unitOfWork.Save();
+                        // set data into cache 
+                        _cacheService.SetData(userId, cartItem.ProductId, cartItem.Count);
+                    }
+                    else
+                    {
+                        //update count in cart details
+                        cartDetailsFromDb.Count += cartItem.Count;
+                        _unitOfWork.CartItems.Update(cartDetailsFromDb);
+                        _unitOfWork.Save();
+                        // set data into cache 
+                        _cacheService.SetData(userId, cartItem.ProductId, cartItem.Count);
+                        cartItem.Count = cartDetailsFromDb.Count;
+
+                    }
 
                 }
-               
+                    return cartItem;
             }
-           return cartItem;
+            return null;
+
+        }
+
+        private bool isProductExist(Guid  productId)
+        {
+            var productFrmDB =   _unitOfWork.Products.GetProduct(x => x.Id == productId);
+            return productFrmDB == null ? false: true;
+        }
+
+        private bool isUserExist(Guid userId)
+        {
+            var userFrmDB = _unitOfWork.Users.GetById(userId);
+            return userFrmDB == null ? false : true;
         }
 
         public bool CreateCart(Cart catalogToCreate)

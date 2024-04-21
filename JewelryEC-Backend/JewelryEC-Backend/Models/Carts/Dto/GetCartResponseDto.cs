@@ -5,13 +5,13 @@ using System.Numerics;
 
 namespace JewelryEC_Backend.Models.Carts.Dto
 {
-    public class GetCartDto
+    public class GetCartResponseDto
     {
         public int IsPayed { get; set; } = 0;
         public string? UserId { get; set; }
-        public List<GetCartItemDto> ? Items { get; set; }
+        public List<GetCartItemResponseDto> ? Items { get; set; }
         public float? TotalPrice { get; set; }
-        public GetCartDto()
+        public GetCartResponseDto()
         {
             // Khởi tạo TotalPrice là 0
             TotalPrice = 0;

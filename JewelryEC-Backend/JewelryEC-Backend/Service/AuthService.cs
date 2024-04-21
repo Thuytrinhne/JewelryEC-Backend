@@ -83,8 +83,6 @@ namespace JewelryEC_Backend.Service
             if (objFrmDb != null && objFrmDb.Otp == otp)
             {
                return  checkExpiryOTP(objFrmDb.Created_at) == true ? true : false;
-
-
             }
             return false;
         }

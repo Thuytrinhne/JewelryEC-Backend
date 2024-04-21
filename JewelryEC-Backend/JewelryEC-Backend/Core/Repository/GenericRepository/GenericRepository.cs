@@ -28,7 +28,7 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
         {
             return _context.Set<TEntity>().ToList();
         }
-        public TEntity GetById(int id)
+        public TEntity GetById(Guid id)
         {
             return _context.Set<TEntity>().Find(id);
         }

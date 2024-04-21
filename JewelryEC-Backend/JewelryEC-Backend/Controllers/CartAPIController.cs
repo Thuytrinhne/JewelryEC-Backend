@@ -44,8 +44,8 @@ namespace JewelryEC_Backend.Controllers
                 }
                 else
                 {
-                    GetCartDto getCartDto = _mapper.Map<GetCartDto>(cart);
-                    getCartDto.Items = _mapper.Map<List<GetCartItemDto>>(cart.cartItems);
+                    GetCartResponseDto getCartDto = _mapper.Map<GetCartResponseDto>(cart);
+                    getCartDto.Items = _mapper.Map<List<GetCartItemResponseDto>>(cart.cartItems);
                     _response.Result = getCartDto;
                     return Ok(_response);
                 }
@@ -66,6 +66,10 @@ namespace JewelryEC_Backend.Controllers
             try
             {
                 var cartItemNew = _cartService.CartUpSert(id, cartItem);
+                if( cartItemNew == null )
+                {
+                    return BadRequest("Encounter errors");
+                }
                 _response.Result = _mapper.Map<CreateCartItemResponseDto>(cartItemNew);
                 return Ok(_response);
             }
