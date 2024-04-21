@@ -10,6 +10,8 @@ using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using JewelryEC_Backend.Service;
+using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +22,11 @@ using JewelryEC_Backend.Models.Roles.Entities;
 using Asp.Versioning;
 
 
+using JewelryEC_Backend.UnitOfWork;
+using JewelryEC_Backend.Repository;
+using JewelryEC_Backend.Repository.IRepository;
+using JewelryEC_Backend.Core.Repository;
+using JewelryEC_Backend.Core.Repository.EntityFramework;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApiVersioning(x =>
@@ -45,6 +52,7 @@ builder.Services.AddDbContext<AppDbContext>(option =>
     option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
@@ -54,6 +62,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IRedisShoppingCartService, RedisShoppingCartService>();
@@ -63,6 +72,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 
 
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IProductCouponService, ProductCouponService>();
 
 builder.Services.AddControllers(options =>
 {
@@ -118,7 +130,9 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

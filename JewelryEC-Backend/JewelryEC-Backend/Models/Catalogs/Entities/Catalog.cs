@@ -9,6 +9,5 @@ namespace JewelryEC_Backend.Models.Catalogs.Entities
         public Guid? ParentId { get; set; }
         public string? CatalogSlug { get; set; }
         public DateTime Created_at { get; set; }
-
     }
 }

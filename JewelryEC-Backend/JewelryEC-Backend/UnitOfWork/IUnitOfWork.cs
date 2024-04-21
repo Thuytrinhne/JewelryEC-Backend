@@ -11,6 +11,10 @@ namespace JewelryEC_Backend.UnitOfWork
         IUserRespository Users { get; }
         IRoleRespository Roles { get; }
 
+        IProductRepository Products { get; }
+        IOrderRepository Orders { get; }
+        IShippingRepository Shippings { get; }
+        IProductCouponRepository ProductCoupons { get; }
         int Save();
     }
 }

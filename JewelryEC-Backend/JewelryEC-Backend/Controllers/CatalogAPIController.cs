@@ -108,7 +108,6 @@ namespace JewelryEC_Backend.Controllers
                 _catalogService.UpdateCatalog(obj);
                 _response.Result = _mapper.Map<UpdateCatalogResponseDto>(obj);
                 return Ok(_response);
-
             }
             catch (Exception ex)
             {

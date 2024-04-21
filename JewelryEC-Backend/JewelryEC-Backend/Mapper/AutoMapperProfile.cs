@@ -10,8 +10,15 @@ using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Models.Roles.Dto;
 using JewelryEC_Backend.Models.Roles.Entities;
 using JewelryEC_Backend.Models.Users.Dto;
+using JewelryEC_Backend.Models.Categories;
+using JewelryEC_Backend.Models.Categories.Dto;
+using JewelryEC_Backend.Models.Coupon;
+using JewelryEC_Backend.Models.Coupon.Dto;
+using JewelryEC_Backend.Models.Orders;
+using JewelryEC_Backend.Models.Products;
+using JewelryEC_Backend.Models.Products.Dto;
 
-namespace JewelryEC_Backend
+namespace JewelryEC_Backend.Mapper
 {
     public class AutoMapperProfile : Profile
     {
@@ -49,6 +56,12 @@ namespace JewelryEC_Backend
 
 
 
+            CreateMap<ProductCoupon, CreateProductCouponDto>().ReverseMap();
+            CreateMap<CatalogCoupon, CreateNewCategoryDto>().ReverseMap();
+            CreateMap<ProductCoupon, UpdateProductCouponDto>().ReverseMap();
+            //Product
+                //CreateMap<Product, CreateProductDto>().ReverseMap();
+                //CreateMap<Product, UpdateProductDto>().ReverseMap();
         }
     }
 }

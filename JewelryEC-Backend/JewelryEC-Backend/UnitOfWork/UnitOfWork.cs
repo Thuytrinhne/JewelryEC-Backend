@@ -23,6 +23,10 @@ namespace JewelryEC_Backend.UnitOfWork
         public IUserRespository Users { get; private set; }
 
         public IRoleRespository Roles { get; private set; }
+         public IOrderRepository Orders { get; private set; }
+        public IProductRepository Products { get; private set; }
+        public IShippingRepository Shippings { get; private set; }
+        public IProductCouponRepository ProductCoupons { get; private set; }
 
         public UnitOfWork(AppDbContext context,
             UserManager<ApplicationUser> userManager,
@@ -35,6 +39,10 @@ namespace JewelryEC_Backend.UnitOfWork
             EmailVerifications = new EmailVerificationRespository(_context);
             Users = new UserRespository(_context, userManager, roleManager);
             Roles = new RoleRespository(_context, roleManager);
+            Orders = new OrderRepository(_context);
+            Products = new ProductRepository(_context);
+            Shippings = new ShippingRepository(_context);
+            ProductCoupons = new ProductCouponRepository(_context);
 
         }
 
