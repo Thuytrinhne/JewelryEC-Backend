@@ -5,6 +5,7 @@ using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Utility;
 using Asp.Versioning;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -70,17 +71,21 @@ namespace JewelryEC_Backend.Controllers
 
         }
         [HttpPost("otps")]
-        public async Task<IActionResult> sendingOTP(string email)
+        public async Task<IActionResult> sendingOTP(SendOTPDto sendOTPDto)
         {
-            await _authService.SendingOTP(email);
+             if (!await _authService.SendingOTP(sendOTPDto.Email))
+                {
+                return BadRequest("Error encountered");
+                }
+            _response.Message = "Check your email to get OTP !!!";
             return Ok(_response);
 
         }
      
         [HttpPost("forgotPassword")]
-        public async Task<IActionResult> forgotPassword(string email)
+        public async Task<IActionResult> forgotPassword(ForgotPasswordDto forgotPasswordDto)
         {
-            if (await _authService.ForgotPassword(email))
+            if (await _authService.ForgotPassword(forgotPasswordDto.Email))
             {
                 _response.ErrorMessages = new List<string>() { "Check email and change password, please !!!" };
                 return Ok(_response);
@@ -96,7 +101,7 @@ namespace JewelryEC_Backend.Controllers
         {
             if (await _authService.ResetPassword(token, resetPasswordDto.NewPassword))
            return Ok(_response);
-            return BadRequest(_response);   
+            return BadRequest("Encounter errors");   
         }
         // làm riêng 1 cái cập nhật khách hàng 
 

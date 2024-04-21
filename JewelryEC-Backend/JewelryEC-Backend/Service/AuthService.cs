@@ -98,7 +98,7 @@ namespace JewelryEC_Backend.Service
         }
         public async Task<LoginResponseDto> Login(LoginDto loginDto)
         {
-            var user = await  _unitOfWork.Users.GetUserByEmail(loginDto.Username);
+            var user = await  _unitOfWork.Users.GetUserByEmail(loginDto.Email);
             if(user != null)
             {
                 bool isValid = await _unitOfWork.Users.Login(user, loginDto.Password);

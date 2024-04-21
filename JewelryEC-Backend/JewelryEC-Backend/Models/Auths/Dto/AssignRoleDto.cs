@@ -7,11 +7,11 @@ namespace JewelryEC_Backend.Models.Auths.Dto
 {
     public class AssignRoleDto
     {
-        [Required(ErrorMessage = "UserId is required.")]
+        [Required(ErrorMessage = "{0} is required.")]
         public Guid UserId  { get; set; }
         
-        [Required(ErrorMessage = "Role is required.")]
-        public string ?RoleId { get; set; }
+        [Required(ErrorMessage = "{0} is required.")]
+        public string RoleId { get; set; }
 
   
     

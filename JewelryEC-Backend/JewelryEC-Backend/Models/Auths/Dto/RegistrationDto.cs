@@ -22,7 +22,7 @@ namespace JewelryEC_Backend.Models.Auths.Dto
         public string Password { get; set; }
 
             [Required(ErrorMessage = "{0} is required.")]
-            [StringLength(5, ErrorMessage = "{0} should be {1} characters")]
+            [StringLength(6, ErrorMessage = "{0} should be {1} characters")]
         public string OTP {  get; set; }
     }
 }

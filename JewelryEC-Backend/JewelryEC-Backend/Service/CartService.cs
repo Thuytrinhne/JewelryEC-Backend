@@ -76,7 +76,7 @@ namespace JewelryEC_Backend.Service
 
         private bool isProductExist(Guid  productId)
         {
-            var productFrmDB =   _unitOfWork.Products.GetProduct(x => x.Id == productId);
+            var productFrmDB =   _unitOfWork.Products.GetById(productId);
             return productFrmDB == null ? false: true;
         }
 
@@ -101,59 +101,94 @@ namespace JewelryEC_Backend.Service
 
         public Cart GetDetailCart(Guid userId)
         {
-
-            
-            // check cache data
-            var cacheData = _cacheService.GetData(userId);
-            if (cacheData != null && cacheData.Count > 0)
+ 
+            if(isUserExist(userId))
             {
-                Cart getCart = new Cart();
-                getCart.UserId = userId;  
-                getCart.cartItems = new List<CartItem>();
-                foreach (var item in cacheData)
-                {
-                    // lấy thêm name, giá sau khi merge code 
-                    getCart.cartItems.Add(new CartItem { ProductId = item.Key, Count = item.Value });
-                }
 
-                return getCart;
-            }
-            else
-            {
-                var CartFrmDb = _unitOfWork.Carts.GetCartHeader(userId);
-                if (CartFrmDb == null)
+                // check cache data
+                var cacheData = _cacheService.GetData(userId);
+                if (cacheData != null )
                 {
-                    return null;
-                    //set null 
+                    Cart getCart = new Cart();
+                    getCart.UserId = userId;  
+                    getCart.cartItems = new List<CartItem>();
+                    foreach (var item in cacheData)
+                    {
+                        // lấy thêm name, giá sau khi merge code 
+                        getCart.cartItems.Add(new CartItem { ProductId = item.Key, Count = item.Value });
+                    }
+
+                    return getCart;
                 }
                 else
                 {
-
-                    CartFrmDb.cartItems = _unitOfWork.CartItems.GetCartItems(CartFrmDb.Id).ToList();
-
-
-                    // set CACHE
-                    if (CartFrmDb.cartItems.Count() == 0)
+                    var CartFrmDb = _unitOfWork.Carts.GetCartHeader(userId);
+                    if (CartFrmDb == null)
                     {
-                        // set null to cache 
+                        return null;
+                        //set null 
                     }
                     else
                     {
-                        foreach (var item in CartFrmDb.cartItems)
+
+                        CartFrmDb.cartItems = _unitOfWork.CartItems.GetCartItems(CartFrmDb.Id).ToList();
+
+
+                        // set CACHE
+                        if (CartFrmDb.cartItems.Count() == 0)
                         {
-                            _cacheService.SetData(userId, item.ProductId, item.Count);
+                            // set null to cache 
+                        }
+                        else
+                        {
+                            foreach (var item in CartFrmDb.cartItems)
+                            {
+                                _cacheService.SetData(userId, item.ProductId, item.Count);
+                            }
                         }
                     }
+                    //var expiryTime = DateTimeOffset.Now.AddSeconds(30);
+                    return CartFrmDb;
                 }
-                //var expiryTime = DateTimeOffset.Now.AddSeconds(30);
-                return CartFrmDb;
+              
             }
-            
+            return null;
+
         }
 
         public void SetStatusForCart(int status, Guid cartId)
         {
              _unitOfWork.Carts.SetStatusForCart(status, cartId);  
+        }
+
+        public bool DeleteCartItem(Guid userId, Guid productId)
+        {
+            try
+            {
+                // tìm cart của user
+                var cartFrmDb = _unitOfWork.Carts.GetCartHeader(userId);
+                if (cartFrmDb != null)
+                {
+                    // kt trong cart có product đó k
+                    var cartItemFrmDb = _unitOfWork.CartItems.FindCartItem(cartFrmDb.Id, productId);
+                    if (cartItemFrmDb != null)
+                    {
+                        // nếu có xóa trên db
+                        _unitOfWork.CartItems.Remove(cartItemFrmDb);
+                        _unitOfWork.Save();
+                        // tiếp, xóa product id trên cache of user
+                        _cacheService.RemoveProductFromCart(userId, productId);
+                        return true;
+                    }
+                    return false;
+                }
+                else return false;
+            }catch (Exception ex)
+            {
+                return false;
+            }
+           
+              
         }
     }
 }
