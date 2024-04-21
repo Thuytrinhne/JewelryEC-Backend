@@ -4,6 +4,7 @@ using JewelryEC_Backend.Filters;
 using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Catalogs.Dto;
 using JewelryEC_Backend.Models.Catalogs.Entities;
+using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,43 +16,28 @@ namespace JewelryEC_Backend.Controllers
 {
     [Route("api/catalog")]
     [ApiController]
+    [Authorize]
     public class CatalogAPIController : ControllerBase
     {
-        private readonly AppDbContext _db;
+      
         private ResponseDto _response;
         private IMapper _mapper;
-
-        public CatalogAPIController(AppDbContext db, IMapper mapper)
+        private ICatalogService _catalogService;
+        public CatalogAPIController( IMapper mapper,ICatalogService catalogService )
         {
-            _db = db;
             _mapper = mapper;
             _response = new ResponseDto();
+            _catalogService = catalogService;
         }
 
 
         [HttpGet]
-        // theem query param
         public async Task<ActionResult<ResponseDto>> Get([FromQuery] Guid ? parentId, [FromQuery] string ? name)
         {
             try
             {
                 IEnumerable<Catalog> objList;
-                if (parentId.HasValue && !string.IsNullOrEmpty(name))
-                {
-                    objList = await _db.Catalogs.Where(c => c.ParentId == parentId && c.Name == name.Trim()).ToListAsync();
-                }
-                else if (parentId.HasValue)
-                {
-                     objList = await _db.Catalogs.Where(c => c.ParentId == parentId).ToListAsync();
-                }
-                else if (!string.IsNullOrEmpty(name))
-                {
-                    objList = await _db.Catalogs.Where(c => c.Name == name.Trim()).ToListAsync();
-                }
-                else
-                {
-                    objList = _db.Catalogs.ToList();
-                }
+                objList = _catalogService.FilterCatalogs(parentId, name);
                 _response.Result = _mapper.Map<IEnumerable<GetCatalogResponseDto>>(objList);
                 return Ok(_response);
 
@@ -70,7 +56,7 @@ namespace JewelryEC_Backend.Controllers
             try
             {
  
-                Catalog ?obj = _db.Catalogs.FirstOrDefault(u => u.Id == id);
+                Catalog ?obj = _catalogService.GetCatalogById(id);
                 if (obj == null)
                 {
                     _response.IsSuccess = false;
@@ -90,15 +76,18 @@ namespace JewelryEC_Backend.Controllers
      
         //global exception filter in .net core web api (try catch )
         [HttpPost]
-        [ValidateModel]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Post([FromBody] CreateCatalogDto CreateCatalogDto)
         {
             try
             {
                 Catalog obj = _mapper.Map<Catalog>(CreateCatalogDto);
-                obj.Id = Guid.NewGuid(); 
-                _db.Catalogs.Add(obj);
-                _db.SaveChanges();
+                obj.Id = Guid.NewGuid();
+
+                if (_catalogService.CreateCatalog(obj)== false)
+                {
+                    return BadRequest("error occur");
+                }
                 _response.Result = _mapper.Map<CreateCatalogResponseDto>(obj);
                 return CreatedAtRoute("GetCatalogById", new { id = obj.Id }, _response);
             }
@@ -110,13 +99,13 @@ namespace JewelryEC_Backend.Controllers
             return _response;
         }
         [HttpPut]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Put([FromBody] UpdateCatalogDto updateCatalogDto)
         {
             try
             {
                 Catalog obj = _mapper.Map<Catalog>(updateCatalogDto);
-                _db.Catalogs.Update(obj);
-                _db.SaveChanges();
+                _catalogService.UpdateCatalog(obj);
                 _response.Result = _mapper.Map<UpdateCatalogResponseDto>(obj);
                 return Ok(_response);
             }
@@ -130,16 +119,13 @@ namespace JewelryEC_Backend.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Delete(Guid id)
         {
             try
             {
-                Catalog obj =  _db.Catalogs.First(u => u.Id == id);
-                _db.Catalogs.Remove(obj);
-                _db.SaveChanges();
+                _catalogService.DeleteCatalog(id);
                 return Ok(_response);
-
-
             }
             catch (Exception ex)
             {

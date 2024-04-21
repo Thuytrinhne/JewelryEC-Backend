@@ -1,4 +1,4 @@
-﻿using JewelryEC_Backend.Core.Repository.EntityFramework;
+using JewelryEC_Backend.Core.Repository.EntityFramework;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Models.Shippings;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace JewelryEC_Backend.Repository
 {
-    public class ShippingRepository : GenericRepository<Shipping>, IShippingRepository
+    public class ShippingRepository : JewelryEC_Backend.Core.Repository.EntityFramework.GenericRepository<Shipping>, IShippingRepository
     {
         public ShippingRepository(AppDbContext _context) : base(_context)
         {

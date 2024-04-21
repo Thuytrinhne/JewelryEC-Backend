@@ -1,4 +1,4 @@
-﻿using JewelryEC_Backend.Core.Repository.EntityFramework;
+using JewelryEC_Backend.Core.Repository.EntityFramework;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Models.Orders;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace JewelryEC_Backend.Repository
 {
-    public class OrderRepository : GenericRepository<Order>, IOrderRepository
+    public class OrderRepository : JewelryEC_Backend.Core.Repository.EntityFramework.GenericRepository<Order>, IOrderRepository
     {
         public OrderRepository(AppDbContext _context) : base(_context)
         {

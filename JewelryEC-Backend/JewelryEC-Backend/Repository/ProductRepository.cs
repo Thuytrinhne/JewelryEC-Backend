@@ -1,4 +1,4 @@
-﻿using JewelryEC_Backend.Core.Repository.EntityFramework;
+using JewelryEC_Backend.Core.Repository.EntityFramework;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Models.Products;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace JewelryEC_Backend.Repository
 {
-    public class ProductRepository : GenericRepository<Product>, IProductRepository
+    public class ProductRepository : JewelryEC_Backend.Core.Repository.EntityFramework.GenericRepository<Product>, IProductRepository
     {
         public ProductRepository(AppDbContext _context) : base(_context)
         {

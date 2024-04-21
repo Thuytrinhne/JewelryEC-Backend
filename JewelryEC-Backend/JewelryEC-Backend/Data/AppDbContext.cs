@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using JewelryEC_Backend.Models.Auths.Entities;
+using JewelryEC_Backend.Models.Carts.Entities;
+using JewelryEC_Backend.Models.CartItems.Entities;
+using JewelryEC_Backend.Models.Roles.Entities;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Orders;
 using JewelryEC_Backend.Models.Categories;
@@ -15,7 +18,7 @@ using JewelryEC_Backend.Models.Coupon;
 
 namespace JewelryEC_Backend.Data
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         protected readonly IConfiguration _configuration;
         public AppDbContext(IConfiguration configuration)
@@ -27,6 +30,13 @@ namespace JewelryEC_Backend.Data
 
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
+        public DbSet<EmailVerification> EmailVerifications { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<ApplicationRole> ApplicationRoles { get; set; }
+
+
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductItem> ProductItems { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }

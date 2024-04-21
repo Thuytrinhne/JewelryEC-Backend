@@ -4,7 +4,7 @@ namespace JewelryEC_Backend.Core.Repository
 {
     public interface IGenericRepository<T> where T : class
     {
-        T GetById(int id);
+        T GetById(Guid id);
         IEnumerable<T> GetAll();
         IEnumerable<T> Find(Expression<Func<T, bool>> expression);
         void Add(T entity);
