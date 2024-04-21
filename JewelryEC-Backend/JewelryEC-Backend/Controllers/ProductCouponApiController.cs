@@ -66,6 +66,18 @@ namespace JewelryEC_Backend.Controllers
 
             return BadRequest(result);
         }
-    }   
+        [HttpPost("delete/{couponId}")]
+        public async Task<IActionResult> Delete(
+        [FromRoute] Guid couponId)
+            {
+                var result = await _productCouponService.Delete(couponId);
+                if (result.IsSuccess)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+
+    }
 
 }
