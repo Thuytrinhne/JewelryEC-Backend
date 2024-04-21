@@ -25,7 +25,7 @@ namespace JewelryEC_Backend.Service
             _cacheDb = redis.GetDatabase();
         }
 
-        public Dictionary<Guid, int> GetData(string userId)
+        public Dictionary<Guid, int> GetData(Guid userId)
         {
        
             var cartKey = $"cart:{userId}_ref";
@@ -41,7 +41,7 @@ namespace JewelryEC_Backend.Service
 
        
 
-        public void SetData (string userId, Guid productId,int quantity)
+        public void SetData (Guid userId, Guid productId,int quantity)
         {
         
             var cartKey = $"cart:{userId}_ref";
@@ -60,7 +60,7 @@ namespace JewelryEC_Backend.Service
             }
 
         }
-        public object RemoveData(string userId)
+        public object RemoveData(Guid userId)
         {
             var cartKey = $"cart:{userId}_ref";
             var _exist = _cacheDb.KeyExists(cartKey);

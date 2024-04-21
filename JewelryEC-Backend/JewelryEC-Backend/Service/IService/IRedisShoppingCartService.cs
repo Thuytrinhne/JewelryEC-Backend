@@ -4,8 +4,8 @@ namespace JewelryEC_Backend.Service.IService
 {
     public interface IRedisShoppingCartService
     {
-        Dictionary<Guid, int> GetData(string userId);
-        void SetData(string userId, Guid productId, int quantity);
-        object RemoveData (string userId);
+        Dictionary<Guid, int> GetData(Guid userId);
+        void SetData(Guid userId, Guid productId, int quantity);
+        object RemoveData (Guid userId);
     }
 }

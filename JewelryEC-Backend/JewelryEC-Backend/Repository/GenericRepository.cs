@@ -1,5 +1,6 @@
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace JewelryEC_Backend.Repository

@@ -6,21 +6,22 @@ namespace JewelryEC_Backend.Service
 {
     public class EmailSender : IEmailSender
     {
-        public Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email, string subject, string message)
         {
             var client = new SmtpClient("smtp.office365.com", 587)
-            {
+            { 
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("mongthitrinhtkp@gmail.com", "[your password]")
+                Credentials = new NetworkCredential("mongthitrinhtkp@gmail.com", "[Your password]")
             };
 
-            return client.SendMailAsync(
+            await client.SendMailAsync(
                 new MailMessage(from: "mongthitrinhtkp@gmail.com",
                                 to: email,
-                                subject,
-                                message
+                                subject: subject,
+                                body: message
                                 ));
         }
+
     }
 }

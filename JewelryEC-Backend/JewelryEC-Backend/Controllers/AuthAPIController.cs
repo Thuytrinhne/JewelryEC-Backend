@@ -3,14 +3,21 @@ using JewelryEC_Backend.Models.Auths.Dto;
 using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Mvc;
+using JewelryEC_Backend.Utility;
+using Asp.Versioning;
+
 
 namespace JewelryEC_Backend.Controllers
 {
-    [Route("api/auth")]
+
     [ApiController]
-    public class AuthAPIController : Controller
-    {
-        private readonly IEmailSender _emailSender;
+    // [Route("api/v{version:apiVersion}/auth")]
+    [Route("api/auth")]
+    [ApiVersion("1.0")]
+
+
+    public class AuthAPIController : ControllerBase
+    {       
         private readonly IAuthService _authService;
         private ResponseDto _response;
 
@@ -18,7 +25,7 @@ namespace JewelryEC_Backend.Controllers
         {
             _authService = authService;
             _response = new ResponseDto();
-            _emailSender = emailSender;
+     
         }
 
         [HttpPost("register")]
@@ -29,10 +36,10 @@ namespace JewelryEC_Backend.Controllers
             {
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { errorMessage };
-                return BadRequest(_response);
+                return BadRequest("Error occur");
             }
             
-                return Ok(_response);
+               return Ok(_response);
           
         }
         [HttpPost("login")]
@@ -49,10 +56,10 @@ namespace JewelryEC_Backend.Controllers
             return Ok(_response);
 
         }
-        [HttpPost("AssignRole")]
-        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto model)
+        [HttpPost("assignRole")]
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto)
         {
-            var assignRoleSuccessful = await _authService.AssignRole(model.Id, model.Role.ToUpper());
+            var assignRoleSuccessful = await _authService.AssignRole(assignRoleDto.UserId, assignRoleDto.RoleId);
             if (!assignRoleSuccessful)
             {
                 _response.IsSuccess = false;
@@ -62,19 +69,37 @@ namespace JewelryEC_Backend.Controllers
             return Ok(_response);
 
         }
-        [HttpPost("SendingOTP")]
+        [HttpPost("otps")]
         public async Task<IActionResult> sendingOTP(string email)
         {
-            Random random = new Random();
-            string otp = random.Next(100000, 999999).ToString();
-            string subject = "Sending OTP";
-            string message = "Your OTP is "+ otp;
-            await _emailSender.SendEmailAsync(email, subject, message);
+            await _authService.SendingOTP(email);
             return Ok(_response);
 
         }
-        // forgot password
+     
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> forgotPassword(string email)
+        {
+            if (await _authService.ForgotPassword(email))
+            {
+                _response.ErrorMessages = new List<string>() { "Check email and change password, please !!!" };
+                return Ok(_response);
+            }
+            else
+            {
+                _response.ErrorMessages = new List<string>() { "Email is not existed in system !!! Check again !!!" };
+                return BadRequest(_response);
+            }
+        }
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> resetPassword(string token, ResetPasswordDto resetPasswordDto)
+        {
+            if (await _authService.ResetPassword(token, resetPasswordDto.NewPassword))
+           return Ok(_response);
+            return BadRequest(_response);   
+        }
         // làm riêng 1 cái cập nhật khách hàng 
 
     }
 }
+

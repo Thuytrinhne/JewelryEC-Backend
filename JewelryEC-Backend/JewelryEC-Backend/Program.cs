@@ -16,8 +16,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using JewelryEC_Backend.Models.Roles.Entities;
+using Asp.Versioning;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddApiVersioning(x =>
+{
+    x.AssumeDefaultVersionWhenUnspecified = true;
+    x.DefaultApiVersion = new ApiVersion(1, 0);
+    x.ReportApiVersions = true;
+    //// x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
+    //x.ApiVersionReader = ApiVersionReader.Combine(
+    //    new QueryStringApiVersionReader("api-version"),
+    //    new HeaderApiVersionReader("x-Version"),
+    //    new MediaTypeApiVersionReader("ver"));
+
+}).AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+}
+);
 
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
@@ -25,14 +46,22 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 });
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
+        .AddEntityFrameworkStores<AppDbContext>()  
+        .AddDefaultTokenProviders();
+
+
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IRedisShoppingCartService, RedisShoppingCartService>();
 builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+
 
 
 builder.Services.AddControllers(options =>
@@ -44,6 +73,8 @@ builder.Services.AddControllers(options =>
 
 
 builder.Services.AddControllers();
+
+
 #region Repositories
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddTransient<ICatalogRepository, CatalogRepository>(); // don't need if use UOW
@@ -99,6 +130,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAuthentication();
+
 
 app.MapControllers();
 

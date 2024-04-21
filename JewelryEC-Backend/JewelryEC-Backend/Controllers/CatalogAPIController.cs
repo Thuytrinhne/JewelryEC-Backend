@@ -82,8 +82,12 @@ namespace JewelryEC_Backend.Controllers
             try
             {
                 Catalog obj = _mapper.Map<Catalog>(CreateCatalogDto);
-                obj.Id = Guid.NewGuid(); 
-                _catalogService.CreateCatalog(obj);
+                obj.Id = Guid.NewGuid();
+
+                if (_catalogService.CreateCatalog(obj)== false)
+                {
+                    return BadRequest("error occur");
+                }
                 _response.Result = _mapper.Map<CreateCatalogResponseDto>(obj);
                 return CreatedAtRoute("GetCatalogById", new { id = obj.Id }, _response);
             }
