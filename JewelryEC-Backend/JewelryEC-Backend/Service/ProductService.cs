@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using JewelryEC_Backend.Core.Utilities.Results;
 using JewelryEC_Backend.Mapper;
 using JewelryEC_Backend.Models;
@@ -61,8 +61,9 @@ namespace JewelryEC_Backend.Service
             Product product = await _productDal.GetProduct(Product => Product.Id == (id));
             if (product != null)
             {
-                await _productDal.Delete(product);
-                return new SuccessResult();
+                //await _productDal.Delete(product);
+                //return new SuccessResult();
+                return new SuccessResult(product);
             }
             return new ErrorResult();
         }

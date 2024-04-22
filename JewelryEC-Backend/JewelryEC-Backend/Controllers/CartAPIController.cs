@@ -1,6 +1,5 @@
 using AutoMapper;
 using JewelryEC_Backend.Data;
-using JewelryEC_Backend.Migrations;
 using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.CartItems.Dto;
 using JewelryEC_Backend.Models.CartItems.Entities;
