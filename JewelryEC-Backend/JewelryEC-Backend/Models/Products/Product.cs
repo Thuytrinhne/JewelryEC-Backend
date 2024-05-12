@@ -11,10 +11,8 @@ namespace JewelryEC_Backend.Models.Products
         public string? Code { get; set; }
         public string? InternationalCode { get; set; }
         public Guid CatalogId { get; set; }
-        public long? SaledCount { get; set; }
         public float? AverageRating { get; set; }
         public long? RatingCount { get; set; }
-        public double Availability { get; set; }
         public DateTime Created_at { get; set; }
         public DateTime Updated_at { get; set; }
         public virtual ICollection<ProductItem> Items { get; set; } = new List<ProductItem>();

@@ -7,14 +7,14 @@ namespace JewelryEC_Backend.Models.Products
     public class ProductItem: IEntity
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Size { get; set; }
         public string ProductSlug { get; set; }
         public string SKU { get; set; }
-        public string State { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal DiscountPrice { get; set; }
         public int DiscountPercent { get; set; }    
         public int Stock { get; set;}
+        public int State { get; set; }
         [ForeignKey("Product")]
         public  Guid  ProductId { get; set; }
         public virtual Product Product { get; set; }
