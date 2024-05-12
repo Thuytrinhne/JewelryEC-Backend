@@ -35,7 +35,8 @@ namespace JewelryEC_Backend.Service
             await _orderRe.AddAsync(order);
             await _orderRe.SaveChangeAsync();
             await _shippingRe.AddAsync(shipping);
-            return new SuccessResult("Add order successfully");
+            Order newOrder = await _orderRe.GetAsync(Order => Order.Id == order.Id);
+            return new SuccessResult("Add order successfully", newOrder);
         }
         public async Task<ResponseDto> Cancel(Guid orderId)
         {

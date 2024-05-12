@@ -21,9 +21,17 @@ namespace JewelryEC_Backend.Repository
 
         public Task<List<Product>> GetProducts(Expression<Func<Product, bool>> filter = null)
         {
-            return filter == null ? _context.Products.ToListAsync() : _context.Products.Where(filter).ToListAsync();
+            return filter == null ?
+                _context.Products
+                    .Include(p => p.Items)  
+                    .Include(p => p.Images) 
+                    .ToListAsync() :
+                _context.Products
+                    .Where(filter)
+                    .Include(p => p.Items)
+                    .Include(p => p.Images)
+                    .ToListAsync();
         }
-
     }
 
 }

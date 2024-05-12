@@ -26,7 +26,10 @@ namespace JewelryEC_Backend.Data
             _configuration = configuration;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+         => 
+            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+        
+
 
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }

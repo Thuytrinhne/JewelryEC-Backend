@@ -1,4 +1,6 @@
 ﻿using JewelryEC_Backend.Core.Entity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JewelryEC_Backend.Models.Products
 {
@@ -13,7 +15,8 @@ namespace JewelryEC_Backend.Models.Products
         public decimal DiscountPrice { get; set; }
         public int DiscountPercent { get; set; }    
         public int Stock { get; set;}
-        public Guid ProductId { get; set; }
+        [ForeignKey("Product")]
+        public  Guid  ProductId { get; set; }
         public virtual Product Product { get; set; }
     }
 }

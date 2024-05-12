@@ -16,7 +16,7 @@ namespace JewelryEC_Backend.Controllers
 {
     [Route("api/catalogs")]
     [ApiController]
-    [Authorize]
+        //[Authorize]
     public class CatalogAPIController : ControllerBase
     {
       
@@ -80,7 +80,7 @@ namespace JewelryEC_Backend.Controllers
      
         //global exception filter in .net core web api (try catch )
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Post([FromBody] CreateCatalogDto CreateCatalogDto)
         {
             try
