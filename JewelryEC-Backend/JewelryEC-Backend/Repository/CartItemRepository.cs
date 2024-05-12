@@ -11,6 +11,12 @@ namespace JewelryEC_Backend.Repository
         {
         }
 
+        public CartItem FindCartItem(Guid cardId, Guid productId)
+        {
+            return Find(u => u.ProductId == productId &&
+                     u.CartId == cardId).FirstOrDefault();
+        }
+
         public CartItem GetCartItem(Guid productId, Guid cartId)
         {
             return Find(u => u.ProductId == productId &&

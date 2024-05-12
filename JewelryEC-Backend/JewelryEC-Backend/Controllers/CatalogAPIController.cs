@@ -14,7 +14,7 @@ using System.Net;
 
 namespace JewelryEC_Backend.Controllers
 {
-    [Route("api/catalog")]
+    [Route("api/catalogs")]
     [ApiController]
     [Authorize]
     public class CatalogAPIController : ControllerBase
@@ -38,6 +38,10 @@ namespace JewelryEC_Backend.Controllers
             {
                 IEnumerable<Catalog> objList;
                 objList = _catalogService.FilterCatalogs(parentId, name);
+                if(objList == null  ||  objList.Count() == 0)
+                    return NotFound("Parent Id is not valid or no catalog with this parentId");
+                
+
                 _response.Result = _mapper.Map<IEnumerable<GetCatalogResponseDto>>(objList);
                 return Ok(_response);
 
@@ -124,7 +128,8 @@ namespace JewelryEC_Backend.Controllers
         {
             try
             {
-                _catalogService.DeleteCatalog(id);
+                if (!_catalogService.DeleteCatalog(id))
+                    return BadRequest("Catalog belongs to other catalog or error occurred");
                 return Ok(_response);
             }
             catch (Exception ex)

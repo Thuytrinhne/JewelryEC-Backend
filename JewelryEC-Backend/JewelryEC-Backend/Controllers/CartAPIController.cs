@@ -34,20 +34,22 @@ namespace JewelryEC_Backend.Controllers
         {
             try
             {
-                var cart = _cartService.GetDetailCart(id);
-                if(cart == null)
-                {
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages = new List<string>() {"Giỏ hàng rỗng !!!"};
-                    return StatusCode(404, _response);
-                }
-                else
-                {
-                    GetCartResponseDto getCartDto = _mapper.Map<GetCartResponseDto>(cart);
-                    getCartDto.Items = _mapper.Map<List<GetCartItemResponseDto>>(cart.cartItems);
-                    _response.Result = getCartDto;
-                    return Ok(_response);
-                }
+                
+                    var cart = _cartService.GetDetailCart(id);
+                    if (cart == null)
+                    {
+                        _response.IsSuccess = false;
+                        _response.ErrorMessages = new List<string>() { "Giỏ hàng rỗng or user k tồn tại !!!" };
+                        return StatusCode(404, _response);
+                    }
+                    else
+                    {
+                        GetCartResponseDto getCartDto = _mapper.Map<GetCartResponseDto>(cart);
+                        getCartDto.Items = _mapper.Map<List<GetCartItemResponseDto>>(cart.cartItems);
+                        _response.Result = getCartDto;
+                        return Ok(_response);
+                    }
+              
                 
             }
             catch (Exception ex)
@@ -79,6 +81,30 @@ namespace JewelryEC_Backend.Controllers
                 return StatusCode(500, _response);
             }
   
+        }
+
+        [HttpDelete("user/{id}/cart/items/{productId}")]
+        public async Task<ActionResult<ResponseDto>> CartItemDelete(Guid id , Guid productId)
+        {
+            
+            try
+            {
+
+                // id??
+                var result = _cartService.DeleteCartItem(id, productId);
+                if (result == false)
+                {
+                    return BadRequest("Encounter errors");
+                }      
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                return StatusCode(500, _response);
+            }
+
         }
 
     }

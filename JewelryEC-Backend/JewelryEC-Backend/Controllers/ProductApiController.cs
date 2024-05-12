@@ -35,7 +35,7 @@ namespace JewelryEC_Backend.Controllers
             var result = await _productService.GetById(id);
             if (result.IsSuccess)
             {
-                return Ok(result);
+                return Ok(result.Result);
             }
 
             return BadRequest(result);

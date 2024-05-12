@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using JewelryEC_Backend.Core.Utilities.Results;
 using JewelryEC_Backend.Mapper;
 using JewelryEC_Backend.Models;
@@ -63,7 +63,7 @@ namespace JewelryEC_Backend.Service
             {
                 return new SuccessDataResult<Product>(product);
             }
-            return new ErrorResult("Not found product with id" + id);
+            return new ErrorResult();
         }
     }
 }

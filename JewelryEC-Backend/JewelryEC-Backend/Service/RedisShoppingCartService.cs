@@ -70,6 +70,18 @@ namespace JewelryEC_Backend.Service
             }
             return false;
         }
+        public void RemoveProductFromCart(Guid userId, Guid productId)
+        {
+            var cartKey = $"cart:{userId}_ref";
+
+            // Kiểm tra xem sản phẩm có tồn tại trong giỏ hàng không
+            if (_cacheDb.HashExists(cartKey, productId.ToString()))
+            {
+                // Nếu sản phẩm tồn tại, xóa nó khỏi giỏ hàng
+                _cacheDb.HashDelete(cartKey, productId.ToString());
+            }
+        }
+
 
     }
 }
