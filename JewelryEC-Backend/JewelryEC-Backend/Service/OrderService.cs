@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using JewelryEC_Backend.Core.Utilities.Results;
 using JewelryEC_Backend.Mapper;
 using JewelryEC_Backend.Models;
@@ -35,7 +35,7 @@ namespace JewelryEC_Backend.Service
             await _orderRe.AddAsync(order);
             await _orderRe.SaveChangeAsync();
             await _shippingRe.AddAsync(shipping);
-            Order newOrder = await _orderRe.GetAsync(Order => Order.Id == order.Id);
+            Order newOrder =  _orderRe.GetById(order.Id);
             return new SuccessResult("Add order successfully", newOrder);
         }
         public async Task<ResponseDto> Cancel(Guid orderId)

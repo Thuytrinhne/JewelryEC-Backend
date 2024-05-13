@@ -9,10 +9,10 @@ namespace JewelryEC_Backend.Repository.IRepository
         Task<IdentityResult> AddUserByUserManager(ApplicationUser user, string password);
         Task<bool> Login(ApplicationUser user, string password);
         Task<ApplicationUser> GetUserByEmail(string email);
-        Task<IEnumerable<ApplicationUser>> GetUsersByRoleAsync(string roleId);
+        Task<IEnumerable<ApplicationUser>> GetUsersByRoleAsync(Guid roleId);
         Task<IEnumerable<string>> GetRoleAsync(ApplicationUser user);
         ApplicationUser GetUserById(Guid userid);
-        Task<bool> AssignRoleForUser(ApplicationUser user, string roleId);
+        Task<bool> AssignRoleForUser(ApplicationUser user, Guid roleId);
         Task<IdentityResult> ResetPassword(ApplicationUser user, string newPass);
         Task<ApplicationUser> UpdateUser(ApplicationUser user);
 

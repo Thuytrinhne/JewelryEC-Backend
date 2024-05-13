@@ -1,4 +1,4 @@
-﻿using JewelryEC_Backend.Models.Catalogs.Entities;
+using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Products.Dto;
 
@@ -27,7 +27,7 @@ namespace JewelryEC_Backend.Mapper
                 DiscountPrice = itemDto.DiscountPrice,
                 DiscountPercent = itemDto.DiscountPercent,
                 Stock = itemDto.Stock,
-                ProductId = newProduct.Id
+               ProductId = newProduct.Id
             }).ToList();
             newProduct.Images = productDto.Images.Select(imageDto => new ProductImage
             {

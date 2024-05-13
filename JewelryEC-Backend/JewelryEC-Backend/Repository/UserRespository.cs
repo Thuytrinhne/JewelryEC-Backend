@@ -29,20 +29,28 @@ namespace JewelryEC_Backend.Repository
                 
         }
 
-        public async Task<bool> AssignRoleForUser(ApplicationUser user,  string roleId)
+        public async Task<bool> AssignRoleForUser(ApplicationUser user,  Guid roleId)
         {
-            var role = await _roleManager.FindByIdAsync(roleId);
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
             {
                 return false;
             }
             // Thêm role cho người dùng
-            var result = await _userManager.AddToRoleAsync(user, role.Name);
-            if (!result.Succeeded)
+            try
+            {
+                var result = await _userManager.AddToRoleAsync(user, role.Name.Trim());
+                if (!result.Succeeded)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception ex)
             {
                 return false;
             }
-            return true;
+            
            
         }
 
@@ -75,9 +83,9 @@ namespace JewelryEC_Backend.Repository
             return result;
         }
 
-        public async  Task<IEnumerable<ApplicationUser>> GetUsersByRoleAsync(string roleId)
+        public async  Task<IEnumerable<ApplicationUser>> GetUsersByRoleAsync(Guid roleId)
         {
-            var role = await _roleManager.FindByIdAsync(roleId);
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null)
             {
                 return null;

@@ -1,8 +1,12 @@
 using JewelryEC_Backend.Helpers.Payments.VnPay;
+using JewelryEC_Backend.Models.Orders;
 using JewelryEC_Backend.Models.Orders.Dto;
 using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using StackExchange.Redis;
 using static JewelryEC_Backend.Utility.SD;
+using Order = JewelryEC_Backend.Models.Orders.Order;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -13,11 +17,13 @@ namespace JewelryEC_Backend.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IVnPayService _vnPayService;
+        private readonly ICartService _cartService;
 
-        public OrderApiController(IOrderService orderService, IVnPayService vnPayService)
+        public OrderApiController(IOrderService orderService, IVnPayService vnPayService, ICartService cartService)
         {
             _orderService = orderService;
             _vnPayService= vnPayService;
+            _cartService = cartService;
         }
 
         [HttpGet("getall")]
@@ -48,26 +54,28 @@ namespace JewelryEC_Backend.Controllers
         public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto, string payment = "COD")
         {
             var result = await _orderService.Add(orderDto);
-     
+            
             if (result.IsSuccess)
             {
-                // PAYMENT VNPAY
-                    // if payment method = vnpay
-                    // 1. update order status "Chờ thành toán"
-                    if (payment == PaymentMethod.VNPAY.ToString())
-                    {
-                        var vnPaymentModel = new VnPaymentRequestModel
+                Order newOrder = (Order)result.Result;
+                #region if payment method = vnpay
+                if (payment == PaymentMethod.VNPAY.ToString())
+                {
+                    var vnPaymentModel = new VnPaymentRequestModel
                         {
-                            Amount = 1000,
-                            CreatedDate = DateTime.Now,
+                            Amount = newOrder.TotalPrice,
+                            CreatedDate = newOrder.CreateDate,
                             Description = "",
                             FullName = "Trinh",
-                            OrderId = new Guid()
+                            OrderId = newOrder.Id,
                         };
                         // return payment url 
-                        return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
-                    }
-                //END PAYMENT VNPAY 
+                    return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
+                }
+                #endregion
+                #region handle cart after checkout
+                _cartService.HanldeCartAfterCheckout(newOrder.UserId);
+                #endregion
                 return Ok(result);
             }
 
@@ -85,19 +93,30 @@ namespace JewelryEC_Backend.Controllers
 
             return BadRequest(result);
         }
-        [HttpPost("PaymentCallBack")]
-        public async  Task <IActionResult> PaymentCallBack ()
+        [HttpGet("PaymentCallBack")]
+        public async  Task <IActionResult> PaymentCallBack ([FromQuery(Name = "vnp_OrderInfo")] string vnpOrderInfo)
         {
-            var response =  _vnPayService.PaymentExecute(Request.Query);
-            if(response == null || response.VnPayResponseCode != "00")
+            try
             {
-                // thông báo lỗi thanh toán k thành công
-                return BadRequest(response.VnPayResponseCode);
+                var response = _vnPayService.PaymentExecute(Request.Query);
+                if (response == null || response.VnPayResponseCode != "00")
+                {
+                    // thông báo lỗi thanh toán k thành công
+                    return BadRequest(response.VnPayResponseCode);
+                }
+
+                // 2. thay đổi trạng thái đơn hàng thành Đã thanh toán (Processing)
+                string orderIdStr = vnpOrderInfo.Split(':').LastOrDefault();
+                Guid orderId = new Guid(orderIdStr);
+                // Hiển
+                return Ok(response);
             }
-            // 2. thay đổi trạng thái đơn hàng thành Đã thanh toán 
-           return Ok(response);
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+
         }
-    }   
         [HttpPost("getbyuser/{ùserId}")]
         public async Task<IActionResult> GetByUserId([FromRoute] Guid userId)
         {
@@ -109,7 +128,9 @@ namespace JewelryEC_Backend.Controllers
 
             return BadRequest(result);
         }
+    }   
+       
 
-    }
+    
 
 }

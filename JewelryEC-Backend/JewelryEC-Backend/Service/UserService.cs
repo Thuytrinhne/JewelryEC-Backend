@@ -31,9 +31,9 @@ namespace JewelryEC_Backend.Service
             return _unitOfWork.Users.GetUserById(idUser);
         }
 
-        public async  Task<IEnumerable<ApplicationUser>> ListUsers(string roleId = "")
+        public async  Task<IEnumerable<ApplicationUser>> ListUsers(Guid roleId )
         {
-            if(string.IsNullOrEmpty(roleId))
+            if(roleId == Guid.Empty)
                 return _unitOfWork.Users.GetAll();
             return await _unitOfWork.Users.GetUsersByRoleAsync(roleId);
         }

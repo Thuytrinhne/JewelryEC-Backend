@@ -9,9 +9,10 @@ namespace JewelryEC_Backend.Models.Catalogs.Dto
             [Required(ErrorMessage = "{0} is required")]
             [DisplayName("Catalog Name")]    
         public string Name { get; set; }
-
         public Guid? ParentId { get; set; } = null;
         public string? CatalogSlug { get; set; } = null;
+        public string Image { get; set; } = default!;
+
 
     }
 }

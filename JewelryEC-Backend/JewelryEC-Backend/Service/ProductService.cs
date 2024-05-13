@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using JewelryEC_Backend.Core.Utilities.Results;
 using JewelryEC_Backend.Mapper;
 using JewelryEC_Backend.Models;
@@ -21,7 +21,7 @@ namespace JewelryEC_Backend.Service
         }
         public async Task<ResponseDto> GetAll()
         {
-            return new SuccessDataResult<List<Product>>(await _productDal.GetAllAsync());
+            return new SuccessDataResult<List<Product>>(await _productDal.GetProducts());
         }
         public async Task<ResponseDto> Add(CreateProductDto productDto)
         {

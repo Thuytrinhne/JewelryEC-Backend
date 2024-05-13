@@ -27,7 +27,12 @@ namespace JewelryEC_Backend.Data
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgresConstr"));
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Product>().Navigation(e => e.Items).AutoInclude();
+            modelBuilder.Entity<Product>().HasMany(s => s.Items).WithOne(s => s.Product);
+        }
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
@@ -35,7 +40,6 @@ namespace JewelryEC_Backend.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
-
 
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductItem> ProductItems { get; set; }

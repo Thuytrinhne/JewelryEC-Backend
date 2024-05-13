@@ -57,6 +57,9 @@ namespace JewelryEC_Backend.Service
                     var result =   _unitOfWork.Users.AddUserByUserManager(applicationUser, registrationDto.Password);
                     if (result.Result.Succeeded)
                     {
+                        // role default for user 
+                        Guid userRoleId = new Guid("10ebc6bb-244f-4180-8804-bb1afd208866");
+                        await AssignRole(applicationUser.Id, userRoleId);
                         return "";
                     }
                     else
@@ -90,7 +93,7 @@ namespace JewelryEC_Backend.Service
         private bool checkExpiryOTP(DateTime created_at)
         {
             var currentTime = DateTime.UtcNow;
-            if (created_at.AddMinutes(10) >= currentTime)
+            if (created_at.AddMinutes(30) >= currentTime)
             {
                 return true;
             }
@@ -122,13 +125,14 @@ namespace JewelryEC_Backend.Service
             return new LoginResponseDto() { User = null, Token = "" };
 
         }
-        public async Task<bool> AssignRole(Guid userId, string roleName)
+        public async Task<bool> AssignRole(Guid userId, Guid roleId)
         {
             var user = _unitOfWork.Users.GetUserById(userId);
             if (user != null)
             {
-             if ( await  _unitOfWork.Users.AssignRoleForUser(user, roleName))
-              return true;
+
+                 if ( await  _unitOfWork.Users.AssignRoleForUser(user, roleId))
+                  return true;
             }
             return false;
 

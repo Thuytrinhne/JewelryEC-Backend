@@ -13,13 +13,11 @@ namespace JewelryEC_Backend.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRedisShoppingCartService _cacheService;
-
         public CartService(IUnitOfWork unitOfWork, IRedisShoppingCartService cacheService)
         {
             _unitOfWork = unitOfWork;
             _cacheService = cacheService;
         }
-
         public CartItem CartUpSert(Guid userId, CartItem cartItem)
         {
             if (isUserExist(userId) && isProductExist(cartItem.ProductId))
@@ -196,5 +194,27 @@ namespace JewelryEC_Backend.Service
         {
             return _unitOfWork.ProductItem.GetInforOfProductItem(productId);
         }
+
+        public void HanldeCartAfterCheckout(Guid userId)
+        {
+
+            // delete items from cart details
+            var cart = _unitOfWork.Carts.GetCartHeader(userId);
+            var cartItemsToDelete = _unitOfWork.CartItems.GetCartItems(cart.Id);
+            _unitOfWork.CartItems.RemoveRange(cartItemsToDelete);
+
+            // delete cart header
+            var cartHeaderToDelete = _unitOfWork.Carts.GetById(cart.Id);
+            if (cartHeaderToDelete != null)
+            {
+                _unitOfWork.Carts.Delete(cartHeaderToDelete);
+            }
+            _unitOfWork.Save();
+
+            // delete cart from cache redis
+            _cacheService.RemoveCartHeader(userId);
+        }
+
+        
     }
 }

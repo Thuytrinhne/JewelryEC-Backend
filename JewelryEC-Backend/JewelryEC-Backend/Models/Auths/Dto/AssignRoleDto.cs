@@ -11,7 +11,7 @@ namespace JewelryEC_Backend.Models.Auths.Dto
         public Guid UserId  { get; set; }
         
         [Required(ErrorMessage = "{0} is required.")]
-        public string RoleId { get; set; }
+        public Guid RoleId { get; set; }
 
   
     

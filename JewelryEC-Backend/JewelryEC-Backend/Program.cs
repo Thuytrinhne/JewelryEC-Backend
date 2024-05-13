@@ -10,8 +10,6 @@ using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using JewelryEC_Backend.Service;
-using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,13 +18,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using JewelryEC_Backend.Models.Roles.Entities;
 using Asp.Versioning;
-
-
-using JewelryEC_Backend.UnitOfWork;
-using JewelryEC_Backend.Repository;
-using JewelryEC_Backend.Repository.IRepository;
 using JewelryEC_Backend.Core.Repository;
 using JewelryEC_Backend.Core.Repository.EntityFramework;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApiVersioning(x =>
@@ -86,7 +80,11 @@ builder.Services.AddControllers(options =>
 
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+        {
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        });
 
 
 #region Repositories

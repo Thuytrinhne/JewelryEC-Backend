@@ -5,7 +5,7 @@ namespace JewelryEC_Backend.Service.IService
 {
     public interface IUserService
     {
-        Task<IEnumerable<ApplicationUser>> ListUsers(string roleId = "");
+        Task<IEnumerable<ApplicationUser>> ListUsers( Guid roleId);
         ApplicationUser GetUserById(Guid idUser);
         Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user);
         ApplicationUser EditProfile(ApplicationUser user);

@@ -17,8 +17,7 @@ namespace JewelryEC_Backend.Repository
                   .Where(x => x.Id == ProductItemId)
                   .Select(x => new ProductItem
                   {
-                      Name = x.Name,
-                      DiscountPrice = x.DiscountPrice,
+                      DiscountPrice = x.DiscountPrice
                   })
                   .FirstOrDefault();
         }

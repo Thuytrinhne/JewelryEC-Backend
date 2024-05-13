@@ -23,25 +23,34 @@ namespace JewelryEC_Backend.Controllers
             _userService = userService;
         }
         [HttpGet]
-        public async Task<ActionResult<ResponseDto>> Get([FromQuery] string ? roleId)
+        public async Task<ActionResult<ResponseDto>> Get([FromQuery] Guid ? roleId)
         {
             try
-            {                       
-                var  users = await _userService.ListUsers(roleId);
-                if (users == null || users.Count() == 0)
+            {
+                IEnumerable<ApplicationUser> users;
+                if (roleId.HasValue)
                 {
-                    return NotFound("No users found [with the specified role].");
+                     users = await _userService.ListUsers(roleId.Value);
                 }
-                var GetUsersDto = new List<GetUserResponseDto>();
-                foreach(var user in users) {
-                   
-                    // Lấy role của người dùng
-                    var userRoles = await _userService.GetRolesAsync(user);
+                else
+                {
+                     users = await _userService.ListUsers(Guid.Empty);
+                }
+                    if (users == null || users.Count() == 0)
+                    {
+                        return NotFound("No users found [with the specified role].");
+                    }
+                    var GetUsersDto = new List<GetUserResponseDto>();
+                    foreach (var user in users)
+                    {
 
-                    var GetUserDto = _mapper.Map<GetUserResponseDto>(user);
-                    GetUserDto.Roles = userRoles.ToList();
-                    GetUsersDto.Add(GetUserDto);
-                }
+                        // Lấy role của người dùng
+                        var userRoles = await _userService.GetRolesAsync(user);
+
+                        var GetUserDto = _mapper.Map<GetUserResponseDto>(user);
+                        GetUserDto.Roles = userRoles.ToList();
+                        GetUsersDto.Add(GetUserDto);
+                    }
                 _response.Result = GetUsersDto;
                 return Ok(_response);
             } catch (Exception ex)

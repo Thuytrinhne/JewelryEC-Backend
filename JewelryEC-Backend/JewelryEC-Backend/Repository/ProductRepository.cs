@@ -19,18 +19,23 @@ namespace JewelryEC_Backend.Repository
             return _context.Products.FirstOrDefaultAsync(filter);
         }
 
-        public Task<List<Product>> GetProducts(Expression<Func<Product, bool>> filter = null)
+        public async  Task<List<Product>> GetProducts(Expression<Func<Product, bool>> filter = null)
         {
-            return filter == null ?
-                _context.Products
-                    .Include(p => p.Items)  
-                    .Include(p => p.Images) 
-                    .ToListAsync() :
-                _context.Products
-                    .Where(filter)
-                    .Include(p => p.Items)
-                    .Include(p => p.Images)
-                    .ToListAsync();
+           
+                // dun need include here -> config "auto include" items for product in appdbcontext
+                return await _context.Products.ToListAsync(); 
+
+           
+            //return filter == null ?
+            //    _context.Products
+            //        .Include(p => p.Items)  
+            //        .Include(p => p.Images) 
+            //        .ToListAsync() :
+            //    _context.Products
+            //        .Where(filter)
+            //        .Include(p => p.Items)
+            //        .Include(p => p.Images)
+            //        .ToListAsync();
         }
     }
 

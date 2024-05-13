@@ -2,6 +2,8 @@ using AutoMapper;
 using JewelryEC_Backend.Models.Products.Dto;
 using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Service.IService;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -24,6 +26,7 @@ namespace JewelryEC_Backend.Controllers
             if (result.IsSuccess)
             {
                 return Ok(result);
+               
             }
 
             return BadRequest(result);
