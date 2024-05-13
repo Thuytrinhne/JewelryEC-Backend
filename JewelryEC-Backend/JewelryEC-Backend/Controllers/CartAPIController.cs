@@ -46,7 +46,13 @@ namespace JewelryEC_Backend.Controllers
                     {
                         GetCartResponseDto getCartDto = _mapper.Map<GetCartResponseDto>(cart);
                         getCartDto.Items = _mapper.Map<List<GetCartItemResponseDto>>(cart.cartItems);
-                        _response.Result = getCartDto;
+                        for (int i = 0; i < getCartDto.Items.Count; i++)
+                        {
+                            var productDetail = _cartService.GetCartItemDetail(getCartDto.Items[0].Id);
+                            getCartDto.Items[i].NameProduct = productDetail.Name;
+                            getCartDto.Items[i].SalePrice = productDetail.DiscountPrice;
+                        }
+                    _response.Result = getCartDto;
                         return Ok(_response);
                     }
               

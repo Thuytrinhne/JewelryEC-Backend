@@ -12,6 +12,6 @@ namespace JewelryEC_Backend.Models.CartItems.Dto
         public int Count { get; set; }
         public string NameProduct { get; set; }
         public string DescriptionProduct { get; set; }
-        public float  SalePrice { get; set; }
+        public decimal   SalePrice { get; set; }
     }
 }

@@ -27,6 +27,7 @@ namespace JewelryEC_Backend.UnitOfWork
         public IProductRepository Products { get; private set; }
         public IShippingRepository Shippings { get; private set; }
         public IProductCouponRepository ProductCoupons { get; private set; }
+        public IProductItemRespository ProductItem { get; private set; }
 
         public UnitOfWork(AppDbContext context,
             UserManager<ApplicationUser> userManager,
@@ -43,6 +44,7 @@ namespace JewelryEC_Backend.UnitOfWork
             Products = new ProductRepository(_context);
             Shippings = new ShippingRepository(_context);
             ProductCoupons = new ProductCouponRepository(_context);
+            ProductItem = new ProductItemRespository(_context);
 
         }
 

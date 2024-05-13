@@ -3,6 +3,7 @@ using JewelryEC_Backend.Models.CartItems.Dto;
 using JewelryEC_Backend.Models.CartItems.Entities;
 using JewelryEC_Backend.Models.Carts.Dto;
 using JewelryEC_Backend.Models.Carts.Entities;
+using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
 
@@ -68,16 +69,16 @@ namespace JewelryEC_Backend.Service
                     }
 
                 }
-                    return cartItem;
+                return cartItem;
             }
             return null;
 
         }
 
-        private bool isProductExist(Guid  productId)
+        private bool isProductExist(Guid productId)
         {
-            var productFrmDB =   _unitOfWork.Products.GetById(productId);
-            return productFrmDB == null ? false: true;
+            var productFrmDB = _unitOfWork.ProductItem.GetById(productId);
+            return productFrmDB == null ? false : true;
         }
 
         private bool isUserExist(Guid userId)
@@ -88,33 +89,32 @@ namespace JewelryEC_Backend.Service
 
         public bool CreateCart(Cart catalogToCreate)
         {
-           try
-           {
+            try
+            {
                 _unitOfWork.Carts.Add(catalogToCreate);
                 return true;
-           }
+            }
             catch (Exception ex)
-           {
+            {
                 return false;
-           }
+            }
         }
 
         public Cart GetDetailCart(Guid userId)
         {
- 
-            if(isUserExist(userId))
+
+            if (isUserExist(userId))
             {
 
                 // check cache data
                 var cacheData = _cacheService.GetData(userId);
-                if (cacheData != null )
+                if (cacheData != null)
                 {
                     Cart getCart = new Cart();
-                    getCart.UserId = userId;  
+                    getCart.UserId = userId;
                     getCart.cartItems = new List<CartItem>();
                     foreach (var item in cacheData)
                     {
-                        // lấy thêm name, giá sau khi merge code 
                         getCart.cartItems.Add(new CartItem { ProductId = item.Key, Count = item.Value });
                     }
 
@@ -132,12 +132,13 @@ namespace JewelryEC_Backend.Service
                     {
 
                         CartFrmDb.cartItems = _unitOfWork.CartItems.GetCartItems(CartFrmDb.Id).ToList();
-
-
                         // set CACHE
+                        // Gọi phương thức SetCartTTL với thời gian sống là 15 phút
+                        TimeSpan expiry = TimeSpan.FromMinutes(15);
+                        _cacheService.SetCartTTL(userId, expiry);
                         if (CartFrmDb.cartItems.Count() == 0)
                         {
-                            // set null to cache 
+                            _cacheService.SetCartHeaderNul(userId);
                         }
                         else
                         {
@@ -150,7 +151,7 @@ namespace JewelryEC_Backend.Service
                     //var expiryTime = DateTimeOffset.Now.AddSeconds(30);
                     return CartFrmDb;
                 }
-              
+
             }
             return null;
 
@@ -158,7 +159,7 @@ namespace JewelryEC_Backend.Service
 
         public void SetStatusForCart(int status, Guid cartId)
         {
-             _unitOfWork.Carts.SetStatusForCart(status, cartId);  
+            _unitOfWork.Carts.SetStatusForCart(status, cartId);
         }
 
         public bool DeleteCartItem(Guid userId, Guid productId)
@@ -183,12 +184,17 @@ namespace JewelryEC_Backend.Service
                     return false;
                 }
                 else return false;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return false;
             }
-           
-              
+
+
+        }
+        public ProductItem GetCartItemDetail(Guid productId)
+        {
+            return _unitOfWork.ProductItem.GetInforOfProductItem(productId);
         }
     }
 }

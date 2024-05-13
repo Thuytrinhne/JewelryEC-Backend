@@ -6,7 +6,9 @@ namespace JewelryEC_Backend.Service.IService
     {
         Dictionary<Guid, int> GetData(Guid userId);
         void SetData(Guid userId, Guid productId, int quantity);
-        object RemoveData (Guid userId);
+        bool RemoveCartHeader(Guid userId);
         void RemoveProductFromCart(Guid userId, Guid productId);
+        void SetCartTTL(Guid userId, TimeSpan expiry);
+        void SetCartHeaderNul(Guid userId);
     }
 }

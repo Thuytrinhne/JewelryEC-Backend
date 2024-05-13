@@ -49,7 +49,7 @@ builder.Services.AddApiVersioning(x =>
 
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
-    option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    option.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConstr"));
 });
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -71,6 +71,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 
 builder.Services.AddScoped<IOrderService, OrderService>();

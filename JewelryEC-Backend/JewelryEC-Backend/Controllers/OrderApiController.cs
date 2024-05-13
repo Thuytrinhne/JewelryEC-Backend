@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using JewelryEC_Backend.Models.Products.Dto;
-using Microsoft.AspNetCore.Mvc;
-using JewelryEC_Backend.Service.IService;
+using JewelryEC_Backend.Helpers.Payments.VnPay;
 using JewelryEC_Backend.Models.Orders.Dto;
+using JewelryEC_Backend.Service.IService;
+using Microsoft.AspNetCore.Mvc;
+using static JewelryEC_Backend.Utility.SD;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -12,10 +12,12 @@ namespace JewelryEC_Backend.Controllers
     public class OrderApiController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IVnPayService _vnPayService;
 
-        public OrderApiController(IOrderService orderService)
+        public OrderApiController(IOrderService orderService, IVnPayService vnPayService)
         {
             _orderService = orderService;
+            _vnPayService= vnPayService;
         }
 
         [HttpGet("getall")]
@@ -43,11 +45,29 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto)
+        public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto, string payment = "COD")
         {
             var result = await _orderService.Add(orderDto);
+     
             if (result.IsSuccess)
             {
+                // PAYMENT VNPAY
+                    // if payment method = vnpay
+                    // 1. update order status "Chờ thành toán"
+                    if (payment == PaymentMethod.VNPAY.ToString())
+                    {
+                        var vnPaymentModel = new VnPaymentRequestModel
+                        {
+                            Amount = 1000,
+                            CreatedDate = DateTime.Now,
+                            Description = "",
+                            FullName = "Trinh",
+                            OrderId = new Guid()
+                        };
+                        // return payment url 
+                        return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
+                    }
+                //END PAYMENT VNPAY 
                 return Ok(result);
             }
 
@@ -77,6 +97,18 @@ namespace JewelryEC_Backend.Controllers
             }
 
             return BadRequest(result);
+        }
+        [HttpPost("PaymentCallBack")]
+        public async  Task <IActionResult> PaymentCallBack ()
+        {
+            var response =  _vnPayService.PaymentExecute(Request.Query);
+            if(response == null || response.VnPayResponseCode != "00")
+            {
+                // thông báo lỗi thanh toán k thành công
+                return BadRequest(response.VnPayResponseCode);
+            }
+            // 2. thay đổi trạng thái đơn hàng thành Đã thanh toán 
+           return Ok(response);
         }
     }   
 

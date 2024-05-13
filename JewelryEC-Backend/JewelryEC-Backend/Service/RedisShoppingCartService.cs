@@ -27,7 +27,7 @@ namespace JewelryEC_Backend.Service
 
         public Dictionary<Guid, int> GetData(Guid userId)
         {
-       
+
             var cartKey = $"cart:{userId}_ref";
 
             // Lấy tất cả các mặt hàng từ hashset và chuyển đổi chúng thành dictionary
@@ -39,11 +39,11 @@ namespace JewelryEC_Backend.Service
             return cartItems;
         }
 
-       
 
-        public void SetData (Guid userId, Guid productId,int quantity)
+
+        public void SetData(Guid userId, Guid productId, int quantity)
         {
-        
+
             var cartKey = $"cart:{userId}_ref";
 
             // Kiểm tra xem mặt hàng đã tồn tại trong giỏ hàng chưa
@@ -60,7 +60,7 @@ namespace JewelryEC_Backend.Service
             }
 
         }
-        public object RemoveData(Guid userId)
+        public bool RemoveCartHeader(Guid userId)
         {
             var cartKey = $"cart:{userId}_ref";
             var _exist = _cacheDb.KeyExists(cartKey);
@@ -81,7 +81,17 @@ namespace JewelryEC_Backend.Service
                 _cacheDb.HashDelete(cartKey, productId.ToString());
             }
         }
+        public void SetCartTTL(Guid userId, TimeSpan expiry)
+        {
+            var cartKey = $"cart:{userId}_ref";
+            _cacheDb.KeyExpire(cartKey, expiry);
+        }
 
+        public void SetCartHeaderNul(Guid userId)
+        {
+            var cartKey = $"cart:{userId}_ref";
+            _cacheDb.HashSet(cartKey, "", "");
 
+        }
     }
 }
