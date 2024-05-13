@@ -74,19 +74,6 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
-        //[HttpPost("update")]
-        //public async Task<IActionResult> Update(
-        //    [FromBody] UpdateProductDto orderDto)
-        //{
-        //    var result = await _orderService.Update( orderDto);
-        //    if (result.IsSuccess)
-        //    {
-        //        return Ok(result);
-        //    }
-
-        //    return BadRequest(result);
-        //}
-
         [HttpPost("cancel/{orderId}")]
         public async Task<IActionResult> Cancel([FromRoute] Guid orderId)
         {
@@ -111,5 +98,18 @@ namespace JewelryEC_Backend.Controllers
            return Ok(response);
         }
     }   
+        [HttpPost("getbyuser/{ùserId}")]
+        public async Task<IActionResult> GetByUserId([FromRoute] Guid userId)
+        {
+            var result = await _orderService.GetOrdersByUserId(userId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+    }
 
 }

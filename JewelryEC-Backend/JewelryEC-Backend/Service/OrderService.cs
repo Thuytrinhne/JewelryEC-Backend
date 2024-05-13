@@ -42,8 +42,9 @@ namespace JewelryEC_Backend.Service
             Order order = await _orderRe.GetOrder(Order => Order.Id == (orderId));
             if(order != null)
             {
-                await _orderRe.Delete(order);
-                return new SuccessResult();
+                order.OrderStatus = Enum.OrderStatus.Cancelled;
+                _orderRe.Update(order);
+                return new SuccessDataResult<Order>(order);
             }
             return new ErrorResult();
         }
@@ -52,10 +53,15 @@ namespace JewelryEC_Backend.Service
             Order order = await _orderRe.GetOrder(Order => Order.Id == (id));
             if (order != null)
             {
-                await _orderRe.Delete(order);
-                return new SuccessResult();
+                return new SuccessDataResult<Order>(order);
             }
             return new ErrorResult();
+        }
+
+        public async Task<ResponseDto> GetOrdersByUserId(Guid userId)
+        {
+            List<Order> orders = _orderRe.GetOrders(order => order.UserId == userId).Result.ToList();
+            return new SuccessDataResult<List<Order>>(orders);
         }
     }
 }

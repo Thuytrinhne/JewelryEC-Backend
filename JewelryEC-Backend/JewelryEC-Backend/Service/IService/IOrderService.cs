@@ -11,5 +11,6 @@ namespace JewelryEC_Backend.Service.IService
         Task<ResponseDto> GetById(Guid id);
         Task<ResponseDto> Add(CreateNewOrderDto orderDto);
         Task<ResponseDto> Cancel(Guid order);
+        Task<ResponseDto> GetOrdersByUserId(Guid userId);
     }
 }
