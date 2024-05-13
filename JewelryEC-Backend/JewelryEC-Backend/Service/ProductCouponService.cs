@@ -60,6 +60,16 @@ namespace JewelryEC_Backend.Service
             return new SuccessResult("Update productCoupon successfully");
 
         }
+        public async Task<ResponseDto> Delete(Guid id)
+        {
+            ProductCoupon productCoupon = _productCouponDal.Get(ProductCoupon => ProductCoupon.Id == id);
+            if (productCoupon != null)
+            {
+                await _productCouponDal.Delete(productCoupon);
+                return new SuccessResult();
+            }
+            return new ErrorResult();
+        }
         private Boolean validateProductCoupon(ProductCoupon productCoupon)
         {
             ProductCoupon existProductCoupon = _productCouponDal.GetAll(

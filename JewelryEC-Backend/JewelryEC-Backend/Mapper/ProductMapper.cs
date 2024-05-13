@@ -16,17 +16,13 @@ namespace JewelryEC_Backend.Mapper
                 Code = productDto.Code,
                 InternationalCode = productDto.InternationalCode,
                 CatalogId = productDto.CatalogId,
-                SaledCount = productDto.SaledCount,
                 AverageRating = productDto.AverageRating,
                 RatingCount = productDto.RatingCount,
-                Availability = productDto.Availability,
             };
             newProduct.Items = productDto.Items.Select(itemDto => new ProductItem
             {
-                Name = itemDto.Name,
                 ProductSlug = itemDto.ProductSlug,
                 SKU = itemDto.SKU,
-                State = itemDto.State,
                 UnitPrice = itemDto.UnitPrice,
                 DiscountPrice = itemDto.DiscountPrice,
                 DiscountPercent = itemDto.DiscountPercent,
@@ -50,17 +46,13 @@ namespace JewelryEC_Backend.Mapper
                 Code = productDto.Code,
                 InternationalCode = productDto.InternationalCode,
                 CatalogId = productDto.CatalogId,
-                SaledCount = productDto.SaledCount,
                 AverageRating = productDto.AverageRating,
                 RatingCount = productDto.RatingCount,
-                Availability = productDto.Availability,
             };
             newProduct.Items = productDto.Items.Select(itemDto => new ProductItem
             {
-                Name = itemDto.Name,
                 ProductSlug = itemDto.ProductSlug,
                 SKU = itemDto.SKU,
-                State = itemDto.State,
                 UnitPrice = itemDto.UnitPrice,
                 DiscountPrice = itemDto.DiscountPrice,
                 DiscountPercent = itemDto.DiscountPercent,

@@ -9,5 +9,6 @@ namespace JewelryEC_Backend.Service.IService
         Task<ResponseDto> GetById(Guid id);
         Task<ResponseDto> Add(CreateProductCouponDto couponDto);
         Task<ResponseDto> Update(UpdateProductCouponDto couponDto);
+        Task<ResponseDto> Delete(Guid id);
     }
 }

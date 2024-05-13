@@ -10,6 +10,8 @@ namespace JewelryEC_Backend.Models.Orders
         public Guid UserId { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public DateTime CreateDate { get; set; }
+        public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.COD;
         public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public decimal TotalPrice;
     }
 }
