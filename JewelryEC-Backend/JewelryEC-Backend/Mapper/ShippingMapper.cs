@@ -11,7 +11,7 @@ namespace JewelryEC_Backend.Mapper
 {
     public class ShippingMapper
     {
-        public static Shipping ShippingFromCreateNewOrderDto(CreateNewOrderDto orderDto)
+        public static Shipping ShippingFromCreateNewOrderDto(Guid? deliveryId, CreateDeliveryDto? createDeliveryDto)
         {
             Shipping shipping = new Shipping
             {
@@ -19,9 +19,8 @@ namespace JewelryEC_Backend.Mapper
                 actualShippingDate = DateTime.Today.AddDays(3),
                 ShippingStatus = ShippingStatus.Pending,
             };
-            if (orderDto.DeliveryId == null)
+            if (deliveryId == null)
             {
-                CreateDeliveryDto createDeliveryDto = orderDto.DeliveryDto;
                 Delivery delivery = new Delivery
                 {
                     UserId = createDeliveryDto.UserId,
@@ -37,7 +36,7 @@ namespace JewelryEC_Backend.Mapper
                 };
                 shipping.Delivery = delivery;
             }
-            else shipping.DeliveryId = (Guid)orderDto.DeliveryId;
+            else shipping.DeliveryId = (Guid)deliveryId;
             return shipping;
         }
     }

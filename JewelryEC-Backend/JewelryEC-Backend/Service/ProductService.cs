@@ -19,9 +19,16 @@ namespace JewelryEC_Backend.Service
         {
             _productDal = unitOfWork.Products;
         }
-        public async Task<ResponseDto> GetAll()
+        public async Task<ResponseDto> GetAll(int pageNumber, int pageSize)
         {
-            return new SuccessDataResult<List<Product>>(await _productDal.GetProducts());
+            try
+            {
+                return new SuccessDataResult<List<Product>>(await _productDal.GetProducts(pageNumber, pageSize));
+            }
+            catch (Exception ex)
+            {
+                return new ErrorResult(ex.Message);
+            }
         }
         public async Task<ResponseDto> Add(CreateProductDto productDto)
         {
@@ -29,7 +36,7 @@ namespace JewelryEC_Backend.Service
             Console.WriteLine(product.ToJson());
             await _productDal.AddAsync(product);
             await _productDal.SaveChangeAsync();
-            return new SuccessResult("Add product successfully");
+            return await this.GetById(product.Id);
         }
         public async Task<ResponseDto> MultiAdd(CreateProductDto[] productDtos)
         {

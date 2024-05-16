@@ -4,8 +4,8 @@ using JewelryEC_Backend.Models.Products;
 
 namespace JewelryEC_Backend.Repository.IRepository
 {
-    public interface IProductItemRespository : IGenericRepository<ProductItem>
+    public interface IProductItemRespository : IGenericRepository<ProductVariant>
     {
-        ProductItem GetInforOfProductItem(Guid ProductItemId);
+        ProductVariant GetInforOfProductItem(int ProductItemId);
     }
 }

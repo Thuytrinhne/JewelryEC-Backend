@@ -10,8 +10,6 @@ using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Models.Roles.Dto;
 using JewelryEC_Backend.Models.Roles.Entities;
 using JewelryEC_Backend.Models.Users.Dto;
-using JewelryEC_Backend.Models.Categories;
-using JewelryEC_Backend.Models.Categories.Dto;
 using JewelryEC_Backend.Models.Coupon;
 using JewelryEC_Backend.Models.Coupon.Dto;
 using JewelryEC_Backend.Models.Orders;
@@ -57,7 +55,7 @@ namespace JewelryEC_Backend.Mapper
 
 
             CreateMap<ProductCoupon, CreateProductCouponDto>().ReverseMap();
-            CreateMap<CatalogCoupon, CreateNewCategoryDto>().ReverseMap();
+            //CreateMap<CatalogCoupon, CreateNewCategoryDto>().ReverseMap();
             CreateMap<ProductCoupon, UpdateProductCouponDto>().ReverseMap();
             //Product
                 //CreateMap<Product, CreateProductDto>().ReverseMap();

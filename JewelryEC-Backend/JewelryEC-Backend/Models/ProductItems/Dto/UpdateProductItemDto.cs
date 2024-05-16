@@ -2,14 +2,12 @@
 {
     public class UpdateProductItemDto
     {
-        public string Name { get; set; }
-        public string ProductSlug { get; set; }
-        public string SKU { get; set; }
-        public string State { get; set; }
-        public decimal UnitPrice { get; set; }
-        public decimal DiscountPrice { get; set; }
-        public int DiscountPercent { get; set; }
-        public int Stock { get; set; }
-        public Guid ProductId { get; set; }
+        public int Id { get; set; }
+        public decimal Price { get; set; }
+        public decimal? DiscountPrice { get; set; }
+        public float? DiscountPercent { get; set; }
+        public string? Description { get; set; }
+        public string? Tags { get; set; }
+        public string? Image { get; set; }
     }
 }

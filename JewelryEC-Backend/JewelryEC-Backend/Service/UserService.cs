@@ -37,6 +37,5 @@ namespace JewelryEC_Backend.Service
                 return _unitOfWork.Users.GetAll();
             return await _unitOfWork.Users.GetUsersByRoleAsync(roleId);
         }
-        
     }
 }

@@ -1,12 +1,13 @@
 ﻿using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Products.Dto;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JewelryEC_Backend.Service.IService
 {
     public interface IProductService
     {
-        Task<ResponseDto> GetAll();
+        Task<ResponseDto> GetAll(int pageNumber, int pageSize);
         Task<ResponseDto> GetById(Guid id);
         Task<ResponseDto> Add(CreateProductDto product);
         Task<ResponseDto> Update(UpdateProductDto product);

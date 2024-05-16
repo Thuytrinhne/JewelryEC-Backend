@@ -1,6 +1,7 @@
 using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Products.Dto;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JewelryEC_Backend.Mapper
 {
@@ -12,27 +13,20 @@ namespace JewelryEC_Backend.Mapper
             {
                 Id = new Guid(),
                 Name = productDto.Name,
-                Description = productDto.Description,
-                Code = productDto.Code,
-                InternationalCode = productDto.InternationalCode,
                 CatalogId = productDto.CatalogId,
                 AverageRating = productDto.AverageRating,
                 RatingCount = productDto.RatingCount,
             };
-            newProduct.Items = productDto.Items.Select(itemDto => new ProductItem
+            newProduct.Items = productDto.Items.Select(itemDto => new ProductVariant
             {
-                ProductSlug = itemDto.ProductSlug,
-                SKU = itemDto.SKU,
-                UnitPrice = itemDto.UnitPrice,
                 DiscountPrice = itemDto.DiscountPrice,
                 DiscountPercent = itemDto.DiscountPercent,
-                Stock = itemDto.Stock,
-               ProductId = newProduct.Id
-            }).ToList();
-            newProduct.Images = productDto.Images.Select(imageDto => new ProductImage
-            {
-                ImageUrl = imageDto,
-                ProductId = newProduct.Id
+                ProductId = newProduct.Id,
+                Price = itemDto.Price,
+                Description = itemDto.Description ?? "",
+                Tags = itemDto.Tags ?? "",
+                Image = itemDto.Image ?? ""
+
             }).ToList();
             return newProduct;
         }
@@ -42,28 +36,22 @@ namespace JewelryEC_Backend.Mapper
             {
                 Id = productDto.Id,
                 Name = productDto.Name,
-                Description = productDto.Description,
-                Code = productDto.Code,
-                InternationalCode = productDto.InternationalCode,
                 CatalogId = productDto.CatalogId,
                 AverageRating = productDto.AverageRating,
                 RatingCount = productDto.RatingCount,
+
             };
-            newProduct.Items = productDto.Items.Select(itemDto => new ProductItem
+            newProduct.Items = productDto.Items.Select(itemDto => new ProductVariant
             {
-                ProductSlug = itemDto.ProductSlug,
-                SKU = itemDto.SKU,
-                UnitPrice = itemDto.UnitPrice,
+                Id = itemDto.Id,    
                 DiscountPrice = itemDto.DiscountPrice,
                 DiscountPercent = itemDto.DiscountPercent,
-                Stock = itemDto.Stock,
-                ProductId = newProduct.Id
-            }).ToList();
-            newProduct.Images = productDto.Images.Select(imageDto => new ProductImage
-            {
-                ImageUrl = imageDto,
-                ProductId = newProduct.Id
-            }).ToList();
+                ProductId = newProduct.Id,
+                Price = itemDto.Price,
+                Description = itemDto.Description,
+                Tags = itemDto.Tags,
+                Image = itemDto.Image
+                }).ToList();
             return newProduct;
         }
 

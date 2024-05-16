@@ -5,12 +5,12 @@ using JewelryEC_Backend.Models.OrderItems.Dto;
 
 namespace JewelryEC_Backend.Models.Orders.Dto
 {
-    public class CreateNewOrderDto
+    public class CreateNewOrderFromCartDto
     {
         public Guid UserId { get; set; }
         public CreateDeliveryDto? DeliveryDto { get; set; }
         public Guid? DeliveryId { get; set;}
-        public virtual ICollection<CreateOrderItemDto> OrderItems { get; set; }
+        public List<Guid> CartItemIds { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
     }
 }

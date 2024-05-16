@@ -1,5 +1,4 @@
 using JewelryEC_Backend.Core.Repository;
-using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Models.Orders;
 using System.Linq.Expressions;
 

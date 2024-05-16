@@ -190,7 +190,7 @@ namespace JewelryEC_Backend.Service
 
 
         }
-        public ProductItem GetCartItemDetail(Guid productId)
+        public ProductVariant GetCartItemDetail(int productId)
         {
             return _unitOfWork.ProductItem.GetInforOfProductItem(productId);
         }
