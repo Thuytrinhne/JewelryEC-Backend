@@ -74,7 +74,7 @@ namespace JewelryEC_Backend.Controllers
                 }
                 #endregion
                 #region handle cart after checkout
-                _cartService.HanldeCartAfterCheckout(newOrder.UserId);
+                //_cartService.HanldeCartAfterCheckout(newOrder.UserId);
                 #endregion
                 return Ok(result);
             }

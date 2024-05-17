@@ -2,7 +2,7 @@
 {
     public class UpdateProductItemDto
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public decimal Price { get; set; }
         public decimal? DiscountPrice { get; set; }
         public float? DiscountPercent { get; set; }

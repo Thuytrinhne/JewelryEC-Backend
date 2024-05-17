@@ -13,13 +13,14 @@ namespace JewelryEC_Backend.Repository
         }
         public ProductVariant GetInforOfProductItem(int ProductItemId)
         {
-            return _context.ProductItems
-                  .Where(x => x.Id == ProductItemId)
-                  .Select(x => new ProductVariant
-                  {
-                      DiscountPrice = x.DiscountPrice
-                  })
-                  .FirstOrDefault();
+            return null;
+            //return _context.ProductVariants
+            //      .Where(x => x.Id == ProductItemId)
+            //      .Select(x => new ProductVariant
+            //      {
+            //          DiscountPrice = x.DiscountPrice
+            //      })
+            //      .FirstOrDefault();
         }
     }
 }

@@ -47,7 +47,7 @@ namespace JewelryEC_Backend.Data
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
 
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductVariant> ProductItems { get; set; }
+        public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Shipping> Shippings { get; set; }
