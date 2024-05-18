@@ -20,13 +20,12 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpGet("getall")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _productService.GetAll();
+            var result = await _productService.GetAll(pageNumber, pageSize);
             if (result.IsSuccess)
             {
                 return Ok(result);
-               
             }
 
             return BadRequest(result);

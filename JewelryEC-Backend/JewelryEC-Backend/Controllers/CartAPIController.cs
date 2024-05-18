@@ -50,7 +50,7 @@ namespace JewelryEC_Backend.Controllers
                         {
                             var productDetail = _cartService.GetCartItemDetail(getCartDto.Items[0].Id);
                            // getCartDto.Items[i].NameProduct = productDetail.Name;
-                            getCartDto.Items[i].SalePrice = productDetail.DiscountPrice;
+                            getCartDto.Items[i].SalePrice = productDetail.Price;
                         }
                     _response.Result = getCartDto;
                         return Ok(_response);

@@ -6,7 +6,7 @@ namespace JewelryEC_Backend.Repository.IRepository
 {
     public interface IProductRepository : JewelryEC_Backend.Core.Repository.IGenericRepository<Product>
     {
-        Task<List<Product>> GetProducts(Expression<Func<Product, bool>> filter = null);
+        Task<List<Product>> GetProducts( int pageNumber, int pageSize, Expression<Func<Product, bool>> filter = null);
         Task<Product> GetProduct(Expression<Func<Product, bool>> filter);
     }
 }

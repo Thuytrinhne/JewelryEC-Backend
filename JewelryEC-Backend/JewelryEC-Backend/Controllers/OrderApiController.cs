@@ -74,7 +74,7 @@ namespace JewelryEC_Backend.Controllers
                 }
                 #endregion
                 #region handle cart after checkout
-                _cartService.HanldeCartAfterCheckout(newOrder.UserId);
+                //_cartService.HanldeCartAfterCheckout(newOrder.UserId);
                 #endregion
                 return Ok(result);
             }
@@ -85,7 +85,7 @@ namespace JewelryEC_Backend.Controllers
         [HttpPost("cancel/{orderId}")]
         public async Task<IActionResult> Cancel([FromRoute] Guid orderId)
         {
-            var result = await _orderService.Cancel(orderId);
+            var result = await _orderService.UpdateOrderStatus(orderId, Enum.OrderStatus.Cancelled);
             if (result.IsSuccess)
             {
                 return Ok(result);

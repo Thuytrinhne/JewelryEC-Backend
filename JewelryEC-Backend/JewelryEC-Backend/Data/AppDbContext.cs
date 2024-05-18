@@ -31,6 +31,12 @@ namespace JewelryEC_Backend.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Product>().Navigation(e => e.Items).AutoInclude();
             modelBuilder.Entity<Product>().HasMany(s => s.Items).WithOne(s => s.Product);
+            modelBuilder.Entity<Product>().Navigation(e => e.Catalog).AutoInclude();
+            modelBuilder.Entity<Product>().HasOne(s => s.Catalog);
+            modelBuilder.Entity<ProductVariant>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
         }
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -41,8 +47,7 @@ namespace JewelryEC_Backend.Data
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
 
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductItem> ProductItems { get; set; }
-        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Shipping> Shippings { get; set; }

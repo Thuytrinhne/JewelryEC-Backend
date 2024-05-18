@@ -1,4 +1,5 @@
 ﻿using JewelryEC_Backend.Enum;
+using JewelryEC_Backend.Models.CartItems.Entities;
 using JewelryEC_Backend.Models.Deliveries;
 using JewelryEC_Backend.Models.OrderItems;
 using JewelryEC_Backend.Models.Orders;
@@ -8,7 +9,7 @@ namespace JewelryEC_Backend.Mapper
 {
     public class OrderMapper
     {
-        public static Order OrderFromCreateOrderDto(CreateNewOrderDto orderDto)
+        public static Order OrderFromCreateOrderDto(CreateNewOrderDto orderDto, List<OrderItem> orderItems)
         {
             Order newOrder = new Order
             {
@@ -16,15 +17,48 @@ namespace JewelryEC_Backend.Mapper
                 UserId = orderDto.UserId,
                 OrderStatus = OrderStatus.Pending,
                 CreateDate = DateTime.Now,
+                PaymentMethod = orderDto.PaymentMethod,
             };
-            newOrder.OrderItems = orderDto.OrderItems.Select(itemDto => new OrderItem
+            decimal totalPrice = 0;
+            newOrder.OrderItems = orderItems.Select(itemDto =>
             {
-                OrderId = newOrder.Id,
-                ProductItemId = itemDto.ProductItemId,
-                Quantity = itemDto.Quantity,
-                Price = itemDto.Price,
-                Subtotal = itemDto.Subtotal,
+                totalPrice += itemDto.Subtotal;
+                return new OrderItem
+                {
+                    OrderId = newOrder.Id,
+                    ProductItemId = itemDto.ProductItemId,
+                    Quantity = itemDto.Quantity,
+                    Price = itemDto.Price,
+                    Subtotal = itemDto.Subtotal,
+                };
             }).ToList();
+            newOrder.TotalPrice = totalPrice;
+            return newOrder;
+        }
+        public static Order OrderFromCreateOrderDto(CreateNewOrderFromCartDto orderDto, List<OrderItem> orderItems)
+        {
+            Order newOrder = new Order
+            {
+                Id = new Guid(),
+                UserId = orderDto.UserId,
+                OrderStatus = OrderStatus.Pending,
+                CreateDate = DateTime.Now,
+                PaymentMethod = orderDto.PaymentMethod,
+            };
+            decimal totalPrice = 0;
+            newOrder.OrderItems = orderItems.Select(itemDto =>
+            {
+                totalPrice += itemDto.Subtotal;
+                return new OrderItem
+                {
+                    OrderId = newOrder.Id,
+                    ProductItemId = itemDto.ProductItemId,
+                    Quantity = itemDto.Quantity,
+                    Price = itemDto.Price,
+                    Subtotal = itemDto.Subtotal,
+                };
+            }).ToList();
+            newOrder.TotalPrice = totalPrice;
             return newOrder;
         }
     }

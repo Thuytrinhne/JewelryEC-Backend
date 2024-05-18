@@ -6,20 +6,21 @@ using JewelryEC_Backend.Repository.IRepository;
 
 namespace JewelryEC_Backend.Repository
 {
-    public class ProductItemRespository : GenericRepository<ProductItem>, IProductItemRespository
+    public class ProductItemRespository : GenericRepository<ProductVariant>, IProductItemRespository
     {
         public ProductItemRespository(AppDbContext context) : base(context)
         {
         }
-        public ProductItem GetInforOfProductItem(Guid ProductItemId)
+        public ProductVariant GetInforOfProductItem(int ProductItemId)
         {
-            return _context.ProductItems
-                  .Where(x => x.Id == ProductItemId)
-                  .Select(x => new ProductItem
-                  {
-                      DiscountPrice = x.DiscountPrice
-                  })
-                  .FirstOrDefault();
+            return null;
+            //return _context.ProductVariants
+            //      .Where(x => x.Id == ProductItemId)
+            //      .Select(x => new ProductVariant
+            //      {
+            //          DiscountPrice = x.DiscountPrice
+            //      })
+            //      .FirstOrDefault();
         }
     }
 }

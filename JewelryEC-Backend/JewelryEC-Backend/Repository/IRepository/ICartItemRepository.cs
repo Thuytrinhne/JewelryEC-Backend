@@ -8,5 +8,6 @@ namespace JewelryEC_Backend.Repository.IRepository
         IEnumerable<CartItem> GetCartItems(Guid cardId);
         CartItem GetCartItem(Guid productId, Guid cartId);
         CartItem FindCartItem(Guid cardId, Guid productId);
+        List<CartItem> GetListCartItems(List<Guid> cartItemIds);
     }
 }

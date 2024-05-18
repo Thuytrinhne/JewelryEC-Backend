@@ -55,6 +55,7 @@ namespace JewelryEC_Backend.Mapper
 
 
             CreateMap<ProductCoupon, CreateProductCouponDto>().ReverseMap();
+            //CreateMap<CatalogCoupon, CreateNewCategoryDto>().ReverseMap();
             CreateMap<ProductCoupon, UpdateProductCouponDto>().ReverseMap();
             //Product
                 //CreateMap<Product, CreateProductDto>().ReverseMap();

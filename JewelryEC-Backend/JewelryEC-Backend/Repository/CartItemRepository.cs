@@ -27,5 +27,9 @@ namespace JewelryEC_Backend.Repository
         {
             return Find(c => c.CartId == cardId).ToList();
         }
+        public List<CartItem> GetListCartItems(List<Guid> cartItemIds)
+        {
+            return Find(c => cartItemIds.Contains(c.Id)).ToList();
+        }
     }
 }
