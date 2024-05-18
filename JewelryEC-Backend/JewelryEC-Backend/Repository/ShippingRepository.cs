@@ -1,6 +1,5 @@
 using JewelryEC_Backend.Core.Repository.EntityFramework;
 using JewelryEC_Backend.Data;
-using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Models.Shippings;
 using JewelryEC_Backend.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;

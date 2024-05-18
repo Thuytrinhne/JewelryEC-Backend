@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using JewelryEC_Backend.Models.Products;
-using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Core.Entity;
 using JewelryEC_Backend.Models.Catalogs.Entities;
 

@@ -9,7 +9,6 @@ using JewelryEC_Backend.Models.CartItems.Entities;
 using JewelryEC_Backend.Models.Roles.Entities;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Orders;
-using JewelryEC_Backend.Models.Categories;
 using JewelryEC_Backend.Models.OrderItems;
 using JewelryEC_Backend.Models.Shippings;
 using JewelryEC_Backend.Models.Addresses;

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Web.Http.Results;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -23,6 +24,7 @@ namespace JewelryEC_Backend.Controllers
         private ResponseDto _response;
         private IMapper _mapper;
         private ICatalogService _catalogService;
+
         public CatalogAPIController( IMapper mapper,ICatalogService catalogService )
         {
             _mapper = mapper;
@@ -49,7 +51,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                _response.ErrorMessages = new List<string>() { ex.Message.ToString() };
                 return StatusCode(500, _response);
 
             }
