@@ -146,7 +146,7 @@ namespace JewelryEC_Backend.Service
                             }
                         }
                     }
-                    //var expiryTime = DateTimeOffset.Now.AddSeconds(30);
+                    var expiryTime = DateTimeOffset.Now.AddMinutes(15);
                     return CartFrmDb;
                 }
 

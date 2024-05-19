@@ -74,7 +74,7 @@ namespace JewelryEC_Backend.Controllers
                 }
                 #endregion
                 #region handle cart after checkout
-                //_cartService.HanldeCartAfterCheckout(newOrder.UserId);
+                _cartService.HanldeCartAfterCheckout(newOrder.UserId);
                 #endregion
                 return Ok(result);
             }
@@ -102,14 +102,18 @@ namespace JewelryEC_Backend.Controllers
                 if (response == null || response.VnPayResponseCode != "00")
                 {
                     // thông báo lỗi thanh toán k thành công
-                    return BadRequest(response.VnPayResponseCode);
+                    return BadRequest("THANH TOÁN KHÔNG THÀNH CÔNG, VUI LÒNG THỬ LẠI");
                 }
-
-                // 2. thay đổi trạng thái đơn hàng thành Đã thanh toán (Processing)
                 string orderIdStr = vnpOrderInfo.Split(':').LastOrDefault();
                 Guid orderId = new Guid(orderIdStr);
-                // Hiển
-                return Ok(response);
+                // 2. thay đổi trạng thái đơn hàng thành Đã thanh toán (Processing)
+                var result = await _orderService.UpdateOrderStatus(orderId, Enum.OrderStatus.Processing);
+                if (result.IsSuccess)
+                {
+                    return Ok(result);
+                }
+                else
+                    return BadRequest(result);
             }
             catch (Exception ex)
             {

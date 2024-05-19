@@ -15,17 +15,18 @@ namespace JewelryEC_Backend.Service
             _unitOfWork = unitOfWork;
         }
 
-        public bool CreateCatalog(Catalog catalogToCreate)
+        public Guid CreateCatalog(Catalog catalogToCreate)
         {
             try
             {
                 _unitOfWork.Catalogs.Add(catalogToCreate);
                 _unitOfWork.Save();
+                return catalogToCreate.Id;
             }catch (Exception ex)
             {
-                return false;
+                throw new Exception($"Could not create catalog {catalogToCreate.Id}");
             }
-            return true;
+
         }
 
         public bool DeleteCatalog(Guid id)
@@ -33,15 +34,20 @@ namespace JewelryEC_Backend.Service
             try
             {
                 Catalog obj = GetCatalogById(id);
-                _unitOfWork.Catalogs.Remove(obj);
-                _unitOfWork.Save();
-            }catch(Exception ex)
-            {
+                if (obj != null)
+                {
+                    _unitOfWork.Catalogs.Remove(obj);
+                    _unitOfWork.Save();
+                    return true;
+
+                }
                 return false;
             }
-            return true;
+            catch (Exception ex)
+            {
+                throw new Exception($"Could not delete catalog {id}");
+            }
         }
-
         public IEnumerable<Catalog> FilterCatalogs(Guid? parentId = null, string name = null)
         {
             IEnumerable<Catalog> catalogs;
@@ -66,7 +72,17 @@ namespace JewelryEC_Backend.Service
 
         public Catalog GetCatalogById(Guid id)
         {
-             return _unitOfWork.Catalogs.GetById(id);
+
+            try
+            {
+                return _unitOfWork.Catalogs.GetById(id);
+              
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ, ví dụ: ghi log hoặc trả về một giá trị mặc định
+                throw new Exception($"Could not found catalog {id}");
+            }
         }
 
         public IEnumerable<Catalog> ListCatalogs()
@@ -76,15 +92,26 @@ namespace JewelryEC_Backend.Service
 
         public bool UpdateCatalog(Catalog catalogToUpdate)
         {
+            if (catalogToUpdate == null)
+            {
+                throw new ArgumentNullException("The catalog to update cannot be null");
+            }
+
             try
             {
-               _unitOfWork.Catalogs.Update(catalogToUpdate);
-               _unitOfWork.Save();
-            }catch (Exception ex)
-            {
+                var catalogFrmDb = GetCatalogById(catalogToUpdate.Id);
+                if (catalogFrmDb != null)
+                {
+                    _unitOfWork.Catalogs.Update(catalogToUpdate);
+                    _unitOfWork.Save();
+                    return true;
+                }
                 return false;
             }
-            return true;
+            catch (Exception ex)
+            {
+                throw new Exception($"Could not update catalog {catalogToUpdate.Id}", ex);
+            }
         }
     }
 }

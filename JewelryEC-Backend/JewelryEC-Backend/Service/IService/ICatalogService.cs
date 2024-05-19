@@ -5,7 +5,7 @@ namespace JewelryEC_Backend.Service.IService
 {
     public interface ICatalogService
     {
-        bool CreateCatalog(Catalog catalogToCreate);
+        Guid CreateCatalog(Catalog catalogToCreate);
         IEnumerable<Catalog> ListCatalogs();
         Catalog GetCatalogById(Guid id);
         IEnumerable<Catalog> FilterCatalogs(Guid? parentId = null, string name = null);

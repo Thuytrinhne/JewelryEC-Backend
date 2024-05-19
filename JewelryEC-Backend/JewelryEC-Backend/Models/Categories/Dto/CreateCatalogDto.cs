@@ -12,6 +12,8 @@ namespace JewelryEC_Backend.Models.Catalogs.Dto
         public Guid? ParentId { get; set; } = null;
         public string? CatalogSlug { get; set; } = null;
         public string Image { get; set; } = default!;
+        public string Description { get; set; } = default!;
+        public int State { get; set; } = 1;
 
 
     }
