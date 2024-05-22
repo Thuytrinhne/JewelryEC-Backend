@@ -38,7 +38,7 @@ namespace JewelryEC_Backend.Service
 
 
 
-        public async Task<string> Register(RegistrationDto registrationDto)
+        public async Task<bool> Register(RegistrationDto registrationDto)
         {
 
             if (checkOTP(registrationDto.Email, registrationDto.OTP))
@@ -54,33 +54,33 @@ namespace JewelryEC_Backend.Service
                 };
                 try
                 {
-                    var result =   _unitOfWork.Users.AddUserByUserManager(applicationUser, registrationDto.Password);
+                    var result = _unitOfWork.Users.AddUserByUserManager(applicationUser, registrationDto.Password);
                     if (result.Result.Succeeded)
                     {
                         // role default for user 
                         Guid userRoleId = new Guid("10ebc6bb-244f-4180-8804-bb1afd208866");
                         await AssignRole(applicationUser.Id, userRoleId);
-                        return "";
+                        return true;
                     }
                     else
                     {
-                        return result.Result.Errors.FirstOrDefault().Description;
+                        throw new Exception(result.Result.Errors.FirstOrDefault().Description);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return "error";
+                    throw new Exception($"Could not create user {applicationUser.UserName}: {ex.Message}");
                 }
 
             }
             else
-                return "otp not valid";
+                return false;
             
            
             
         }
 
-        private bool checkOTP(string email, string otp)
+        public bool checkOTP(string email, string otp)
         {
             var objFrmDb = _unitOfWork.EmailVerifications.GetEntityByEmail(email);
             if (objFrmDb != null && objFrmDb.Otp == otp)

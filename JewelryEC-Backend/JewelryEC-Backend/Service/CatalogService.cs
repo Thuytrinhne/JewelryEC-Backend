@@ -1,3 +1,4 @@
+using JewelryEC_Backend.Core.Pagination;
 using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
@@ -85,6 +86,11 @@ namespace JewelryEC_Backend.Service
             }
         }
 
+        public async Task<PaginationResult<Catalog>> GetCatalogsByPage(PaginationRequest request)
+        {
+            return await _unitOfWork.Catalogs.GetCatalogsByPage(request);
+        }
+
         public IEnumerable<Catalog> ListCatalogs()
         {
             return  _unitOfWork.Catalogs.GetAll();   
@@ -113,5 +119,7 @@ namespace JewelryEC_Backend.Service
                 throw new Exception($"Could not update catalog {catalogToUpdate.Id}", ex);
             }
         }
+
+        
     }
 }

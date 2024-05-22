@@ -32,16 +32,25 @@ namespace JewelryEC_Backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register( [FromBody]RegistrationDto registrationDto)
         {
-            var errorMessage = await  _authService.Register(registrationDto);
-            if(!string.IsNullOrEmpty(errorMessage))
+            try
+            {
+                var result = await _authService.Register(registrationDto);
+                if (!result)
+                {
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = new List<string>() { "OTP is not valid" };
+                    return BadRequest(_response);
+                }
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { errorMessage };
-                return BadRequest("Error occur");
+                _response.ErrorMessages = new List<string>() { ex.Message};
+                return StatusCode(500, _response); // Trả về 500 Internal Server Error
             }
-            
-               return Ok(_response);
-          
+
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)

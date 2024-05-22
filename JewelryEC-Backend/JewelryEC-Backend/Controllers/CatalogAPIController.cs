@@ -1,4 +1,5 @@
 using AutoMapper;
+using JewelryEC_Backend.Core.Pagination;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Filters;
 using JewelryEC_Backend.Models;
@@ -78,8 +79,33 @@ namespace JewelryEC_Backend.Controllers
             }
             return _response;
         }
-       
-     
+
+        [HttpGet("api/catalogs/GetByPage")]
+        public async Task<ActionResult<ResponseDto>> GetCatalogByPage([FromQuery]PaginationRequest request)
+        {
+            try
+            {
+
+                PaginationResult<Catalog> obj = await _catalogService.GetCatalogsByPage(request);
+                if (obj == null)
+                {
+                    _response.IsSuccess = false;
+                    return NotFound(_response);
+                }
+                _response.Result = _mapper.Map<PaginationResult<GetCatalogResponseDto>>(obj);
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                return StatusCode(500, _response); // Trả về 500 Internal Server Error
+
+            }
+        }
+
+
+
         //global exception filter in .net core web api (try catch )
         [HttpPost]
         //[Authorize(Roles = "ADMIN")]
