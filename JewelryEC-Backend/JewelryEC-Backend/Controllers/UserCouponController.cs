@@ -25,9 +25,9 @@ namespace JewelryEC_Backend.Controllers
         [HttpGet("getall")]
         public async Task<IActionResult> GetByCouponStatus([FromQuery] CouponStatus status)
         {
-            //String name = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            String userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             //TASK: Don't hard code userId
-            var result = await _userCouponService.FindCouponByStatusAndUserId(status, new Guid("4368638a-867a-4041-ada4-768752c69b7a"));
+            var result = await _userCouponService.FindCouponByStatusAndUserId(status, new Guid(userId));
             if (result.IsSuccess)
             {
                 return Ok(result);

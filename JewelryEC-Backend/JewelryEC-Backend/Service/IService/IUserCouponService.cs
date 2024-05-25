@@ -8,7 +8,7 @@ namespace JewelryEC_Backend.Service.IService
     {
         Task<ResponseDto> ReceiveCoupon(String? code, Guid? couponProductId);
         Task<ResponseDto> FindCouponByStatusAndUserId(CouponStatus couponStatus, Guid userId);
-        Task<ResponseDto> tryApplyCoupon(Guid couponId, Guid productItemId);
+        Task<ResponseDto> tryApplyCoupon(Guid userCouponId, Guid productItemId);
 
     }
 }

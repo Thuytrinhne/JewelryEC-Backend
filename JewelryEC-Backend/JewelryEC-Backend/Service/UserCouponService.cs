@@ -68,9 +68,10 @@ namespace JewelryEC_Backend.Service
         //check if an coupon can apply to an product item
         public async Task<ResponseDto> tryApplyCoupon(Guid userCouponId, Guid productItemId)
         {
+            DateTime currentDate = DateTime.UtcNow;
             UserCoupon userCoupon = _userCouponRe.GetById(userCouponId);
-            if (userCoupon == null) return new ErrorResult("You must receive coupon before try apply coupon");
-            if (userCoupon.RemainingUsage > 0 || !userCoupon.Status.Equals(CouponStatus.ACTIVE) || userCoupon.ProductCoupon.ValidFrom >= new DateTime() || userCoupon.ProductCoupon.ValidTo < new DateTime())
+            if (userCoupon == null) return new ErrorResult("User coupon is not exists");
+            if (userCoupon.RemainingUsage == 0 || !userCoupon.Status.Equals(CouponStatus.ACTIVE) || userCoupon.ProductCoupon.ValidFrom >= currentDate || userCoupon.ProductCoupon.ValidTo < currentDate)
             {
                 return new ErrorResult("Coupon inactive");
             }
@@ -78,7 +79,7 @@ namespace JewelryEC_Backend.Service
             {
                 if (!userCoupon.ProductCoupon.Product.Items.Any(item => item.Id == productItemId))
                     return new ErrorResult("This coupon with id " + userCouponId + " can't not apply to this " + productItemId);
-                else return new SuccessResult("Coupon active to apply");
+                else return new SuccessResult("Coupon active to apply", userCoupon);
             }
         }
     }

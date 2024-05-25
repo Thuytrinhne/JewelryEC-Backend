@@ -42,6 +42,7 @@ namespace JewelryEC_Backend.Service
         //add new order
         public async Task<ResponseDto> Add(CreateNewOrderDto orderDto)
         {
+
             Shipping shipping = ShippingMapper.ShippingFromCreateNewOrderDto(orderDto.DeliveryId, orderDto.DeliveryDto);
             Tuple<List<OrderItem>, decimal> res =await orderItemsFromOrderItemDto(orderDto.OrderItems.ToList());
             Order order = OrderMapper.OrderFromCreateOrderDto(orderDto, res.Item1);

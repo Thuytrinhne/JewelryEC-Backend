@@ -13,6 +13,7 @@ namespace JewelryEC_Backend.Repository
         }
         public ProductVariant GetInforOfProductItem(int ProductItemId)
         {
+            
             return null;
             //return _context.ProductVariants
             //      .Where(x => x.Id == ProductItemId)
