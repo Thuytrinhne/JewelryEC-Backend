@@ -5,6 +5,7 @@ using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using StackExchange.Redis;
+using System.ComponentModel;
 using static JewelryEC_Backend.Utility.SD;
 using Order = JewelryEC_Backend.Models.Orders.Order;
 
@@ -51,6 +52,7 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("add")]
+        [Description("Choose between deliveryDto and deliveryId (in case have existing delivery information)")]
         public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto, string payment = "COD")
         {
             var result = await _orderService.Add(orderDto);
@@ -74,7 +76,7 @@ namespace JewelryEC_Backend.Controllers
                 }
                 #endregion
                 #region handle cart after checkout
-                _cartService.HanldeCartAfterCheckout(newOrder.UserId);
+                //_cartService.HanldeCartAfterCheckout(newOrder.UserId);
                 #endregion
                 return Ok(result);
             }
@@ -82,7 +84,7 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("cancel/{orderId}")]
+        [HttpPatch("cancel/{orderId}")]
         public async Task<IActionResult> Cancel([FromRoute] Guid orderId)
         {
             var result = await _orderService.UpdateOrderStatus(orderId, Enum.OrderStatus.Cancelled);

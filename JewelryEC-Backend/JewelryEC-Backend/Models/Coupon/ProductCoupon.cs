@@ -2,18 +2,21 @@
 using System.ComponentModel.DataAnnotations;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Core.Entity;
+using JewelryEC_Backend.Enum;
 
 namespace JewelryEC_Backend.Models.Coupon
 {
     public class ProductCoupon: IEntity
     {
         public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Conditions { get; set; }
 
         public Guid ProductId { get; set; }
 
         public double DiscountValue { get; set; }
 
-        public int DiscountUnit { get; set; }
+        public DiscountUnit DiscountUnit { get; set; }
 
         public DateTime CreatedTime { get; set; }
 
@@ -26,6 +29,8 @@ namespace JewelryEC_Backend.Models.Coupon
         public decimal? MinimumOrderValue { get; set; }
 
         public decimal? MaximumDiscountValue { get; set; }
+
+        public int UsedTime { get; set; }
 
         public bool IsRedeemAllowed { get; set; }
 

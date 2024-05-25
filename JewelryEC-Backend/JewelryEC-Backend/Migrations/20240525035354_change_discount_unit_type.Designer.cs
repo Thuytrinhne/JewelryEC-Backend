@@ -3,6 +3,7 @@ using System;
 using JewelryEC_Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JewelryEC_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240525035354_change_discount_unit_type")]
+    partial class change_discount_unit_type
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,9 +159,6 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserCouponId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
@@ -282,9 +282,8 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("DiscountUnit")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("DiscountUnit")
+                        .HasColumnType("integer");
 
                     b.Property<double>("DiscountValue")
                         .HasColumnType("double precision");
@@ -304,9 +303,6 @@ namespace JewelryEC_Backend.Migrations
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("UsedTime")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ValidFrom")
                         .HasColumnType("timestamp without time zone");
@@ -354,9 +350,6 @@ namespace JewelryEC_Backend.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CouponApplicationId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Discount")
@@ -530,7 +523,7 @@ namespace JewelryEC_Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("OrderItemId")
+                    b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UserCouponId")
@@ -538,8 +531,7 @@ namespace JewelryEC_Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderItemId")
-                        .IsUnique();
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("UserCouponId");
 
@@ -554,9 +546,6 @@ namespace JewelryEC_Backend.Migrations
 
                     b.Property<Guid>("ProductCouponId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("RemainingUsage")
-                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -701,7 +690,7 @@ namespace JewelryEC_Backend.Migrations
             modelBuilder.Entity("JewelryEC_Backend.Models.Coupon.ProductCoupon", b =>
                 {
                     b.HasOne("JewelryEC_Backend.Models.Products.Product", "Product")
-                        .WithMany("Coupons")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -764,9 +753,9 @@ namespace JewelryEC_Backend.Migrations
 
             modelBuilder.Entity("JewelryEC_Backend.Models.Voucher.CouponApplication", b =>
                 {
-                    b.HasOne("JewelryEC_Backend.Models.OrderItems.OrderItem", "OrderItem")
-                        .WithOne("CouponApplication")
-                        .HasForeignKey("JewelryEC_Backend.Models.Voucher.CouponApplication", "OrderItemId")
+                    b.HasOne("JewelryEC_Backend.Models.Orders.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -776,7 +765,7 @@ namespace JewelryEC_Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("OrderItem");
+                    b.Navigation("Order");
 
                     b.Navigation("UserCoupon");
                 });
@@ -851,12 +840,6 @@ namespace JewelryEC_Backend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("JewelryEC_Backend.Models.OrderItems.OrderItem", b =>
-                {
-                    b.Navigation("CouponApplication")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("JewelryEC_Backend.Models.Orders.Order", b =>
                 {
                     b.Navigation("OrderItems");
@@ -864,8 +847,6 @@ namespace JewelryEC_Backend.Migrations
 
             modelBuilder.Entity("JewelryEC_Backend.Models.Products.Product", b =>
                 {
-                    b.Navigation("Coupons");
-
                     b.Navigation("Items");
                 });
 

@@ -71,6 +71,7 @@ builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IProductCouponService, ProductCouponService>();
+builder.Services.AddTransient<IUserCouponService, UserCouponService>();
 
 builder.Services.AddControllers(options =>
 {

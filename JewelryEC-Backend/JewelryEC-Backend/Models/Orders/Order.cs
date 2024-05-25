@@ -4,7 +4,7 @@ using JewelryEC_Backend.Models.OrderItems;
 
 namespace JewelryEC_Backend.Models.Orders
 {
-    public class Order: IEntity
+    public class Order : IEntity
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }

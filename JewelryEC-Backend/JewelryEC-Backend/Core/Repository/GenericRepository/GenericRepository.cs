@@ -65,7 +65,7 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
 
         public TEntity Get(Expression<Func<TEntity, bool>> filter)
         {
-            return _context.Set<TEntity>().SingleOrDefault(filter);
+            return _context.Set<TEntity>().FirstOrDefault(filter);
         }
 
         public async Task AddAsync(TEntity entity)

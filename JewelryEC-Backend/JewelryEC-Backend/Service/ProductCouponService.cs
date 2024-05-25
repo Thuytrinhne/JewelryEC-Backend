@@ -30,14 +30,14 @@ namespace JewelryEC_Backend.Service
         public async Task<ResponseDto> Add(CreateProductCouponDto productCouponDto)
         {
             ProductCoupon productCoupon = _mapper.Map<ProductCoupon>(productCouponDto);
-            if (!validateProductCoupon(productCoupon))
-            {
-                return new ErrorResult("Invalid productCoupon");
-            }
+            //if (!validateProductCoupon(productCoupon))
+            //{
+            //    return new ErrorResult("Invalid productCoupon");
+            //}
             Console.WriteLine(productCoupon.ToJson());
             await _productCouponDal.AddAsync(productCoupon);
             await _productCouponDal.SaveChangeAsync();
-            return new SuccessResult("Add productCoupon successfully");
+            return new SuccessResult("Add productCoupon successfully", _productCouponDal.Get(p => p.Id == productCoupon.Id));
         }
         public async Task<ResponseDto> MultiAdd(CreateProductCouponDto[] productCouponDtos)
         {

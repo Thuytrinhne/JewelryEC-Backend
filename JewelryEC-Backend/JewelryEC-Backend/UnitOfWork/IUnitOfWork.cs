@@ -1,4 +1,5 @@
 using JewelryEC_Backend.Repository.IRepository;
+using JewelryEC_Backend.Service.IService;
 
 namespace JewelryEC_Backend.UnitOfWork
 {
@@ -16,6 +17,7 @@ namespace JewelryEC_Backend.UnitOfWork
         IShippingRepository Shippings { get; }
         IProductCouponRepository ProductCoupons { get; }
         IProductItemRespository ProductItem { get; }
+        IUserCouponRepository UserCoupon { get; }
 
         int Save();
     }

@@ -26,7 +26,6 @@ namespace JewelryEC_Backend.Validations.CustomAttributes
                     var errorMessage = FormatErrorMessage(validationContext.DisplayName);
                     return new ValidationResult(errorMessage);
                 }
-          
             }
             return ValidationResult.Success;
         }

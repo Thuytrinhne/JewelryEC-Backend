@@ -3,6 +3,7 @@ using System;
 using JewelryEC_Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JewelryEC_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240525064649_add_coupon_to_orderItem")]
+    partial class add_coupon_to_orderItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -305,9 +308,6 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("UsedTime")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("ValidFrom")
                         .HasColumnType("timestamp without time zone");
 
@@ -554,9 +554,6 @@ namespace JewelryEC_Backend.Migrations
 
                     b.Property<Guid>("ProductCouponId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("RemainingUsage")
-                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

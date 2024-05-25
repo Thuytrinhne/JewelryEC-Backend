@@ -18,21 +18,22 @@ namespace JewelryEC_Backend.Mapper
                 OrderStatus = OrderStatus.Pending,
                 CreateDate = DateTime.Now,
                 PaymentMethod = orderDto.PaymentMethod,
+                OrderItems = orderItems
             };
-            decimal totalPrice = 0;
-            newOrder.OrderItems = orderItems.Select(itemDto =>
-            {
-                totalPrice += itemDto.Subtotal;
-                return new OrderItem
-                {
-                    OrderId = newOrder.Id,
-                    ProductItemId = itemDto.ProductItemId,
-                    Quantity = itemDto.Quantity,
-                    Price = itemDto.Price,
-                    Subtotal = itemDto.Subtotal,
-                };
-            }).ToList();
-            newOrder.TotalPrice = totalPrice;
+            //decimal totalPrice = 0;
+            //newOrder.OrderItems = orderItems.Select(itemDto =>
+            //{
+            //    totalPrice += itemDto.Subtotal;
+            //    return new OrderItem
+            //    {
+            //        OrderId = newOrder.Id,
+            //        ProductItemId = itemDto.ProductItemId,
+            //        Quantity = itemDto.Quantity,
+            //        Price = itemDto.Price,
+            //        Subtotal = itemDto.Subtotal,
+            //    };
+            //}).ToList();
+            //newOrder.TotalPrice = totalPrice;
             return newOrder;
         }
         public static Order OrderFromCreateOrderDto(CreateNewOrderFromCartDto orderDto, List<OrderItem> orderItems)

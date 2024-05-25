@@ -1,4 +1,6 @@
-﻿namespace JewelryEC_Backend.Models.Coupon.Dto
+﻿using JewelryEC_Backend.Enum;
+
+namespace JewelryEC_Backend.Models.Coupon.Dto
 {
     public class CreateProductCouponDto
     {
@@ -6,7 +8,10 @@
 
         public double DiscountValue { get; set; }
 
-        public int DiscountUnit { get; set; }
+        public DiscountUnit DiscountUnit { get; set; }
+        public string Name { get; set; }
+        public string Conditions { get; set; }
+        public int usedTime { get; set; }
 
         public DateTime CreatedTime { get; set; }
 
