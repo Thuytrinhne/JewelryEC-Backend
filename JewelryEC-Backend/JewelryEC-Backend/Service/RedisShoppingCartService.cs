@@ -15,7 +15,7 @@ namespace JewelryEC_Backend.Service
         public RedisShoppingCartService(IConfiguration configuration)
         {
             _configuration = configuration;
-            //connectRedis();
+            connectRedis();
 
         }
 
@@ -31,12 +31,22 @@ namespace JewelryEC_Backend.Service
             var cartKey = $"cart:{userId}_ref";
 
             // Lấy tất cả các mặt hàng từ hashset và chuyển đổi chúng thành dictionary
-            var cartItems = _cacheDb.HashGetAll(cartKey)
-                             .ToDictionary(
-                                 x => Guid.Parse(x.Name.ToString()),
-                                 x => (int)x.Value);
+            var cartItemsHashEntries = _cacheDb.HashGetAll(cartKey);
 
-            return cartItems;
+            if (cartItemsHashEntries.Length  != 0  )
+            {
+                var cartItems = cartItemsHashEntries
+                    .ToDictionary(
+                        x => Guid.Parse(x.Name.ToString()),
+                        x => (int)x.Value);
+                return cartItems ;
+
+            }
+            else
+            {
+                return null;
+            }
+
         }
 
 

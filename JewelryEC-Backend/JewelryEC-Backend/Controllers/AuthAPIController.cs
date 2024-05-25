@@ -38,7 +38,7 @@ namespace JewelryEC_Backend.Controllers
                 if (!result)
                 {
                     _response.IsSuccess = false;
-                    _response.ErrorMessages = new List<string>() { "OTP is not valid" };
+                    _response.Message = "OTP is not valid";
                     return BadRequest(_response);
                 }
 
@@ -47,7 +47,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.Message};
+                _response.Message = ex.Message;
                 return StatusCode(500, _response); // Trả về 500 Internal Server Error
             }
 
@@ -59,7 +59,7 @@ namespace JewelryEC_Backend.Controllers
             if (loginResponse.User == null)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { "Username or password is incorrect" };
+                _response.Message = "Username or password is incorrect";
                 return BadRequest(_response);
             }
             _response.Result = loginResponse;
@@ -73,7 +73,7 @@ namespace JewelryEC_Backend.Controllers
             if (!assignRoleSuccessful)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { "Error encountered" };
+                _response.Message = "Error encountered";
                 return BadRequest(_response);
             }
             return Ok(_response);
@@ -86,7 +86,7 @@ namespace JewelryEC_Backend.Controllers
                 {
                 return BadRequest("Error encountered");
                 }
-            _response.Message = "Check your email to get OTP !!!";
+             _response.Message =  "Check your email to get OTP !!!";
             return Ok(_response);
 
         }
@@ -96,23 +96,23 @@ namespace JewelryEC_Backend.Controllers
         {
             if (await _authService.ForgotPassword(forgotPasswordDto.Email))
             {
-                _response.ErrorMessages = new List<string>() { "Check email and change password, please !!!" };
+                _response.Message = "Check email and change password, please !!!";
                 return Ok(_response);
             }
             else
             {
-                _response.ErrorMessages = new List<string>() { "Email is not existed in system !!! Check again !!!" };
+                _response.Message = "Email is not existed in system !!! Check again !!!";
                 return BadRequest(_response);
             }
         }
         [HttpPost("resetPassword")]
-        public async Task<IActionResult> resetPassword(string token, ResetPasswordDto resetPasswordDto)
+       
+        public async Task<IActionResult> resetPassword([FromHeader] string token, ResetPasswordDto resetPasswordDto)
         {
             if (await _authService.ResetPassword(token, resetPasswordDto.NewPassword))
            return Ok(_response);
             return BadRequest("Encounter errors");   
         }
-        // làm riêng 1 cái cập nhật khách hàng 
 
     }
 }

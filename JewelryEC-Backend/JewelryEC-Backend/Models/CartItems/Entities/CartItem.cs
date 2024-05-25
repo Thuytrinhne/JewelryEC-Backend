@@ -13,7 +13,7 @@ namespace JewelryEC_Backend.Models.CartItems.Entities
         public Guid CartId { get; set; }
         [ForeignKey("CartId")]
         public Cart Cart { get; set; }
-        public Guid ProductId { get; set; }
+        public Guid ProductItemId { get; set; }
         [Required]
         public int Count { get; set; }
 

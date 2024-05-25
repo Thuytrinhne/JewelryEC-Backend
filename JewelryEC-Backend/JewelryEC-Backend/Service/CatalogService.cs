@@ -3,6 +3,7 @@ using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Xml.Linq;
 
 namespace JewelryEC_Backend.Service
@@ -11,7 +12,7 @@ namespace JewelryEC_Backend.Service
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CatalogService(IUnitOfWork unitOfWork)
+        public CatalogService( IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

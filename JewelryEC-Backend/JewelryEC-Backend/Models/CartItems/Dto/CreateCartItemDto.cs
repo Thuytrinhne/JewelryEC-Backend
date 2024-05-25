@@ -10,10 +10,9 @@ namespace JewelryEC_Backend.Models.CartItems.Dto
     {
             [Required(ErrorMessage = "{0} is required")]
            // [ProductIdExists(ErrorMessage = "Should not be null or empty.")]
-        public Guid ProductId { get; set; }
+        public Guid ProductItemId { get; set; }
 
             [Required(ErrorMessage = "{0} is required")]
-            [Range(1,500, ErrorMessage= "Please enter correct value [{1},{2}]")]
         public int Count { get; set; }
     }
 }

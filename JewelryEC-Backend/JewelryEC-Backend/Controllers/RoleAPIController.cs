@@ -41,7 +41,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                _response.Message = ex.ToString();
                 return StatusCode(500, _response);
             }
         }
@@ -65,7 +65,7 @@ namespace JewelryEC_Backend.Controllers
             {
 
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                _response.Message = ex.ToString();
                 return StatusCode(500, _response);
             }
 
@@ -84,7 +84,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                _response.Message = ex.ToString();
                 return StatusCode(500, _response);
             }
         }
@@ -109,7 +109,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                _response.Message = ex.ToString();
                 return StatusCode(500, _response);
             }
         }
@@ -127,7 +127,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                _response.Message = ex.ToString();
                 return StatusCode(500, _response);
             }
         }

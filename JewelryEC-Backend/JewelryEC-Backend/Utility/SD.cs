@@ -11,12 +11,7 @@ namespace JewelryEC_Backend.Utility
             ADMIN,
             STAFF
         }
-        public enum PaymentMethod
-        {
-            COD,
-            VNPAY,
-            MOMO,
-        }
+       
         
 
     }
