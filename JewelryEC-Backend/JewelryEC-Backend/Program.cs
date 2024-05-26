@@ -23,6 +23,7 @@ using JewelryEC_Backend.Core.Repository.EntityFramework;
 using Newtonsoft.Json.Serialization;
 using JewelryEC_Backend.Enum;
 using System.Configuration;
+using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,19 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
         .AddEntityFrameworkStores<AppDbContext>()  
         .AddDefaultTokenProviders();
 
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(new ValidateModelAttribute());
+})
+.AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ContractResolver = new DefaultContractResolver
+    {
+        NamingStrategy = new CamelCaseNamingStrategy()
+    };
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+});
 
 
 builder.Services.AddScoped<IAuthService, AuthService>();

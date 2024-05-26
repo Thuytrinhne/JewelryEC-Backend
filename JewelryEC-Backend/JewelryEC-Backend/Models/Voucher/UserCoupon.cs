@@ -12,7 +12,6 @@ namespace JewelryEC_Backend.Models.Voucher
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid ProductCouponId { get; set; }
-
         public int RemainingUsage { get; set; }
         public CouponStatus Status { get; set; }
         public virtual ApplicationUser User { get; set; }

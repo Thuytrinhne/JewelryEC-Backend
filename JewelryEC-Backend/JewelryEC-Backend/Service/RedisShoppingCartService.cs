@@ -15,7 +15,7 @@ namespace JewelryEC_Backend.Service
         public RedisShoppingCartService(IConfiguration configuration)
         {
             _configuration = configuration;
-            connectRedis();
+         //   connectRedis();
 
         }
 

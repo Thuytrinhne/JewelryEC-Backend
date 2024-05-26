@@ -53,11 +53,16 @@ namespace JewelryEC_Backend.Data
             modelBuilder.Entity<UserCoupon>().Navigation(u => u.CouponApplications).AutoInclude();
             modelBuilder.Entity<UserCoupon>().Navigation(u => u.ProductCoupon).AutoInclude();
             modelBuilder.Entity<UserCoupon>().Navigation(u => u.CouponApplications).AutoInclude();
+            modelBuilder.Entity<UserCoupon>().Property(p => p.Status)
+                .HasConversion<string>();
 
             //Order
             modelBuilder.Entity<Order>().Navigation(o => o.OrderItems).AutoInclude();
             modelBuilder.Entity<Order>().Navigation(o => o.Shipping).AutoInclude();
-
+            modelBuilder.Entity<Order>().Property(p => p.OrderStatus)
+                .HasConversion<string>();
+            modelBuilder.Entity<Order>().Property(p => p.PaymentMethod)
+               .HasConversion<string>();
 
             //Coupon Application
             modelBuilder.Entity<CouponApplication>()
