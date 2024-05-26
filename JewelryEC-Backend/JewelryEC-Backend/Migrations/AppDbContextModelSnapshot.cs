@@ -17,7 +17,7 @@ namespace JewelryEC_Backend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -156,6 +156,9 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<Guid>("ProductItemId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("UserCouponId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
@@ -265,6 +268,10 @@ namespace JewelryEC_Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Conditions")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("CouponCode")
                         .IsRequired()
                         .HasColumnType("text");
@@ -272,8 +279,9 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("DiscountUnit")
-                        .HasColumnType("integer");
+                    b.Property<string>("DiscountUnit")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<double>("DiscountValue")
                         .HasColumnType("double precision");
@@ -287,8 +295,15 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<decimal?>("MinimumOrderValue")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("UsedTime")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ValidFrom")
                         .HasColumnType("timestamp without time zone");
@@ -356,9 +371,14 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("numeric");
 
+                    b.Property<Guid>("UserCouponId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("UserCouponId");
 
                     b.ToTable("OrderItems");
                 });
@@ -372,11 +392,13 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("OrderStatus")
-                        .HasColumnType("integer");
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("PaymentMethod")
-                        .HasColumnType("integer");
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -500,7 +522,38 @@ namespace JewelryEC_Backend.Migrations
 
                     b.HasIndex("DeliveryId");
 
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
                     b.ToTable("Shippings");
+                });
+
+            modelBuilder.Entity("JewelryEC_Backend.Models.Voucher.UserCoupon", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductCouponId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RemainingUsage")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductCouponId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserCoupons");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -631,7 +684,7 @@ namespace JewelryEC_Backend.Migrations
             modelBuilder.Entity("JewelryEC_Backend.Models.Coupon.ProductCoupon", b =>
                 {
                     b.HasOne("JewelryEC_Backend.Models.Products.Product", "Product")
-                        .WithMany()
+                        .WithMany("Coupons")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -657,6 +710,14 @@ namespace JewelryEC_Backend.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("JewelryEC_Backend.Models.Voucher.UserCoupon", "UserCoupon")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("UserCouponId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserCoupon");
                 });
 
             modelBuilder.Entity("JewelryEC_Backend.Models.Products.Product", b =>
@@ -689,7 +750,34 @@ namespace JewelryEC_Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("JewelryEC_Backend.Models.Orders.Order", "Order")
+                        .WithOne("Shipping")
+                        .HasForeignKey("JewelryEC_Backend.Models.Shippings.Shipping", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Delivery");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("JewelryEC_Backend.Models.Voucher.UserCoupon", b =>
+                {
+                    b.HasOne("JewelryEC_Backend.Models.Coupon.ProductCoupon", "ProductCoupon")
+                        .WithMany()
+                        .HasForeignKey("ProductCouponId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JewelryEC_Backend.Models.Auths.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductCoupon");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -746,11 +834,21 @@ namespace JewelryEC_Backend.Migrations
             modelBuilder.Entity("JewelryEC_Backend.Models.Orders.Order", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Shipping")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("JewelryEC_Backend.Models.Products.Product", b =>
                 {
+                    b.Navigation("Coupons");
+
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("JewelryEC_Backend.Models.Voucher.UserCoupon", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

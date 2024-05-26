@@ -8,10 +8,11 @@ namespace JewelryEC_Backend.Service.IService
 {
     public interface IOrderService
     {
-        Task<ResponseDto> GetAll();
+        Task<ResponseDto> GetAll(int pageNumber, int pageSize);
         Task<ResponseDto> GetById(Guid id);
-        Task<ResponseDto> Add(CreateNewOrderDto orderDto);
+        //Task<ResponseDto> Add(CreateNewOrderDto orderDto);
+        Task<ResponseDto> AddFromCart(CreateNewOrderFromCartDto orderDto);
         Task<ResponseDto> UpdateOrderStatus(Guid order, OrderStatus orderStatus);
-        Task<ResponseDto> GetOrdersByUserId(Guid userId);
+        Task<ResponseDto> GetOrdersByUserId(Guid userId, int pageNumber, int pageSize);
     }
 }

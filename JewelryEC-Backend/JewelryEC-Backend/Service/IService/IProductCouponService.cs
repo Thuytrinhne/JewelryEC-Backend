@@ -1,4 +1,5 @@
-﻿using JewelryEC_Backend.Models;
+﻿using JewelryEC_Backend.Enum;
+using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Coupon.Dto;
 
 namespace JewelryEC_Backend.Service.IService
@@ -10,5 +11,6 @@ namespace JewelryEC_Backend.Service.IService
         Task<ResponseDto> Add(CreateProductCouponDto couponDto);
         Task<ResponseDto> Update(UpdateProductCouponDto couponDto);
         Task<ResponseDto> Delete(Guid id);
+
     }
 }

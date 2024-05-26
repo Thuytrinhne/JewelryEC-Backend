@@ -1,8 +1,10 @@
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Models.Roles.Entities;
+using JewelryEC_Backend.Models.Voucher;
 using JewelryEC_Backend.Repository;
 using JewelryEC_Backend.Repository.IRepository;
+using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -29,6 +31,8 @@ namespace JewelryEC_Backend.UnitOfWork
         public IProductCouponRepository ProductCoupons { get; private set; }
         public IProductItemRespository ProductItem { get; private set; }
 
+        public IUserCouponRepository UserCoupon { get; private set; }
+
         public UnitOfWork(AppDbContext context,
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager)
@@ -45,7 +49,7 @@ namespace JewelryEC_Backend.UnitOfWork
             Shippings = new ShippingRepository(_context);
             ProductCoupons = new ProductCouponRepository(_context);
             ProductItem = new ProductItemRespository(_context);
-
+            UserCoupon = new UserCouponRepository(_context);
         }
 
 

@@ -32,9 +32,9 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpGet("getall")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _orderService.GetAll();
+            var result = await _orderService.GetAll(pageNumber, pageSize);
             if (result.IsSuccess)
             {
                 return Ok(result);
@@ -55,34 +55,68 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("add")]
+        //[HttpPost("add")]
+        //[Authorize]
+        //public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto)
+        //{
+
+        //    var result = await _orderService.Add(orderDto);
+            
+        //    if (result.IsSuccess)
+        //    {
+        //        Order newOrder = (Order)result.Result;
+        //        #region if payment method = vnpay
+        //        if (orderDto.PaymentMethod == PaymentMethod.VNPAY)
+        //        {
+        //            var vnPaymentModel = new VnPaymentRequestModel
+        //                {
+        //                    Amount = newOrder.TotalPrice,
+        //                    CreatedDate = newOrder.CreateDate,
+        //                    Description = "",
+        //                    FullName = "Trinh",
+        //                    OrderId = newOrder.Id,
+        //                };
+        //                // return payment url 
+        //            return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
+        //        }
+        //        #endregion
+        //        #region handle cart after checkout
+        //        //_cartService.HanldeCartAfterCheckout(newOrder.UserId);
+        //        #endregion
+        //        return Ok(result);
+        //    }
+
+        //    return BadRequest(result);
+        //}
+        [HttpPost("addFromCart")]
         [Authorize]
-        public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto, string payment = "COD")
+        public async Task<IActionResult> AddFromCart([FromBody] CreateNewOrderFromCartDto orderDto)
         {
-            var result = await _orderService.Add(orderDto);
-           
+            var result = await _orderService.AddFromCart(orderDto);
+
             if (result.IsSuccess)
             {
                 Order newOrder = (Order)result.Result;
                 #region delete cart items that have been checkout  
                 _cartService.HanldeCartAfterCheckout(new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier)), newOrder.OrderItems.ToList());
                 #endregion
+
                 #region if payment method = vnpay
-                if (payment == PaymentMethod.VNPAY.ToString())
+                if (orderDto.PaymentMethod == PaymentMethod.VNPAY)
                 {
                     var vnPaymentModel = new VnPaymentRequestModel
-                        {
-                            Amount = newOrder.TotalPrice,
-                            CreatedDate = newOrder.CreateDate,
-                            Description = "",
-                            FullName = User.FindFirstValue("name").ToString(),
-                            OrderId = newOrder.Id,
-                        };
-                        // return payment url 
+                    {
+                        Amount = newOrder.TotalPrice,
+                        CreatedDate = newOrder.CreateDate,
+                        Description = "",
+                        FullName = User.FindFirstValue("name").ToString(),
+                        OrderId = newOrder.Id,
+                    };
+                    // return payment url 
                     return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
                 }
                 #endregion
-               
+
                 return Ok(result);
             }
 
@@ -90,7 +124,7 @@ namespace JewelryEC_Backend.Controllers
         }
       
 
-        [HttpPost("cancel/{orderId}")]
+        [HttpPatch("cancel/{orderId}")]
         public async Task<IActionResult> Cancel([FromRoute] Guid orderId)
         {
             var result = await _orderService.UpdateOrderStatus(orderId, Enum.OrderStatus.Cancelled);
@@ -130,10 +164,10 @@ namespace JewelryEC_Backend.Controllers
             }
 
         }
-        [HttpPost("getbyuser/{ùserId}")]
-        public async Task<IActionResult> GetByUserId([FromRoute] Guid userId)
+        [HttpPost("getbyuser/{userId}")]
+        public async Task<IActionResult> GetByUserId([FromRoute] Guid userId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _orderService.GetOrdersByUserId(userId);
+            var result = await _orderService.GetOrdersByUserId(userId,pageNumber, pageSize );
             if (result.IsSuccess)
             {
                 return Ok(result);

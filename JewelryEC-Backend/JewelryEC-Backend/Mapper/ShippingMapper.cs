@@ -11,7 +11,7 @@ namespace JewelryEC_Backend.Mapper
 {
     public class ShippingMapper
     {
-        public static Shipping ShippingFromCreateNewOrderDto(Guid? deliveryId, CreateDeliveryDto? createDeliveryDto)
+        public static Shipping ShippingFromCreateNewOrderDto(Guid? deliveryId, CreateDeliveryDto? createDeliveryDto, Guid userId)
         {
             Shipping shipping = new Shipping
             {
@@ -23,7 +23,7 @@ namespace JewelryEC_Backend.Mapper
             {
                 Delivery delivery = new Delivery
                 {
-                    UserId = createDeliveryDto.UserId,
+                    UserId = userId,
                     IsDepartment = createDeliveryDto.IsDepartment,
                     ReceiverIsMe = createDeliveryDto.ReceiverIsMe,
                     Information = createDeliveryDto.Information,
