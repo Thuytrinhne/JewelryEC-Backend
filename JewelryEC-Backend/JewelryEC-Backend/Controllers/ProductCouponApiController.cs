@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using JewelryEC_Backend.Models.Products.Dto;
 using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.Models.Coupon.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -43,6 +44,8 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("add")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<IActionResult> Add([FromBody] CreateProductCouponDto dto)
         {
             var result = await _productCouponService.Add(dto);
@@ -55,6 +58,8 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("update")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<IActionResult> Update(
             [FromBody] UpdateProductCouponDto updateProductCoupon)
         {
@@ -67,6 +72,8 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
         [HttpPost("delete/{couponId}")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<IActionResult> Delete(
         [FromRoute] Guid couponId)
             {

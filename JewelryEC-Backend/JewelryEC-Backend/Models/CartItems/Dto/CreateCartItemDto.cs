@@ -14,5 +14,7 @@ namespace JewelryEC_Backend.Models.CartItems.Dto
 
             [Required(ErrorMessage = "{0} is required")]
         public int Count { get; set; }
+        public Guid ? UserCouponId { get; set; }
+
     }
 }

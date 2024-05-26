@@ -15,6 +15,8 @@ namespace JewelryEC_Backend.Models.CartItems.Dto
         public decimal   SalePrice { get; set; }
         public double DiscountPrice { get; set; }
         public string Image { get; set; }
+        public Guid? UserCouponId { get; set; }
+
 
     }
 }

@@ -178,7 +178,7 @@ namespace JewelryEC_Backend.Service
                 };
                 if (item.UserCouponId != null)
                 {
-                    Tuple<bool, decimal> result = await tryApplyCoupon(item.UserCouponId, item.ProductItemId, orderItem.Subtotal);
+                    Tuple<bool, decimal> result = await tryApplyCoupon(item.UserCouponId.Value, item.ProductItemId, orderItem.Subtotal);
                     if (result.Item1 == true)
                     {
                         //CouponApplication couponApplication = new CouponApplication();

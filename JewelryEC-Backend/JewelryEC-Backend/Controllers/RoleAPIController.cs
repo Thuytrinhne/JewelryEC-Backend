@@ -4,6 +4,7 @@ using JewelryEC_Backend.Models.Roles.Dto;
 using JewelryEC_Backend.Models.Roles.Entities;
 using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,6 +73,8 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<ActionResult<ResponseDto>> Create(CreateRoleDto createRoleDto)
         {
             try
@@ -92,6 +95,8 @@ namespace JewelryEC_Backend.Controllers
 
 
         [HttpPatch("")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<ActionResult<ResponseDto>> Edit(UpdateRoleDto updateRoleDto)
         {
             try
@@ -114,6 +119,8 @@ namespace JewelryEC_Backend.Controllers
             }
         }
         [HttpDelete("{id:Guid}")]
+        [Authorize(Roles = "ADMIN")]
+
         public async  Task <ActionResult<ResponseDto>> Delete(Guid id)
         {
             try

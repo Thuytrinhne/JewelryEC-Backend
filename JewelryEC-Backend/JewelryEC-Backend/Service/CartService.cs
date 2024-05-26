@@ -21,13 +21,29 @@ namespace JewelryEC_Backend.Service
         }
         public CartItem CartUpSert(Guid userId, CartItem cartItem)
         {
+
             if (isUserExist(userId) && isProductExist(cartItem.ProductItemId))
             {
                 var cartFromDb = _unitOfWork.Carts.GetCartHeader(userId);
                 if (cartFromDb == null)
                 {
                     if (cartItem.Count <= 0)
-                        return null;    
+                        return null;
+                    // check if usercoupon id is valid for this product
+                    if (cartItem.UserCouponId is not null)
+                    {
+                        var productItemFrmDb = _unitOfWork.ProductItem.GetById(cartItem.ProductItemId);
+                        var result = (from uc in _unitOfWork.UserCoupon.GetAll()
+                                      join pc in _unitOfWork.ProductCoupons.GetAll() on uc.ProductCouponId equals pc.Id
+                                      where uc.Id == cartItem.UserCouponId && pc.ProductId == productItemFrmDb.ProductId
+                                      select uc).Count();
+
+                        if(result == 0)
+                        {
+                            throw new Exception("This coupon doesn't not apply for this product");
+                        }    
+                    }
+
                     //create cart new and details 
                     Cart cart = new Cart();
                     cart.Id = Guid.NewGuid();
@@ -49,6 +65,20 @@ namespace JewelryEC_Backend.Service
                     var cartDetailsFromDb = _unitOfWork.CartItems.GetCartItem(cartItem.ProductItemId, cartFromDb.Id);
                     if (cartDetailsFromDb is null)
                     {
+                        // check if usercoupon id is valid for this product
+                        if (cartItem.UserCouponId is not null)
+                        {
+                            var productItemFrmDb = _unitOfWork.ProductItem.GetById(cartItem.ProductItemId);
+                            var result = (from uc in _unitOfWork.UserCoupon.GetAll()
+                                          join pc in _unitOfWork.ProductCoupons.GetAll() on uc.ProductCouponId equals pc.Id
+                                          where uc.Id == cartItem.UserCouponId && pc.ProductId == productItemFrmDb.ProductId
+                                          select uc).Count();
+
+                            if (result == 0)
+                            {
+                                throw new Exception("This coupon doesn't not apply for this product");
+                            }
+                        }
                         //create cartdetails
                         cartItem.CartId = cartFromDb.Id;
                         cartItem.Id = Guid.NewGuid();
@@ -109,12 +139,14 @@ namespace JewelryEC_Backend.Service
                 var cacheData = _cacheService.GetData(userId);
                 if (cacheData != null)
                 {
+                    var CartFrmDb = _unitOfWork.Carts.GetCartHeader(userId);
                     Cart getCart = new Cart();
                     getCart.UserId = userId;
                     getCart.Items = new List<CartItem>();
                     foreach (var item in cacheData)
                     {
-                        getCart.Items.Add(new CartItem { ProductItemId = item.Key, Count = item.Value });
+                        var cartItemFrmDb = _unitOfWork.CartItems.Find(U => U.ProductItemId == item.Key && U.CartId ==CartFrmDb.Id ).FirstOrDefault();
+                        getCart.Items.Add(new CartItem { ProductItemId = item.Key, Count = item.Value, Id = cartItemFrmDb.Id, UserCouponId = cartItemFrmDb.UserCouponId });
                     }
 
                     return getCart;

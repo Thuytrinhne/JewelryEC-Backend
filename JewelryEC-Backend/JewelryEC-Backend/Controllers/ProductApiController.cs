@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Service.IService;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -44,6 +45,8 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("add")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<IActionResult> Add([FromBody] CreateProductDto productDto)
         {
             var result = await _productService.Add(productDto);
@@ -56,6 +59,8 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("update")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<IActionResult> Update(
             [FromBody] UpdateProductDto productDto)
         {
@@ -69,6 +74,8 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("delete/{productId}")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<IActionResult> Delete([FromRoute] Guid productId)
         {
             var result = await _productService.Delete(productId);

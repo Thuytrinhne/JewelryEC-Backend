@@ -66,12 +66,12 @@ namespace JewelryEC_Backend.Controllers
             }
        
         }
-        [HttpGet("{UserId}")]
-        public async Task<ActionResult<ResponseDto>> GetById([FromRoute] Guid UserId)
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<ResponseDto>> GetById([FromRoute] Guid userId)
         {
             try
             {
-                var user = _userService.GetUserById(UserId);
+                var user = _userService.GetUserById(userId);
                 if(user != null)
                 {
                    
@@ -99,7 +99,9 @@ namespace JewelryEC_Backend.Controllers
         }
         [Authorize]
         [HttpPatch("{userId}")]
-        public async Task<ActionResult<ResponseDto>> Put(Guid userId, [FromBody] UpdateUserDto updateUser)
+        [Authorize]
+
+        public async Task<ActionResult<ResponseDto>> Patch(Guid userId, [FromBody] UpdateUserDto updateUser)
         {
             try
             {
@@ -134,6 +136,8 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("{userId}/assignRole")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto, Guid userId)
         {
             var assignRoleSuccessful = await _userService.AssignRole(userId, assignRoleDto.RoleId);
