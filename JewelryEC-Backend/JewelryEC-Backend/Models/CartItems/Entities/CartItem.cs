@@ -17,6 +17,5 @@ namespace JewelryEC_Backend.Models.CartItems.Entities
         [Required]
         public int Count { get; set; }
         public Guid UserCouponId { get; set; }
-
     }
 }

@@ -53,8 +53,7 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("add")]
-        [Description("Choose between deliveryDto and deliveryId (in case have existing delivery information)")]
-        public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto, string payment = "COD")
+        public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto)
         {
             var result = await _orderService.Add(orderDto);
             
@@ -62,7 +61,7 @@ namespace JewelryEC_Backend.Controllers
             {
                 Order newOrder = (Order)result.Result;
                 #region if payment method = vnpay
-                if (payment == PaymentMethod.VNPAY.ToString())
+                if (orderDto.PaymentMethod == PaymentMethod.VNPAY)
                 {
                     var vnPaymentModel = new VnPaymentRequestModel
                         {
@@ -73,6 +72,38 @@ namespace JewelryEC_Backend.Controllers
                             OrderId = newOrder.Id,
                         };
                         // return payment url 
+                    return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
+                }
+                #endregion
+                #region handle cart after checkout
+                //_cartService.HanldeCartAfterCheckout(newOrder.UserId);
+                #endregion
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+        [HttpPost("addFromCart")]
+        public async Task<IActionResult> AddFromCart([FromBody] CreateNewOrderFromCartDto orderDto)
+        {
+            var result = await _orderService.AddFromCart(orderDto);
+
+            if (result.IsSuccess)
+            {
+                Order newOrder = (Order)result.Result;
+                #region if payment method = vnpay
+                if (orderDto.PaymentMethod == PaymentMethod.VNPAY)
+                {
+                    var vnPaymentModel = new VnPaymentRequestModel
+                    {
+                        Amount = newOrder.TotalPrice,
+                        CreatedDate = newOrder.CreateDate,
+                        Description = "",
+                        FullName = "Trinh",
+                        OrderId = newOrder.Id,
+                        
+                    };
+                    // return payment url 
                     return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
                 }
                 #endregion

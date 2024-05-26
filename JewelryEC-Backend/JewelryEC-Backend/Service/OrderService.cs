@@ -61,11 +61,11 @@ namespace JewelryEC_Backend.Service
         {
             Shipping shipping = ShippingMapper.ShippingFromCreateNewOrderDto(dto.DeliveryId, dto.DeliveryDto);
             List<CartItem> cartItems = _cartRe.GetListCartItems(dto.CartItemIds);
-            List<OrderItem> orderItems = orderItemsFromCartItems(cartItems);
-            Order order = OrderMapper.OrderFromCreateOrderDto(dto, orderItems);
+            Tuple<List<OrderItem>, decimal> res = await orderItemsFromCartItem(cartItems);
+            Order order = OrderMapper.OrderFromCreateOrderDto(dto, res.Item1);
             //TASK: calculate discount value
-
             shipping.OrderId = order.Id;
+            order.TotalPrice = res.Item2;
             Console.WriteLine(order.ToJson());
             await _orderRe.AddAsync(order);
             await _orderRe.SaveChangeAsync();
@@ -102,23 +102,23 @@ namespace JewelryEC_Backend.Service
             return new SuccessDataResult<List<Order>>(orders);
         }
         //create orderItems from CartItems
-        private List<OrderItem> orderItemsFromCartItems(List<CartItem> cartItems)
-        {
-            List<OrderItem> orderItems = new List<OrderItem>();
-            foreach (var cartItem in cartItems)
-            {
-                ProductVariant productItem =  _productItemRe.GetById(cartItem.ProductItemId);
-                OrderItem orderItem = new OrderItem
-                {
-                    ProductItemId = cartItem.ProductItemId,
-                    Quantity = cartItem.Count,
-                    Price = productItem.Price,
-                    Subtotal = productItem.Price * cartItem.Count,
-                };
-                orderItems.Add(orderItem);
-            }
-            return orderItems;
-        }
+        //private List<OrderItem> orderItemsFromCartItems(List<CartItem> cartItems)
+        //{
+        //    List<OrderItem> orderItems = new List<OrderItem>();
+        //    foreach (var cartItem in cartItems)
+        //    {
+        //        ProductVariant productItem =  _productItemRe.GetById(cartItem.ProductItemId);
+        //        OrderItem orderItem = new OrderItem
+        //        {
+        //            ProductItemId = cartItem.ProductItemId,
+        //            Quantity = cartItem.Count,
+        //            Price = productItem.Price,
+        //            Subtotal = productItem.Price * cartItem.Count,
+        //        };
+        //        orderItems.Add(orderItem);
+        //    }
+        //    return orderItems;
+        //}
         //create orderItems from OrderItemDto (calculate discount)
         private async Task<Tuple<List<OrderItem>, decimal>> orderItemsFromOrderItemDto(List<CreateOrderItemDto> orderItemDtos)
         {
@@ -135,7 +135,7 @@ namespace JewelryEC_Backend.Service
                     Price = productItem.Price,
                     Subtotal = productItem.Price * item.Quantity,
                 };
-                if(item.UserCouponId != null)
+                if (item.UserCouponId != null)
                 {
                     Tuple<bool, decimal> result = await tryApplyCoupon(item.UserCouponId.Value, item.ProductItemId, orderItem.Subtotal);
                     if (result.Item1 == true)
@@ -156,7 +156,45 @@ namespace JewelryEC_Backend.Service
                 totalPrice += orderItem.Subtotal;
                 orderItems.Add(orderItem);
             }
-            return new Tuple<List<OrderItem>,decimal>(orderItems, totalPrice);
+            return new Tuple<List<OrderItem>, decimal>(orderItems, totalPrice);
+        }
+        private async Task<Tuple<List<OrderItem>, decimal>> orderItemsFromCartItem(List<CartItem> cartItems)
+        {
+            decimal totalPrice = 0;
+            List<OrderItem> orderItems = new List<OrderItem>();
+            foreach (var item in cartItems)
+            {
+                ProductVariant productItem = _productItemRe.GetById(item.ProductItemId);
+                OrderItem orderItem = new OrderItem
+                {
+                    Id = new Guid(),
+                    ProductItemId = item.ProductItemId,
+                    Quantity = item.Count,
+                    Price = productItem.Price,
+                    Subtotal = productItem.Price * item.Count,
+                };
+                if (item.UserCouponId != null)
+                {
+                    Tuple<bool, decimal> result = await tryApplyCoupon(item.UserCouponId, item.ProductItemId, orderItem.Subtotal);
+                    if (result.Item1 == true)
+                    {
+                        CouponApplication couponApplication = new CouponApplication();
+                        couponApplication.Id = new Guid();
+                        couponApplication.OrderItemId = orderItem.Id;
+                        couponApplication.UserCouponId = item.UserCouponId;
+                        couponApplication.DiscountAmount = result.Item2;
+                        orderItem.CouponApplication = couponApplication;
+                        orderItem.CouponApplicationId = couponApplication.Id;
+                        orderItem.Discount = result.Item2;
+                        if (orderItem.Subtotal > result.Item2)
+                            orderItem.Subtotal -= result.Item2;
+                        else orderItem.Subtotal = 0;
+                    }
+                }
+                totalPrice += orderItem.Subtotal;
+                orderItems.Add(orderItem);
+            }
+            return new Tuple<List<OrderItem>, decimal>(orderItems, totalPrice);
         }
         public async Task<Tuple<bool, decimal>> tryApplyCoupon(Guid userCouponId, Guid productItemId, decimal subTotal)
         {
