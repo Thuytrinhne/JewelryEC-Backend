@@ -140,13 +140,14 @@ namespace JewelryEC_Backend.Service
                     Tuple<bool, decimal> result = await tryApplyCoupon(item.UserCouponId.Value, item.ProductItemId, orderItem.Subtotal);
                     if (result.Item1 == true)
                     {
-                        CouponApplication couponApplication = new CouponApplication();
-                        couponApplication.Id = new Guid();
-                        couponApplication.OrderItemId = orderItem.Id;
-                        couponApplication.UserCouponId = item.UserCouponId.Value;
-                        couponApplication.DiscountAmount = result.Item2;
-                        orderItem.CouponApplication = couponApplication;
-                        orderItem.CouponApplicationId = couponApplication.Id;
+                        //CouponApplication couponApplication = new CouponApplication();
+                        //couponApplication.Id = new Guid();
+                        //couponApplication.OrderItemId = orderItem.Id;
+                        //couponApplication.UserCouponId = item.UserCouponId.Value;
+                        //couponApplication.DiscountAmount = result.Item2;
+                        //orderItem.CouponApplication = couponApplication;
+                        //orderItem.CouponApplicationId = couponApplication.Id;
+                        orderItem.UserCouponId = item.UserCouponId;
                         orderItem.Discount = result.Item2;
                         if (orderItem.Subtotal > result.Item2)
                             orderItem.Subtotal -= result.Item2;
@@ -178,13 +179,14 @@ namespace JewelryEC_Backend.Service
                     Tuple<bool, decimal> result = await tryApplyCoupon(item.UserCouponId, item.ProductItemId, orderItem.Subtotal);
                     if (result.Item1 == true)
                     {
-                        CouponApplication couponApplication = new CouponApplication();
-                        couponApplication.Id = new Guid();
-                        couponApplication.OrderItemId = orderItem.Id;
-                        couponApplication.UserCouponId = item.UserCouponId;
-                        couponApplication.DiscountAmount = result.Item2;
-                        orderItem.CouponApplication = couponApplication;
-                        orderItem.CouponApplicationId = couponApplication.Id;
+                        //CouponApplication couponApplication = new CouponApplication();
+                        //couponApplication.Id = new Guid();
+                        //couponApplication.OrderItemId = orderItem.Id;
+                        //couponApplication.UserCouponId = item.UserCouponId;
+                        //couponApplication.DiscountAmount = result.Item2;
+                        //orderItem.CouponApplication = couponApplication;
+                        //orderItem.CouponApplicationId = couponApplication.Id;
+                        orderItem.UserCouponId = item.UserCouponId;
                         orderItem.Discount = result.Item2;
                         if (orderItem.Subtotal > result.Item2)
                             orderItem.Subtotal -= result.Item2;

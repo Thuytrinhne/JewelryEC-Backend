@@ -13,7 +13,7 @@ namespace JewelryEC_Backend.Models.Orders
         public DateTime CreateDate { get; set; }
         public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.COD;
         public virtual ICollection<OrderItem> OrderItems { get; set; }
-        public decimal TotalPrice;
+        public decimal TotalPrice { get; set; }
         public virtual Shipping Shipping { get; set; }
 
     }

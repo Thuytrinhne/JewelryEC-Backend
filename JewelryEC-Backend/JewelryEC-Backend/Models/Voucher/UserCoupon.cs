@@ -2,6 +2,7 @@
 using JewelryEC_Backend.Enum;
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Models.Coupon;
+using JewelryEC_Backend.Models.OrderItems;
 using JewelryEC_Backend.Models.Products;
 using System.Runtime.InteropServices;
 
@@ -16,6 +17,7 @@ namespace JewelryEC_Backend.Models.Voucher
         public CouponStatus Status { get; set; }
         public virtual ApplicationUser User { get; set; }
         public virtual ProductCoupon ProductCoupon { get; set; }
-        public virtual List<CouponApplication> CouponApplications { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; }
+        //public virtual List<CouponApplication> CouponApplications { get; set; }
     }
 }

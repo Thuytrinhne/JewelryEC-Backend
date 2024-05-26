@@ -11,7 +11,10 @@ namespace JewelryEC_Backend.Models.OrderItems
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
         public decimal Subtotal { get; set; }
-        public Guid? CouponApplicationId { get; set; }
-        public virtual CouponApplication CouponApplication { get; set; }
+        public Guid? UserCouponId { get; set; }
+        public virtual UserCoupon UserCoupon { get; set; }
+
+        //public Guid? CouponApplicationId { get; set; }
+        //public virtual CouponApplication CouponApplication { get; set; }
     }
 }

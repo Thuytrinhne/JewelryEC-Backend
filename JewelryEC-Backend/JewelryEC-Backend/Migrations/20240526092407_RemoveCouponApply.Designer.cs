@@ -3,6 +3,7 @@ using System;
 using JewelryEC_Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JewelryEC_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240526092407_RemoveCouponApply")]
+    partial class RemoveCouponApply
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -374,14 +377,9 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid>("UserCouponId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
-
-                    b.HasIndex("UserCouponId");
 
                     b.ToTable("OrderItems");
                 });
@@ -713,14 +711,6 @@ namespace JewelryEC_Backend.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("JewelryEC_Backend.Models.Voucher.UserCoupon", "UserCoupon")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("UserCouponId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserCoupon");
                 });
 
             modelBuilder.Entity("JewelryEC_Backend.Models.Products.Product", b =>
@@ -847,11 +837,6 @@ namespace JewelryEC_Backend.Migrations
                     b.Navigation("Coupons");
 
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("JewelryEC_Backend.Models.Voucher.UserCoupon", b =>
-                {
-                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

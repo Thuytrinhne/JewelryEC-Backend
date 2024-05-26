@@ -50,9 +50,9 @@ namespace JewelryEC_Backend.Data
 
             //User Coupon
             modelBuilder.Entity<UserCoupon>().Navigation(u => u.ProductCoupon).AutoInclude();
-            modelBuilder.Entity<UserCoupon>().Navigation(u => u.CouponApplications).AutoInclude();
+            //modelBuilder.Entity<UserCoupon>().Navigation(u => u.CouponApplications).AutoInclude();
             modelBuilder.Entity<UserCoupon>().Navigation(u => u.ProductCoupon).AutoInclude();
-            modelBuilder.Entity<UserCoupon>().Navigation(u => u.CouponApplications).AutoInclude();
+            modelBuilder.Entity<UserCoupon>().Navigation(u => u.OrderItems).AutoInclude();
             modelBuilder.Entity<UserCoupon>().Property(p => p.Status)
                 .HasConversion<string>();
 
@@ -64,12 +64,15 @@ namespace JewelryEC_Backend.Data
             modelBuilder.Entity<Order>().Property(p => p.PaymentMethod)
                .HasConversion<string>();
 
+            //OrderItem
+            modelBuilder.Entity<OrderItem>().Navigation(o => o.UserCoupon).AutoInclude();
+
             //Coupon Application
-            modelBuilder.Entity<CouponApplication>()
-                .HasOne(ca => ca.OrderItem)
-                .WithOne(oi => oi.CouponApplication)
-                .HasForeignKey<CouponApplication>(ca => ca.OrderItemId)
-                .IsRequired();
+            //modelBuilder.Entity<CouponApplication>()
+            //    .HasOne(ca => ca.OrderItem);
+            //.WithOne(oi => oi.CouponApplication)
+            //.HasForeignKey<CouponApplication>(ca => ca.OrderItemId)
+            //.IsRequired();
             //Shipping
             modelBuilder.Entity<Shipping>().Navigation(s => s.Delivery).AutoInclude();
         }
@@ -91,6 +94,6 @@ namespace JewelryEC_Backend.Data
         public DbSet<CatalogCoupon> CatalogCoupons { get; set; }
         public DbSet<ProductCoupon> ProductCoupons { get; set; }
         public DbSet<UserCoupon> UserCoupons { get; set; }
-        public DbSet<CouponApplication> CouponApplications { get; set; }    
+        //public DbSet<CouponApplication> CouponApplications { get; set; }    
     }
 }
