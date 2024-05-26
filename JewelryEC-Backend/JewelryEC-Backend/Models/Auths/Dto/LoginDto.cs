@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace JewelryEC_Backend.Models.Auths.Dto

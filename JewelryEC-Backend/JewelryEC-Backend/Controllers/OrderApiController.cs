@@ -3,9 +3,13 @@ using JewelryEC_Backend.Helpers.Payments.VnPay;
 using JewelryEC_Backend.Models.Orders;
 using JewelryEC_Backend.Models.Orders.Dto;
 using JewelryEC_Backend.Service.IService;
+using Microsoft.AspNetCore.Authorization; // 
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using StackExchange.Redis;
+using System.ComponentModel;
+using System.Security.Claims;
 using static JewelryEC_Backend.Utility.SD;
 using Order = JewelryEC_Backend.Models.Orders.Order;
 
@@ -52,13 +56,17 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("add")]
+        [Authorize]
         public async Task<IActionResult> Add([FromBody] CreateNewOrderDto orderDto, string payment = "COD")
         {
             var result = await _orderService.Add(orderDto);
-            
+           
             if (result.IsSuccess)
             {
                 Order newOrder = (Order)result.Result;
+                #region delete cart items that have been checkout  
+                _cartService.HanldeCartAfterCheckout(new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier)), newOrder.OrderItems.ToList());
+                #endregion
                 #region if payment method = vnpay
                 if (payment == PaymentMethod.VNPAY.ToString())
                 {
@@ -67,21 +75,20 @@ namespace JewelryEC_Backend.Controllers
                             Amount = newOrder.TotalPrice,
                             CreatedDate = newOrder.CreateDate,
                             Description = "",
-                            FullName = "Trinh",
+                            FullName = User.FindFirstValue("name").ToString(),
                             OrderId = newOrder.Id,
                         };
                         // return payment url 
                     return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
                 }
                 #endregion
-                #region handle cart after checkout
-                _cartService.HanldeCartAfterCheckout(newOrder.UserId);
-                #endregion
+               
                 return Ok(result);
             }
 
             return BadRequest(result);
         }
+      
 
         [HttpPost("cancel/{orderId}")]
         public async Task<IActionResult> Cancel([FromRoute] Guid orderId)
@@ -95,6 +102,7 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
         [HttpGet("PaymentCallBack")]
+        
         public async  Task <IActionResult> PaymentCallBack ([FromQuery(Name = "vnp_OrderInfo")] string vnpOrderInfo)
         {
             try
@@ -111,7 +119,7 @@ namespace JewelryEC_Backend.Controllers
                 var result = await _orderService.UpdateOrderStatus(orderId, Enum.OrderStatus.Processing);
                 if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok("THANH TOÁN THÀNH CÔNG");
                 }
                 else
                     return BadRequest(result);

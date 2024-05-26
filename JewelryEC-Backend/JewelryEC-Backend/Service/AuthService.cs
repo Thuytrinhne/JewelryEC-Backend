@@ -6,6 +6,7 @@ using JewelryEC_Backend.Models.Catalogs.Dto;
 using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
+using JewelryEC_Backend.Utility;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -103,7 +104,7 @@ namespace JewelryEC_Backend.Service
         private bool checkExpiryOTP(DateTime created_at)
         {
             var currentTime = DateTime.UtcNow;
-            if (created_at.AddMinutes(30) >= currentTime)
+            if (created_at.AddMinutes(SD.OTPValidTime_Mins) >= currentTime)
             {
                 return true;
             }
@@ -162,6 +163,11 @@ namespace JewelryEC_Backend.Service
         {
             try
             {
+                var user = await  _unitOfWork.Users.GetUserByEmail(email);
+                if (user is not null)
+                {
+                    return false;
+                }
                 string otp = GenerateOTP();
                 await SendOTPEmail(email, otp);
                 await SaveEmailVerification(email, otp);
@@ -180,8 +186,8 @@ namespace JewelryEC_Backend.Service
         }
         private async Task SendOTPEmail(string email, string otp)
         {
-            string subject = "Sending OTP";
-            string message = "Your OTP is " + otp;
+            string subject = "JewelryStore- Sending OTP";
+            string message = $"Your OTP is {otp}.\n Note that this OTP is valid within {SD.OTPValidTime_Mins.ToString()} mins.";
             await _emailSender.SendEmailAsync(email, subject, message);
         }
         private async Task SaveEmailVerification(string email, string otp)
@@ -228,7 +234,7 @@ namespace JewelryEC_Backend.Service
         {
             try
             {
-                var message = $"Click the following link to reset your password: https://yourapp.com/reset-password?token={resetToken}";
+                var message = $"[Valid within {SD.ResetPassValidTime_Mins.ToString()} mins] Click the following link to reset your password: https://yourapp.com/reset-password?token={resetToken}";
                 await _emailSender.SendEmailAsync(email, "Reset Password", message);
             }
             catch (Exception ex)

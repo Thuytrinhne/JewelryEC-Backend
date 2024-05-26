@@ -11,7 +11,6 @@ namespace JewelryEC_Backend.Models.Carts.Entities
     {
         [Key]
         public  Guid Id { get; set; }
-        public int IsPayed { get; set; } = 0;
         public Guid ?UserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set;} = DateTime.UtcNow;

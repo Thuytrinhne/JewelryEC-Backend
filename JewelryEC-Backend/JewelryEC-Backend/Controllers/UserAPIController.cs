@@ -1,7 +1,9 @@
 using AutoMapper;
 using JewelryEC_Backend.Models;
+using JewelryEC_Backend.Models.Auths.Dto;
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Models.Users.Dto;
+using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -114,6 +116,20 @@ namespace JewelryEC_Backend.Controllers
                 return StatusCode(500, _response);
             }
         }
- 
+
+        //[HttpPost("{id}")]
+        //public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto)
+        //{
+        //    var assignRoleSuccessful = await _authService.AssignRole(assignRoleDto.UserId, assignRoleDto.RoleId);
+        //    if (!assignRoleSuccessful)
+        //    {
+        //        _response.IsSuccess = false;
+        //        _response.Message = "Error encountered";
+        //        return BadRequest(_response);
+        //    }
+        //    return Ok(_response);
+
+        //}
+
     }
 }

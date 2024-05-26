@@ -11,8 +11,10 @@ namespace JewelryEC_Backend.Utility
             ADMIN,
             STAFF
         }
-       
-        
+        public const int OTPValidTime_Mins = 30;
+        public const int ResetPassValidTime_Mins = 30;
+
+        public const int AccessTokenValidTime_Days = 7;
 
     }
     

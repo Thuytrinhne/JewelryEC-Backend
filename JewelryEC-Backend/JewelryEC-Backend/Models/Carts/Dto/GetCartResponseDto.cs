@@ -7,7 +7,6 @@ namespace JewelryEC_Backend.Models.Carts.Dto
 {
     public class GetCartResponseDto
     {
-        public int IsPayed { get; set; } = 0;
         public string? UserId { get; set; }
         public List<GetCartItemResponseDto> ? Items { get; set; }
         public decimal? TotalPrice { get; set; } = 0;

@@ -3,6 +3,7 @@ using JewelryEC_Backend.Models.CartItems.Dto;
 using JewelryEC_Backend.Models.CartItems.Entities;
 using JewelryEC_Backend.Models.Carts.Dto;
 using JewelryEC_Backend.Models.Carts.Entities;
+using JewelryEC_Backend.Models.OrderItems;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
@@ -155,10 +156,7 @@ namespace JewelryEC_Backend.Service
 
         }
 
-        public void SetStatusForCart(int status, Guid cartId)
-        {
-            _unitOfWork.Carts.SetStatusForCart(status, cartId);
-        }
+        
 
         public bool DeleteCartItem(Guid userId, Guid productId)
         {
@@ -210,24 +208,28 @@ namespace JewelryEC_Backend.Service
         {
             return _unitOfWork.Products.GetById(productId).Name;
         }
-        public void HanldeCartAfterCheckout(Guid userId)
+        public void HanldeCartAfterCheckout(Guid userId, List<OrderItem> orderItems)
         {
-
-            // delete items from cart details
             var cart = _unitOfWork.Carts.GetCartHeader(userId);
-            var cartItemsToDelete = _unitOfWork.CartItems.GetCartItems(cart.Id);
-            _unitOfWork.CartItems.RemoveRange(cartItemsToDelete);
-
-            // delete cart header
-            var cartHeaderToDelete = _unitOfWork.Carts.GetById(cart.Id);
-            if (cartHeaderToDelete != null)
+            foreach (var item in orderItems)
             {
-                _unitOfWork.Carts.Delete(cartHeaderToDelete);
-            }
-            _unitOfWork.Save();
+                // delete items from cart details
+           
+                var cartItemsToDelete = _unitOfWork.CartItems.Find(i=>i.CartId == cart.Id && i.ProductItemId == item.ProductItemId).FirstOrDefault();
+                _unitOfWork.CartItems.Remove(cartItemsToDelete);
+                _unitOfWork.Save();
 
-            // delete cart from cache redis
-            _cacheService.RemoveCartHeader(userId);
+                // delete cart from cache redis
+                _cacheService.RemoveProductFromCart(userId, item.ProductItemId);
+            }
+            // delete cart header if not exist cartitem
+            var cartHeaderItems = _unitOfWork.CartItems.GetCartItems(cart.Id).Count();
+            if (cartHeaderItems == 0)
+            {
+                _unitOfWork.Carts.Delete(cart);
+                _unitOfWork.Save();
+                _cacheService.RemoveCartHeader(userId);
+            }
         }
 
         

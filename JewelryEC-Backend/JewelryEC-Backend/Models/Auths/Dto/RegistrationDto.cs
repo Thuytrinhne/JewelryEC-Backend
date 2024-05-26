@@ -18,7 +18,8 @@ namespace JewelryEC_Backend.Models.Auths.Dto
             [Phone(ErrorMessage = "{0} is not in correct format.")]   
         public string ? PhoneNumber { get; set; }
 
-            [PasswordPropertyText]
+        [Required(ErrorMessage = "{0} is required.")]
+        [PasswordPropertyText]
         public string Password { get; set; }
 
             [Required(ErrorMessage = "{0} is required.")]
