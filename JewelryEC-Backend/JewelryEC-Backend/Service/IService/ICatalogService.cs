@@ -1,3 +1,4 @@
+using JewelryEC_Backend.Core.Pagination;
 using JewelryEC_Backend.Models.Catalogs.Entities;
 using System.Linq.Expressions;
 
@@ -11,5 +12,6 @@ namespace JewelryEC_Backend.Service.IService
         IEnumerable<Catalog> FilterCatalogs(Guid? parentId = null, string name = null);
         bool UpdateCatalog(Catalog catalogToUpdate);
         bool DeleteCatalog(Guid id);
+        Task<PaginationResult<Catalog>> GetCatalogsByPage(PaginationRequest request);
     }
 }

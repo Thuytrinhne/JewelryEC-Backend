@@ -20,11 +20,13 @@ namespace JewelryEC_Backend.Service
         }
         public CartItem CartUpSert(Guid userId, CartItem cartItem)
         {
-            if (isUserExist(userId) && isProductExist(cartItem.ProductId))
+            if (isUserExist(userId) && isProductExist(cartItem.ProductItemId))
             {
                 var cartFromDb = _unitOfWork.Carts.GetCartHeader(userId);
                 if (cartFromDb == null)
                 {
+                    if (cartItem.Count <= 0)
+                        return null;    
                     //create cart new and details 
                     Cart cart = new Cart();
                     cart.Id = Guid.NewGuid();
@@ -37,14 +39,14 @@ namespace JewelryEC_Backend.Service
                     _unitOfWork.CartItems.Add(cartItem);
                     _unitOfWork.Save();
                     // set data into cache
-                    _cacheService.SetData(userId, cartItem.ProductId, cartItem.Count);
+                    _cacheService.SetData(userId, cartItem.ProductItemId, cartItem.Count);
                 }
                 else
                 {
                     //if header is not null
                     //check if details has same product
-                    var cartDetailsFromDb = _unitOfWork.CartItems.GetCartItem(cartItem.ProductId, cartFromDb.Id);
-                    if (cartDetailsFromDb == null)
+                    var cartDetailsFromDb = _unitOfWork.CartItems.GetCartItem(cartItem.ProductItemId, cartFromDb.Id);
+                    if (cartDetailsFromDb is null)
                     {
                         //create cartdetails
                         cartItem.CartId = cartFromDb.Id;
@@ -52,16 +54,18 @@ namespace JewelryEC_Backend.Service
                         _unitOfWork.CartItems.Add(cartItem);
                         _unitOfWork.Save();
                         // set data into cache 
-                        _cacheService.SetData(userId, cartItem.ProductId, cartItem.Count);
+                        _cacheService.SetData(userId, cartItem.ProductItemId, cartItem.Count);
                     }
                     else
                     {
                         //update count in cart details
-                        cartDetailsFromDb.Count += cartItem.Count;
+                        if (cartDetailsFromDb.Count <= -cartItem.Count)
+                            return null;
+                            cartDetailsFromDb.Count += cartItem.Count;
                         _unitOfWork.CartItems.Update(cartDetailsFromDb);
                         _unitOfWork.Save();
                         // set data into cache 
-                        _cacheService.SetData(userId, cartItem.ProductId, cartItem.Count);
+                        _cacheService.SetData(userId, cartItem.ProductItemId, cartItem.Count);
                         cartItem.Count = cartDetailsFromDb.Count;
 
                     }
@@ -100,20 +104,16 @@ namespace JewelryEC_Backend.Service
 
         public Cart GetDetailCart(Guid userId)
         {
-
-            if (isUserExist(userId))
-            {
-
                 // check cache data
                 var cacheData = _cacheService.GetData(userId);
                 if (cacheData != null)
                 {
                     Cart getCart = new Cart();
                     getCart.UserId = userId;
-                    getCart.cartItems = new List<CartItem>();
+                    getCart.Items = new List<CartItem>();
                     foreach (var item in cacheData)
                     {
-                        getCart.cartItems.Add(new CartItem { ProductId = item.Key, Count = item.Value });
+                        getCart.Items.Add(new CartItem { ProductItemId = item.Key, Count = item.Value });
                     }
 
                     return getCart;
@@ -129,20 +129,20 @@ namespace JewelryEC_Backend.Service
                     else
                     {
 
-                        CartFrmDb.cartItems = _unitOfWork.CartItems.GetCartItems(CartFrmDb.Id).ToList();
+                        CartFrmDb.Items = _unitOfWork.CartItems.GetCartItems(CartFrmDb.Id).ToList();
                         // set CACHE
                         // Gọi phương thức SetCartTTL với thời gian sống là 15 phút
                         TimeSpan expiry = TimeSpan.FromMinutes(15);
                         _cacheService.SetCartTTL(userId, expiry);
-                        if (CartFrmDb.cartItems.Count() == 0)
+                        if (CartFrmDb.Items.Count() == 0)
                         {
                             _cacheService.SetCartHeaderNul(userId);
                         }
                         else
                         {
-                            foreach (var item in CartFrmDb.cartItems)
+                            foreach (var item in CartFrmDb.Items)
                             {
-                                _cacheService.SetData(userId, item.ProductId, item.Count);
+                                _cacheService.SetData(userId, item.ProductItemId, item.Count);
                             }
                         }
                     }
@@ -150,7 +150,7 @@ namespace JewelryEC_Backend.Service
                     return CartFrmDb;
                 }
 
-            }
+            
             return null;
 
         }
@@ -164,10 +164,12 @@ namespace JewelryEC_Backend.Service
         {
             try
             {
+                if (!isProductExist(productId)) { return false; }
                 // tìm cart của user
                 var cartFrmDb = _unitOfWork.Carts.GetCartHeader(userId);
-                if (cartFrmDb != null)
+                if (cartFrmDb is not null)
                 {
+
                     // kt trong cart có product đó k
                     var cartItemFrmDb = _unitOfWork.CartItems.FindCartItem(cartFrmDb.Id, productId);
                     if (cartItemFrmDb != null)
@@ -175,13 +177,23 @@ namespace JewelryEC_Backend.Service
                         // nếu có xóa trên db
                         _unitOfWork.CartItems.Remove(cartItemFrmDb);
                         _unitOfWork.Save();
+
+                        // nếu đó là sp cuối cùng thì xóa cart luôn
+                        var count = _unitOfWork.CartItems.GetAll(u => u.CartId == cartFrmDb.Id).Count;
+                       if (count == 0)
+                        {
+                            _unitOfWork.Carts.Remove(cartFrmDb); _unitOfWork.Save();
+                            _cacheService.RemoveCartHeader(userId);
+                        }
+                       else
                         // tiếp, xóa product id trên cache of user
                         _cacheService.RemoveProductFromCart(userId, productId);
+
                         return true;
                     }
                     return false;
                 }
-                else return false;
+                 return false;
             }
             catch (Exception ex)
             {
@@ -190,11 +202,14 @@ namespace JewelryEC_Backend.Service
 
 
         }
-        public ProductVariant GetCartItemDetail(int productId)
+        public ProductVariant GetCartItemDetail(Guid productId)
         {
-            return _unitOfWork.ProductItem.GetInforOfProductItem(productId);
+            return _unitOfWork.ProductItem.GetById(productId);
         }
-
+        public string GetCartItemName(Guid productId)
+        {
+            return _unitOfWork.Products.GetById(productId).Name;
+        }
         public void HanldeCartAfterCheckout(Guid userId)
         {
 

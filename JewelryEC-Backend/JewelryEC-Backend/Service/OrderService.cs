@@ -107,10 +107,10 @@ namespace JewelryEC_Backend.Service
             List<OrderItem> orderItems = new List<OrderItem>();
             foreach (var cartItem in cartItems)
             {
-                ProductVariant productItem =  _productItemRe.GetById(cartItem.ProductId);
+                ProductVariant productItem =  _productItemRe.GetById(cartItem.ProductItemId);
                 OrderItem orderItem = new OrderItem
                 {
-                    ProductItemId = cartItem.ProductId,
+                    ProductItemId = cartItem.ProductItemId,
                     Quantity = cartItem.Count,
                     Price = productItem.Price,
                     Subtotal = productItem.Price * cartItem.Count,

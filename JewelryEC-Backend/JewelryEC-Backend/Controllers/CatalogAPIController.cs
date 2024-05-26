@@ -1,4 +1,5 @@
 using AutoMapper;
+using JewelryEC_Backend.Core.Pagination;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Filters;
 using JewelryEC_Backend.Models;
@@ -9,7 +10,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http.Results;
 
 
@@ -17,7 +20,7 @@ namespace JewelryEC_Backend.Controllers
 {
     [Route("api/catalogs")]
     [ApiController]
-        //[Authorize]
+    [Authorize]
     public class CatalogAPIController : ControllerBase
     {
       
@@ -34,13 +37,14 @@ namespace JewelryEC_Backend.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<ResponseDto>> Get([FromQuery] Guid ? parentId, [FromQuery] string ? name)
+        public async Task<ActionResult<ResponseDto>> Get
+            ([FromQuery] Guid ? parentId, [FromQuery] string ? name)
         {
             try
             {
                 IEnumerable<Catalog> objList;
                 objList = _catalogService.FilterCatalogs(parentId, name);
-                if(objList == null  ||  objList.Count() == 0)
+                if(objList is null  ||  objList.Count() == 0)
                     return NotFound("Parent Id is not valid or no catalog with this parentId");
                 
 
@@ -51,7 +55,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.Message.ToString() };
+                _response.Message = ex.Message.ToString();
                 return StatusCode(500, _response);
 
             }
@@ -74,15 +78,40 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() }; 
+                _response.Message = ex.ToString();
             }
             return _response;
         }
-       
-     
+
+        [HttpGet("GetByPage")]
+        public async Task<ActionResult<ResponseDto>> GetCatalogByPage([FromQuery]PaginationRequest request)
+        {
+            try
+            {
+
+                PaginationResult<Catalog> obj = await _catalogService.GetCatalogsByPage(request);
+                if (obj == null)
+                {
+                    _response.IsSuccess = false;
+                    return NotFound(_response);
+                }
+                _response.Result = _mapper.Map<PaginationResult<GetCatalogResponseDto>>(obj);
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.Message = ex.ToString();
+                return StatusCode(500, _response); // Trả về 500 Internal Server Error
+
+            }
+        }
+
+
+
         //global exception filter in .net core web api (try catch )
         [HttpPost]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Post([FromBody] CreateCatalogDto CreateCatalogDto)
         {
             try
@@ -96,16 +125,17 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() }; 
+                _response.Message = ex.ToString();
             }
             return _response;
         }
         [HttpPut]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Put([FromBody] UpdateCatalogDto updateCatalogDto)
         {
             try
             {
+              
                 Catalog obj = _mapper.Map<Catalog>(updateCatalogDto);
                 _catalogService.UpdateCatalog(obj);
                 _response.Result = _mapper.Map<UpdateCatalogResponseDto>(obj);
@@ -114,7 +144,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() }; ;
+                _response.Message = ex.ToString(); 
             }
             return _response;
         }
@@ -133,7 +163,7 @@ namespace JewelryEC_Backend.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() }; 
+                _response.Message = ex.ToString(); 
             }
             return _response;
         }

@@ -15,6 +15,7 @@ using JewelryEC_Backend.Models.Coupon.Dto;
 using JewelryEC_Backend.Models.Orders;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Products.Dto;
+using JewelryEC_Backend.Core.Pagination;
 
 namespace JewelryEC_Backend.Mapper
 {
@@ -28,6 +29,8 @@ namespace JewelryEC_Backend.Mapper
             CreateMap<Catalog, GetCatalogResponseDto>().ReverseMap();
             CreateMap<Catalog, UpdateCatalogDto>().ReverseMap();
             CreateMap<Catalog, UpdateCatalogResponseDto>().ReverseMap();
+            CreateMap<PaginationResult<Catalog>, PaginationResult<GetCatalogResponseDto>>().ReverseMap();
+           
             // auth
             CreateMap<ApplicationUser, RegistrationResponseDto>().ReverseMap();
             CreateMap<ApplicationUser, UserDto>().ReverseMap();

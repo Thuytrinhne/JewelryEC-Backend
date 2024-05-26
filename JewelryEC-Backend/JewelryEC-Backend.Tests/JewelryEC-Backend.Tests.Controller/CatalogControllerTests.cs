@@ -82,7 +82,7 @@ public class CatalogControllerTests
         Assert.Equal(500, statusCodeResult.StatusCode);
         var responseDto = Assert.IsType<ResponseDto>(statusCodeResult.Value);
         Assert.False(responseDto.IsSuccess);
-        Assert.Contains("Database error", responseDto.ErrorMessages);
+        Assert.Contains("Database error", responseDto.Message);
     }
     #endregion
 }

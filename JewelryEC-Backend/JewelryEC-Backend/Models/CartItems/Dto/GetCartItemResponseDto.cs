@@ -7,11 +7,14 @@ namespace JewelryEC_Backend.Models.CartItems.Dto
     public class GetCartItemResponseDto
     {
 
-        public int Id { get; set; }
-        public Guid ProductId { get; set; }
+        public Guid Id { get; set; }
+        public Guid ProductItemId { get; set; }
         public int Count { get; set; }
         public string NameProduct { get; set; }
-        public string DescriptionProduct { get; set; }
+        public string Description { get; set; }
         public decimal   SalePrice { get; set; }
+        public double DiscountPrice { get; set; }
+        public string Image { get; set; }
+
     }
 }

@@ -1,3 +1,4 @@
+using JewelryEC_Backend.Enum;
 using JewelryEC_Backend.Helpers.Payments.VnPay;
 using JewelryEC_Backend.Models.Orders;
 using JewelryEC_Backend.Models.Orders.Dto;

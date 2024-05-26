@@ -1,4 +1,4 @@
-﻿using JewelryEC_Backend.Core.Entity;
+using JewelryEC_Backend.Core.Entity;
 using JewelryEC_Backend.Models;
 
 namespace JewelryEC_Backend.Core.Utilities.Results
@@ -7,7 +7,7 @@ namespace JewelryEC_Backend.Core.Utilities.Results
     {
         public SuccessDataResult(T data, string message) : base(true)
         {
-            base.ErrorMessages.Add(message);
+            base.Message = message;
             base.Result = data;
         }
 

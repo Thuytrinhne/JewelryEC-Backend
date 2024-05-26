@@ -8,3 +8,6 @@ global using Microsoft.AspNetCore.Mvc;
 global using System.Web.Http.Results;
 global using JewelryEC_Backend.Service;
 global using JewelryEC_Backend.UnitOfWork;
+global using JewelryEC_Backend.Models.Catalogs.Entities;
+global using Microsoft.AspNetCore.Routing;
+global using System.Linq.Expressions;

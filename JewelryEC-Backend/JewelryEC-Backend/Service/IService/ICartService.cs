@@ -12,7 +12,8 @@ namespace JewelryEC_Backend.Service.IService
         void SetStatusForCart(int status, Guid cartId);
         CartItem CartUpSert(Guid userId, CartItem cartItem);
         bool DeleteCartItem(Guid userId, Guid productId);
-        ProductVariant GetCartItemDetail(int productId);
+        ProductVariant GetCartItemDetail(Guid productId);
+        string GetCartItemName(Guid productId);
         void HanldeCartAfterCheckout (Guid userId);
 
     }

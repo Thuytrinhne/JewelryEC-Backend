@@ -20,13 +20,12 @@ namespace JewelryEC_Backend.Service
             try
             {
                 _unitOfWork.Roles.Add(roleToCreate);
-                _unitOfWork.Save();
-                  
+                _unitOfWork.Save();                 
                 return true;
             }
-            catch 
+            catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.Message); 
             }
         }
 
@@ -38,9 +37,9 @@ namespace JewelryEC_Backend.Service
                 _unitOfWork.Save();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -57,16 +56,16 @@ namespace JewelryEC_Backend.Service
         public  bool UpdateRole(ApplicationRole roleToUpdate)
         {
             var roleEntity = GetRoleById(roleToUpdate.Id);
-            if (roleEntity != null)
+            if (roleEntity is not  null)
             {          
                 if (!string.IsNullOrEmpty(roleToUpdate.Name))
                 {
                     roleEntity.Name = roleToUpdate.Name;
                     _unitOfWork.Save();
+                    return true;
                 }  
-                return true;
             }
-            else return false;
+             return false;
 
         }
     }

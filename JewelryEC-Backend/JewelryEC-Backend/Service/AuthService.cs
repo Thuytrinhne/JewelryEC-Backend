@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
+using System.Security.Authentication;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
@@ -38,49 +39,58 @@ namespace JewelryEC_Backend.Service
 
 
 
-        public async Task<string> Register(RegistrationDto registrationDto)
+        public async Task<bool> Register(RegistrationDto registrationDto)
         {
-
             if (checkOTP(registrationDto.Email, registrationDto.OTP))
             {
-
-                ApplicationUser applicationUser = new()
-                {
-                    UserName = registrationDto.Email.ToLower(),
-                    Email = registrationDto.Email,
-                    NormalizedEmail = registrationDto.Email.ToUpper(),
-                    Name = registrationDto.Name,
-                    PhoneNumber = registrationDto.PhoneNumber
-                };
+                var applicationUser = CreateApplicationUser(registrationDto);
                 try
                 {
-                    var result =   _unitOfWork.Users.AddUserByUserManager(applicationUser, registrationDto.Password);
-                    if (result.Result.Succeeded)
+
+                    var result = await AddUser(applicationUser, registrationDto.Password);
+                    if (result.Succeeded)
                     {
-                        // role default for user 
                         Guid userRoleId = new Guid("10ebc6bb-244f-4180-8804-bb1afd208866");
                         await AssignRole(applicationUser.Id, userRoleId);
-                        return "";
+                        return true;
                     }
                     else
                     {
-                        return result.Result.Errors.FirstOrDefault().Description;
+                        throw new Exception(result.Errors.FirstOrDefault().Description);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return "error";
+                    throw new Exception($"Could not create user {applicationUser.UserName}: {ex.Message}");
                 }
-
             }
             else
-                return "otp not valid";
-            
-           
-            
+            {
+                return false;
+            }
         }
 
-        private bool checkOTP(string email, string otp)
+      
+        // có thêm vào interface k 
+        private ApplicationUser CreateApplicationUser(RegistrationDto registrationDto)
+        {
+            return new ApplicationUser
+            {
+                UserName = registrationDto.Email.ToLower(),
+                Email = registrationDto.Email,
+                NormalizedEmail = registrationDto.Email.ToUpper(),
+                Name = registrationDto.Name,
+                PhoneNumber = registrationDto.PhoneNumber
+            };
+        }
+        // có thêm vào interface k 
+
+        private async Task<IdentityResult> AddUser(ApplicationUser applicationUser, string password)
+        {
+            return await _unitOfWork.Users.AddUserByUserManager(applicationUser, password);
+        }
+   
+        public bool checkOTP(string email, string otp)
         {
             var objFrmDb = _unitOfWork.EmailVerifications.GetEntityByEmail(email);
             if (objFrmDb != null && objFrmDb.Otp == otp)
@@ -102,16 +112,20 @@ namespace JewelryEC_Backend.Service
         public async Task<LoginResponseDto> Login(LoginDto loginDto)
         {
             var user = await  _unitOfWork.Users.GetUserByEmail(loginDto.Email);
-            if(user != null)
+            if(user is not null)
             {
                 bool isValid = await _unitOfWork.Users.Login(user, loginDto.Password);
-                if ( isValid == true)
+                if ( isValid)
                 {
                     //if user was found , Generate JWT Token
                     var roles = await _unitOfWork.Users.GetRoleAsync(user);
+                    if(roles is null || roles.Count() ==0)
+                    {
+                        throw new AuthenticationException("Người dùng không có quyền truy cập.");
+                    }
                     var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
-                    UserDto userDTO = _mapper.Map<UserDto>(user);
+                    var userDTO = _mapper.Map<UserDto>(user);
 
                     LoginResponseDto loginResponseDto = new LoginResponseDto()
                     {
@@ -122,19 +136,25 @@ namespace JewelryEC_Backend.Service
                 }
 
             }
-            return new LoginResponseDto() { User = null, Token = "" };
+            throw new AuthenticationException("Email hoặc mật khẩu không chính xác.");
 
         }
         public async Task<bool> AssignRole(Guid userId, Guid roleId)
         {
-            var user = _unitOfWork.Users.GetUserById(userId);
-            if (user != null)
+            try
             {
-
-                 if ( await  _unitOfWork.Users.AssignRoleForUser(user, roleId))
-                  return true;
+                var user = _unitOfWork.Users.GetUserById(userId);
+                if (user is not null)
+                {
+                    if (await _unitOfWork.Users.AssignRoleForUser(user, roleId))
+                        return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while assigning role: " + ex.Message, ex);
+            }
 
         }
 
@@ -142,58 +162,89 @@ namespace JewelryEC_Backend.Service
         {
             try
             {
-                // send otp 
-                Random random = new Random();
-                string otp = random.Next(100000, 999999).ToString();
-                string subject = "Sending OTP";
-                string message = "Your OTP is " + otp;
-                await _emailSender.SendEmailAsync(email, subject, message);
-                // insert email verifiaction 
-                EmailVerification emailVerification = new EmailVerification();
-                emailVerification.Id = new Guid();
-                emailVerification.Email = email;
-                emailVerification.Otp = otp;
-
-                _unitOfWork.EmailVerifications.Add(emailVerification);
-                _unitOfWork.Save();
+                string otp = GenerateOTP();
+                await SendOTPEmail(email, otp);
+                await SaveEmailVerification(email, otp);
                 return true;
             }
             catch (Exception ex)
             {
-                return false;
+                // Log exception here if you have a logging mechanism
+                throw new Exception("An error occurred while sending OTP: " + ex.Message, ex);
             }
         }
-
-        public async  Task<bool> ForgotPassword(string email)
+        private string GenerateOTP()
         {
-            var user = await   _unitOfWork.Users.GetUserByEmail(email);
-            if (user == null)
+            Random random = new Random();
+            return random.Next(100000, 999999).ToString();
+        }
+        private async Task SendOTPEmail(string email, string otp)
+        {
+            string subject = "Sending OTP";
+            string message = "Your OTP is " + otp;
+            await _emailSender.SendEmailAsync(email, subject, message);
+        }
+        private async Task SaveEmailVerification(string email, string otp)
+        {
+            EmailVerification emailVerification = new EmailVerification
             {
-                return false;
-            }
-            var roles = await _unitOfWork.Users.GetRoleAsync(user);
-            var resetToken = _jwtTokenGenerator.GenerateToken(user, roles);
-            SendResetPasswordEmail(email, resetToken);
-            return true;
-            
-           
+                Id = Guid.NewGuid(),
+                Email = email,
+                Otp = otp
+            };
+
+            _unitOfWork.EmailVerifications.Add(emailVerification);
+            _unitOfWork.Save();
         }
 
-        private async void SendResetPasswordEmail(string email, object resetToken)
+
+       
+        public async Task<bool> ForgotPassword(string email)
         {
-            var message = $"Click the following link to reset your password: https://yourapp.com/reset-password?token={resetToken}";
-            await _emailSender.SendEmailAsync(email, "Reset Password", message);
+            try
+            {
+                var user = await _unitOfWork.Users.GetUserByEmail(email);
+                if (user is null)
+                {
+                    return false;
+                }
+                var roles = await _unitOfWork.Users.GetRoleAsync(user);
+                if (roles is null || !roles.Any())
+                {
+                    throw new AuthenticationException("Người dùng không có quyền truy cập.");
+                }
+                var resetToken = _jwtTokenGenerator.GenerateToken(user, roles);
+                await SendResetPasswordEmail(email, resetToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log exception here if you have a logging mechanism
+                throw new Exception("An error occurred while processing ForgotPassword: " + ex.Message);
+            }
+        }
+
+        private async Task SendResetPasswordEmail(string email, object resetToken)
+        {
+            try
+            {
+                var message = $"Click the following link to reset your password: https://yourapp.com/reset-password?token={resetToken}";
+                await _emailSender.SendEmailAsync(email, "Reset Password", message);
+            }
+            catch (Exception ex)
+            {
+                // Log exception here if you have a logging mechanism
+                throw new Exception("An error occurred while sending the reset password email: " + ex.Message, ex);
+            }
         }
         public async  Task<bool> ResetPassword(string resetToken, string newPass)
         {
             var user = _jwtTokenGenerator.ValidateToken(resetToken);
-            if (user != null)
+            if (user is not null)
             {
-
                 var userFrmDb =  _unitOfWork.Users.GetUserById(user.Id);
-                if (userFrmDb != null)
-                {
-                   
+                if (userFrmDb is not null)
+                {                
                     var result = await _unitOfWork.Users.ResetPassword(userFrmDb, newPass);
                     if (result.Succeeded)
                         return true;

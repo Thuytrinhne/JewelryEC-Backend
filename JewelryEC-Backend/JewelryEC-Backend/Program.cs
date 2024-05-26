@@ -21,25 +21,11 @@ using Asp.Versioning;
 using JewelryEC_Backend.Core.Repository;
 using JewelryEC_Backend.Core.Repository.EntityFramework;
 using Newtonsoft.Json.Serialization;
+using JewelryEC_Backend.Enum;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddApiVersioning(x =>
-{
-    x.AssumeDefaultVersionWhenUnspecified = true;
-    x.DefaultApiVersion = new ApiVersion(1, 0);
-    x.ReportApiVersions = true;
-    //// x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
-    //x.ApiVersionReader = ApiVersionReader.Combine(
-    //    new QueryStringApiVersionReader("api-version"),
-    //    new HeaderApiVersionReader("x-Version"),
-    //    new MediaTypeApiVersionReader("ver"));
 
-}).AddApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
-}
-);
 
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
@@ -132,6 +118,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

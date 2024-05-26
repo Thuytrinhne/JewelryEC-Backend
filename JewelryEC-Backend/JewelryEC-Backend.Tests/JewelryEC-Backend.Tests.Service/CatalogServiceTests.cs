@@ -1,7 +1,3 @@
-using JewelryEC_Backend.Models.Catalogs.Entities;
-using Microsoft.AspNetCore.Routing;
-using System.Linq.Expressions;
-
 
 namespace JewelryEC_Backend.Tests.JewelryEC_Backend.Tests.Service;
 public class CatalogServiceTests

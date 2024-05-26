@@ -16,7 +16,7 @@ namespace JewelryEC_Backend.Models.Carts.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set;} = DateTime.UtcNow;
         [NotMapped]
-        public List<CartItem> ? cartItems { get; set; }
+        public List<CartItem> ? Items { get; set; }
 
        
     }
