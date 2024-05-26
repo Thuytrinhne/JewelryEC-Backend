@@ -9,12 +9,12 @@ namespace JewelryEC_Backend.Mapper
 {
     public class OrderMapper
     {
-        public static Order OrderFromCreateOrderDto(CreateNewOrderDto orderDto, List<OrderItem> orderItems)
+        public static Order OrderFromCreateOrderDto(CreateNewOrderDto orderDto, List<OrderItem> orderItems, Guid userId)
         {
             Order newOrder = new Order
             {
                 Id = new Guid(),
-                UserId = orderDto.UserId,
+                UserId = userId,
                 OrderStatus = OrderStatus.Pending,
                 CreateDate = DateTime.Now,
                 PaymentMethod = orderDto.PaymentMethod,
@@ -36,12 +36,12 @@ namespace JewelryEC_Backend.Mapper
             //newOrder.TotalPrice = totalPrice;
             return newOrder;
         }
-        public static Order OrderFromCreateOrderDto(CreateNewOrderFromCartDto orderDto, List<OrderItem> orderItems)
+        public static Order OrderFromCreateOrderDto(CreateNewOrderFromCartDto orderDto, List<OrderItem> orderItems, Guid userId)
         {
             Order newOrder = new Order
             {
                 Id = new Guid(),
-                UserId = orderDto.UserId,
+                UserId = userId,
                 OrderStatus = OrderStatus.Pending,
                 CreateDate = DateTime.Now,
                 PaymentMethod = orderDto.PaymentMethod,

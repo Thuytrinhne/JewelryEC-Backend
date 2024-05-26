@@ -15,6 +15,7 @@ using JewelryEC_Backend.Repository.IRepository;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
 using NuGet.Protocol;
+using System.Security.Claims;
 
 namespace JewelryEC_Backend.Service
 {
@@ -25,14 +26,15 @@ namespace JewelryEC_Backend.Service
         private readonly IShippingRepository _shippingRe;
         private readonly IProductItemRespository _productItemRe;
         private readonly IUserCouponRepository _userCouponRe;
-
-        public OrderService(IUnitOfWork unitOfWork)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public OrderService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             _orderRe = unitOfWork.Orders;
             _shippingRe = unitOfWork.Shippings;
             _cartRe = unitOfWork.CartItems;
             _productItemRe = unitOfWork.ProductItem;
             _userCouponRe = unitOfWork.UserCoupon;
+            _httpContextAccessor = httpContextAccessor;
         }
         //get orders
         public async Task<ResponseDto> GetAll(int pageNumber, int pageSize)
@@ -40,29 +42,29 @@ namespace JewelryEC_Backend.Service
             return new SuccessDataResult<List<Order>>(await _orderRe.GetOrders(pageNumber, pageSize));
         }
         //add new order
-        public async Task<ResponseDto> Add(CreateNewOrderDto orderDto)
-        {
-
-            Shipping shipping = ShippingMapper.ShippingFromCreateNewOrderDto(orderDto.DeliveryId, orderDto.DeliveryDto);
-            Tuple<List<OrderItem>, decimal> res =await orderItemsFromOrderItemDto(orderDto.OrderItems.ToList());
-            Order order = OrderMapper.OrderFromCreateOrderDto(orderDto, res.Item1);
-            shipping.OrderId = order.Id;
-            order.TotalPrice = res.Item2;
+        //public async Task<ResponseDto> Add(CreateNewOrderDto orderDto)
+        //{
+        //    Shipping shipping = ShippingMapper.ShippingFromCreateNewOrderDto(orderDto.DeliveryId, orderDto.DeliveryDto);
+        //    Tuple<List<OrderItem>, decimal> res =await orderItemsFromOrderItemDto(orderDto.OrderItems.ToList());
+        //    Order order = OrderMapper.OrderFromCreateOrderDto(orderDto, res.Item1);
+        //    shipping.OrderId = order.Id;
+        //    order.TotalPrice = res.Item2;
             
-            Console.WriteLine(order.ToJson());
-            await _orderRe.AddAsync(order);
-            await _orderRe.SaveChangeAsync();
-            await _shippingRe.AddAsync(shipping);
-            Order newOrder =  _orderRe.GetById(order.Id);
-            return new SuccessResult("Add order successfully", newOrder);
-        }
+        //    Console.WriteLine(order.ToJson());
+        //    await _orderRe.AddAsync(order);
+        //    await _orderRe.SaveChangeAsync();
+        //    await _shippingRe.AddAsync(shipping);
+        //    Order newOrder =  _orderRe.GetById(order.Id);
+        //    return new SuccessResult("Add order successfully", newOrder);
+        //}
         //add new order from carts
         public async Task<ResponseDto> AddFromCart(CreateNewOrderFromCartDto dto)
         {
-            Shipping shipping = ShippingMapper.ShippingFromCreateNewOrderDto(dto.DeliveryId, dto.DeliveryDto);
+            String userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Shipping shipping = ShippingMapper.ShippingFromCreateNewOrderDto(dto.DeliveryId, dto.DeliveryDto, new Guid(userId));
             List<CartItem> cartItems = _cartRe.GetListCartItems(dto.CartItemIds);
             Tuple<List<OrderItem>, decimal> res = await orderItemsFromCartItem(cartItems);
-            Order order = OrderMapper.OrderFromCreateOrderDto(dto, res.Item1);
+            Order order = OrderMapper.OrderFromCreateOrderDto(dto, res.Item1, new Guid(userId));
             //TASK: calculate discount value
             shipping.OrderId = order.Id;
             order.TotalPrice = res.Item2;

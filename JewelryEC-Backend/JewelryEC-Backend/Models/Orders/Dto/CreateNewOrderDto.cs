@@ -7,7 +7,7 @@ namespace JewelryEC_Backend.Models.Orders.Dto
 {
     public class CreateNewOrderDto
     {
-        public Guid UserId { get; set; }
+        //public Guid UserId { get; set; }
         public CreateDeliveryDto? DeliveryDto { get; set; }
         public Guid? DeliveryId { get; set;}
         public virtual ICollection<CreateOrderItemDto> OrderItems { get; set; }

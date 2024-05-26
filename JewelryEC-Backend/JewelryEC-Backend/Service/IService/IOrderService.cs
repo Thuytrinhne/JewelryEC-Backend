@@ -10,7 +10,7 @@ namespace JewelryEC_Backend.Service.IService
     {
         Task<ResponseDto> GetAll(int pageNumber, int pageSize);
         Task<ResponseDto> GetById(Guid id);
-        Task<ResponseDto> Add(CreateNewOrderDto orderDto);
+        //Task<ResponseDto> Add(CreateNewOrderDto orderDto);
         Task<ResponseDto> AddFromCart(CreateNewOrderFromCartDto orderDto);
         Task<ResponseDto> UpdateOrderStatus(Guid order, OrderStatus orderStatus);
         Task<ResponseDto> GetOrdersByUserId(Guid userId, int pageNumber, int pageSize);
