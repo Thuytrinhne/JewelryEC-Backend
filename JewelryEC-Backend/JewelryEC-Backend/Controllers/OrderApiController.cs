@@ -28,9 +28,9 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpGet("getall")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _orderService.GetAll();
+            var result = await _orderService.GetAll(pageNumber, pageSize);
             if (result.IsSuccess)
             {
                 return Ok(result);
@@ -124,9 +124,9 @@ namespace JewelryEC_Backend.Controllers
 
         }
         [HttpPost("getbyuser/{ùserId}")]
-        public async Task<IActionResult> GetByUserId([FromRoute] Guid userId)
+        public async Task<IActionResult> GetByUserId([FromRoute] Guid userId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _orderService.GetOrdersByUserId(userId);
+            var result = await _orderService.GetOrdersByUserId(userId,pageNumber, pageSize );
             if (result.IsSuccess)
             {
                 return Ok(result);

@@ -35,9 +35,9 @@ namespace JewelryEC_Backend.Service
             _userCouponRe = unitOfWork.UserCoupon;
         }
         //get orders
-        public async Task<ResponseDto> GetAll()
+        public async Task<ResponseDto> GetAll(int pageNumber, int pageSize)
         {
-            return new SuccessDataResult<List<Order>>(await _orderRe.GetAllAsync());
+            return new SuccessDataResult<List<Order>>(await _orderRe.GetOrders(pageNumber, pageSize));
         }
         //add new order
         public async Task<ResponseDto> Add(CreateNewOrderDto orderDto)
@@ -96,9 +96,9 @@ namespace JewelryEC_Backend.Service
             return new ErrorResult();
         }
         //get orders by user id
-        public async Task<ResponseDto> GetOrdersByUserId(Guid userId)
+        public async Task<ResponseDto> GetOrdersByUserId(Guid userId, int pageNumber, int pageSize)
         {
-            List<Order> orders = _orderRe.GetOrders(order => order.UserId == userId).Result.ToList();
+            List<Order> orders = _orderRe.GetOrders(pageNumber, pageSize,order => order.UserId == userId).Result.ToList();
             return new SuccessDataResult<List<Order>>(orders);
         }
         //create orderItems from CartItems

@@ -30,6 +30,7 @@ namespace JewelryEC_Backend.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            //Product
             modelBuilder.Entity<Product>().Navigation(e => e.Items).AutoInclude();
             modelBuilder.Entity<Product>().HasMany(s => s.Items).WithOne(s => s.Product);
             modelBuilder.Entity<Product>().Navigation(e => e.Coupons).AutoInclude();
@@ -37,27 +38,35 @@ namespace JewelryEC_Backend.Data
             modelBuilder.Entity<Product>().Navigation(e => e.Catalog).AutoInclude();
             modelBuilder.Entity<Product>().HasOne(s => s.Catalog);
 
+            //Product Variant
             modelBuilder.Entity<ProductVariant>()
                 .Property(p => p.Id)
                 .ValueGeneratedOnAdd();
 
+            //Product Coupon
             modelBuilder.Entity<ProductCoupon>().Property(p => p.DiscountUnit)
                 .HasConversion<string>();
             modelBuilder.Entity<ProductCoupon>().Navigation(p => p.Product).AutoInclude();
 
+            //User Coupon
+            modelBuilder.Entity<UserCoupon>().Navigation(u => u.ProductCoupon).AutoInclude();
+            modelBuilder.Entity<UserCoupon>().Navigation(u => u.CouponApplications).AutoInclude();
             modelBuilder.Entity<UserCoupon>().Navigation(u => u.ProductCoupon).AutoInclude();
             modelBuilder.Entity<UserCoupon>().Navigation(u => u.CouponApplications).AutoInclude();
 
-            modelBuilder.Entity<UserCoupon>().Navigation(u => u.ProductCoupon).AutoInclude();
-            modelBuilder.Entity<UserCoupon>().Navigation(u => u.CouponApplications).AutoInclude();
-
+            //Order
             modelBuilder.Entity<Order>().Navigation(o => o.OrderItems).AutoInclude();
+            modelBuilder.Entity<Order>().Navigation(o => o.Shipping).AutoInclude();
+
+
+            //Coupon Application
             modelBuilder.Entity<CouponApplication>()
                 .HasOne(ca => ca.OrderItem)
                 .WithOne(oi => oi.CouponApplication)
                 .HasForeignKey<CouponApplication>(ca => ca.OrderItemId)
                 .IsRequired();
-
+            //Shipping
+            modelBuilder.Entity<Shipping>().Navigation(s => s.Delivery).AutoInclude();
         }
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }

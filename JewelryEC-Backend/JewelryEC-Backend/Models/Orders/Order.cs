@@ -1,6 +1,7 @@
 ﻿using JewelryEC_Backend.Core.Entity;
 using JewelryEC_Backend.Enum;
 using JewelryEC_Backend.Models.OrderItems;
+using JewelryEC_Backend.Models.Shippings;
 
 namespace JewelryEC_Backend.Models.Orders
 {
@@ -13,5 +14,7 @@ namespace JewelryEC_Backend.Models.Orders
         public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.COD;
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public decimal TotalPrice;
+        public virtual Shipping Shipping { get; set; }
+
     }
 }
