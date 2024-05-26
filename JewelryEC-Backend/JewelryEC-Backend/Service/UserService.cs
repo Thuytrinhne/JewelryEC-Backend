@@ -1,5 +1,6 @@
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Models.Catalogs.Entities;
+using JewelryEC_Backend.Models.Users.Dto;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
 
@@ -13,12 +14,36 @@ namespace JewelryEC_Backend.Service
         {
             _unitOfWork = unitOfWork;
         }
-
-        public ApplicationUser EditProfile(ApplicationUser user)
+        public async Task<bool> AssignRole(Guid userId, Guid roleId)
         {
-            _unitOfWork.Users.UpdateUser(user);
+            try
+            {
+                var user = _unitOfWork.Users.GetUserById(userId);
+                if (user is not null)
+                {
+                    if (await _unitOfWork.Users.AssignRoleForUser(user, roleId))
+                        return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while assigning role: " + ex.Message, ex);
+            }
+
+        }
+        public ApplicationUser EditProfile(Guid UserId, UpdateUserDto user)
+        {
+            var userFrmDb = _unitOfWork.Users.GetUserById(UserId);
+            if(!String.IsNullOrEmpty(user.Name))
+                userFrmDb.Name = user.Name;
+
+            if (!String.IsNullOrEmpty(user.PhoneNumber))
+                userFrmDb.PhoneNumber = user.PhoneNumber;
+
+            _unitOfWork.Users.Update(userFrmDb);
             _unitOfWork.Save();
-            return user;
+            return userFrmDb;
         }
 
         public Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user)

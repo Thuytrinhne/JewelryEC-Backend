@@ -24,18 +24,20 @@ namespace JewelryEC_Backend.Service
         private IMapper _mapper;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IService.IEmailSender _emailSender;
-        private readonly IUnitOfWork _unitOfWork; 
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService  _userService;
 
         public AuthService(
             IMapper mapper, IJwtTokenGenerator jwtTokenGenerator,
             IService.IEmailSender emailSender,
-            IUnitOfWork unitOfWork)
-        {
-          
+            IUnitOfWork unitOfWork,
+            IUserService userService)
+        {          
             _mapper = mapper;
             _jwtTokenGenerator = jwtTokenGenerator;
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
+            _userService = userService;
         }
 
 
@@ -52,7 +54,7 @@ namespace JewelryEC_Backend.Service
                     if (result.Succeeded)
                     {
                         Guid userRoleId = new Guid("10ebc6bb-244f-4180-8804-bb1afd208866");
-                        await AssignRole(applicationUser.Id, userRoleId);
+                        await _userService.AssignRole(applicationUser.Id, userRoleId);
                         return true;
                     }
                     else
@@ -140,24 +142,7 @@ namespace JewelryEC_Backend.Service
             throw new AuthenticationException("Email hoặc mật khẩu không chính xác.");
 
         }
-        public async Task<bool> AssignRole(Guid userId, Guid roleId)
-        {
-            try
-            {
-                var user = _unitOfWork.Users.GetUserById(userId);
-                if (user is not null)
-                {
-                    if (await _unitOfWork.Users.AssignRoleForUser(user, roleId))
-                        return true;
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while assigning role: " + ex.Message, ex);
-            }
-
-        }
+       
 
         public async Task<bool> SendingOTP(string email)
         {

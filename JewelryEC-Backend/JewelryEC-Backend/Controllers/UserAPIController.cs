@@ -5,8 +5,10 @@ using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Models.Users.Dto;
 using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace JewelryEC_Backend.Controllers
 {
@@ -14,7 +16,7 @@ namespace JewelryEC_Backend.Controllers
     [ApiController]
     public class UserAPIController : Controller
     {
-
+       
         private ResponseDto _response;
         private IMapper _mapper;
         private IUserService _userService;
@@ -24,6 +26,7 @@ namespace JewelryEC_Backend.Controllers
             _response = new ResponseDto();
             _userService = userService;
         }
+        
         [HttpGet]
         public async Task<ActionResult<ResponseDto>> Get([FromQuery] Guid ? roleId)
         {
@@ -63,12 +66,12 @@ namespace JewelryEC_Backend.Controllers
             }
        
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ResponseDto>> GetById([FromRoute] Guid id)
+        [HttpGet("{UserId}")]
+        public async Task<ActionResult<ResponseDto>> GetById([FromRoute] Guid UserId)
         {
             try
             {
-                var user = _userService.GetUserById(id);
+                var user = _userService.GetUserById(UserId);
                 if(user != null)
                 {
                    
@@ -78,7 +81,10 @@ namespace JewelryEC_Backend.Controllers
                     _response.Result = userDto;
                     return Ok(_response);
                 }
-                return NotFound("No user found");
+                _response.IsSuccess = false;
+                _response.Message = "No user found";
+
+                return NotFound(_response);
             }
             catch (Exception ex)
             {
@@ -91,22 +97,23 @@ namespace JewelryEC_Backend.Controllers
 
             }
         }
-        [HttpPut]
-        public async Task<ActionResult<ResponseDto>> Put([FromBody] UpdateUserDto updateUser)
+        [Authorize]
+        [HttpPatch("{userId}")]
+        public async Task<ActionResult<ResponseDto>> Put(Guid userId, [FromBody] UpdateUserDto updateUser)
         {
             try
             {
-
-                var user = _userService.GetUserById(updateUser.Id);
-                if (user != null)
+                if (checkValidUserId(userId))
                 {
-
-                    _userService.EditProfile(_mapper.Map<ApplicationUser>(updateUser));
-                    _response.Result = _mapper.Map<UpdateUserResponseDto>(user);
-                    return Ok(_response);
+                    var user = _userService.GetUserById(userId);
+                    if (user != null)
+                    {                  
+                        _userService.EditProfile(userId, updateUser);
+                        _response.Result = _mapper.Map<UpdateUserResponseDto>(user);
+                        return Ok(_response);
+                    }
                 }
-                else
-                    return NotFound("No user found");
+                        return NotFound("No user found"); 
 
             }
             catch (Exception ex)
@@ -116,20 +123,30 @@ namespace JewelryEC_Backend.Controllers
                 return StatusCode(500, _response);
             }
         }
+        private bool checkValidUserId(Guid userId)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdClaim != userId.ToString())
+            {
+                return false;
+            }
+            return true;
+        }
 
-        //[HttpPost("{id}")]
-        //public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto)
-        //{
-        //    var assignRoleSuccessful = await _authService.AssignRole(assignRoleDto.UserId, assignRoleDto.RoleId);
-        //    if (!assignRoleSuccessful)
-        //    {
-        //        _response.IsSuccess = false;
-        //        _response.Message = "Error encountered";
-        //        return BadRequest(_response);
-        //    }
-        //    return Ok(_response);
+        [HttpPost("{userId}/assignRole")]
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto, Guid userId)
+        {
+            var assignRoleSuccessful = await _userService.AssignRole(userId, assignRoleDto.RoleId);
+            if (!assignRoleSuccessful)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "RoleId or UserId is not valid";
+                return BadRequest(_response);
+            }
+            return Ok(_response);
 
-        //}
+        }
+
 
     }
 }
