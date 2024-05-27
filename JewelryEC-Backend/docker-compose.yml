@@ -9,5 +9,4 @@ services:
 
   my-redis:
     image: redis
-volumes:
-  postgres_my-redis:
+
