@@ -1,4 +1,5 @@
 using AutoMapper;
+using JewelryEC_Backend.Core.Filter;
 using JewelryEC_Backend.Core.Utilities.Results;
 using JewelryEC_Backend.Mapper;
 using JewelryEC_Backend.Models;
@@ -7,7 +8,12 @@ using JewelryEC_Backend.Models.Products.Dto;
 using JewelryEC_Backend.Repository.IRepository;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
+using System.Drawing.Printing;
+using System.Dynamic;
 
 namespace JewelryEC_Backend.Service
 {
@@ -37,6 +43,22 @@ namespace JewelryEC_Backend.Service
             await _productDal.AddAsync(product);
             await _productDal.SaveChangeAsync();
             return await this.GetById(product.Id);
+        }
+        public async Task<ResponseDto> Get(RootFilter? filters, int pageNumber, int pageSize)
+        {
+            var productList = new List<Product>();
+            long totalCount = 0;
+            if (filters != null)
+            {
+                totalCount =await _productDal.GetTotalCount(CompositeFilter<Product>.ApplyFilter(filters));
+               productList = await _productDal.GetProducts(pageNumber, pageSize,  CompositeFilter<Product>.ApplyFilter(filters));
+            }
+            var response = new
+            {
+                Data = productList,
+                TotalCount = totalCount
+            };
+            return new SuccessDataResult<object>(response);
         }
         public async Task<ResponseDto> MultiAdd(CreateProductDto[] productDtos)
         {

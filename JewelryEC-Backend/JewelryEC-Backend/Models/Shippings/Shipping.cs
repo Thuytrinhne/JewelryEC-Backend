@@ -12,9 +12,9 @@ namespace JewelryEC_Backend.Models.Shippings
         public DateTime actualShippingDate { get; set; }
         public Guid DeliveryId { get; set; }
         public ShippingStatus ShippingStatus { get; set; }
-        public Guid OrderId { get; set; }
+        //public Guid OrderId { get; set; }
         public virtual Delivery Delivery { get; set; }
-        public virtual Order Order { get; set; }
+        //public virtual Order Order { get; set; }
 
     }
 }

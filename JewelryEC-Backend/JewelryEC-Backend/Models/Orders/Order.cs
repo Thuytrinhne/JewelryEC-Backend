@@ -9,6 +9,7 @@ namespace JewelryEC_Backend.Models.Orders
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
+        public Guid ShippingId { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public DateTime CreateDate { get; set; }
         public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.COD;

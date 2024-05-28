@@ -1,3 +1,4 @@
+using JewelryEC_Backend.Core.Filter;
 using JewelryEC_Backend.Core.Repository.EntityFramework;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Models.Products;
@@ -38,6 +39,11 @@ namespace JewelryEC_Backend.Repository
                 throw;
             }
 
+        }
+
+        public async Task<long> GetTotalCount(Expression<Func<Product, bool>> filter)
+        {
+            return await _context.Products.Where(filter).LongCountAsync();
         }
     }
 

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Service.IService;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -30,6 +29,19 @@ namespace JewelryEC_Backend.Controllers
             }
 
             return BadRequest(result);
+        }
+        [HttpGet("")]
+        public async Task<IActionResult> Get([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            string filter = HttpContext.Request.Query["filter"];
+            var filterResult = new RootFilter();
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                filterResult = JsonConvert.DeserializeObject<RootFilter>(filter);
+            }
+            var result= await  _productService.Get(filterResult, pageNumber, pageSize);
+            return Ok(result);
         }
 
         [HttpGet("getbyid/{id}")]
@@ -74,8 +86,6 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("delete/{productId}")]
-        [Authorize(Roles = "ADMIN")]
-
         public async Task<IActionResult> Delete([FromRoute] Guid productId)
         {
             var result = await _productService.Delete(productId);

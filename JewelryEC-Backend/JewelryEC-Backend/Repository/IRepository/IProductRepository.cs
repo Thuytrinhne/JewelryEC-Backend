@@ -8,5 +8,6 @@ namespace JewelryEC_Backend.Repository.IRepository
     {
         Task<List<Product>> GetProducts( int pageNumber, int pageSize, Expression<Func<Product, bool>> filter = null);
         Task<Product> GetProduct(Expression<Func<Product, bool>> filter);
+        Task<long> GetTotalCount(Expression<Func<Product, bool>> filter);
     }
 }

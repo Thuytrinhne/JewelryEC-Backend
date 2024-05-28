@@ -75,6 +75,8 @@ namespace JewelryEC_Backend.Data
             //.IsRequired();
             //Shipping
             modelBuilder.Entity<Shipping>().Navigation(s => s.Delivery).AutoInclude();
+            modelBuilder.Entity<Shipping>().Property(p => p.ShippingStatus)
+                .HasConversion<string>();
         }
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }

@@ -10,10 +10,10 @@ namespace JewelryEC_Backend.Models.Orders.Dto
     {
         //public Guid UserId { get; set; }
 
-        [Required(ErrorMessage = "Delivery details are required.")]
+        //[Required(ErrorMessage = "Delivery details are required.")]
         public CreateDeliveryDto? DeliveryDto { get; set; }
 
-        [Required(ErrorMessage = "Delivery ID is required.")]
+        //[Required(ErrorMessage = "Delivery ID is required.")]
         public Guid? DeliveryId { get; set; }
 
         [Required(ErrorMessage = "Cart item IDs are required.")]
