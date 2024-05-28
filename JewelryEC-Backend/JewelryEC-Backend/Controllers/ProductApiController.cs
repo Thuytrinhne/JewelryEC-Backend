@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Service.IService;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using JewelryEC_Backend.Core.Filter;
+using JewelryEC_Backend.Models.Products;
+using Newtonsoft.Json;
+using System.Dynamic;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -29,6 +34,19 @@ namespace JewelryEC_Backend.Controllers
             }
 
             return BadRequest(result);
+        }
+        [HttpGet("")]
+        public async Task<IActionResult> Get([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            string filter = HttpContext.Request.Query["filter"];
+            var filterResult = new RootFilter();
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                filterResult = JsonConvert.DeserializeObject<RootFilter>(filter);
+            }
+            var result= await  _productService.Get(filterResult, pageNumber, pageSize);
+            return Ok(result);
         }
 
         [HttpGet("getbyid/{id}")]
@@ -68,7 +86,7 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("delete/{productId}")]
+        [HttpDelete("delete/{productId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid productId)
         {
             var result = await _productService.Delete(productId);

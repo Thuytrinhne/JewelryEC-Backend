@@ -15,6 +15,7 @@ namespace JewelryEC_Backend.Mapper
         {
             Shipping shipping = new Shipping
             {
+                Id = new Guid(),
                 expectationShippingDate = DateTime.Today.AddDays(2),
                 actualShippingDate = DateTime.Today.AddDays(3),
                 ShippingStatus = ShippingStatus.Pending,

@@ -66,12 +66,14 @@ namespace JewelryEC_Backend.Service
             Tuple<List<OrderItem>, decimal> res = await orderItemsFromCartItem(cartItems);
             Order order = OrderMapper.OrderFromCreateOrderDto(dto, res.Item1, new Guid(userId));
             //TASK: calculate discount value
-            shipping.OrderId = order.Id;
+            //shipping.OrderId = order.Id;
+            order.Shipping = shipping;
+            order.ShippingId = shipping.Id;
             order.TotalPrice = res.Item2;
             Console.WriteLine(order.ToJson());
+            await _shippingRe.AddAsync(shipping);
             await _orderRe.AddAsync(order);
             await _orderRe.SaveChangeAsync();
-            await _shippingRe.AddAsync(shipping);
             Order newOrder = _orderRe.GetById(order.Id);
             return new SuccessResult("Add order successfully", newOrder);
         }
@@ -178,7 +180,7 @@ namespace JewelryEC_Backend.Service
                 };
                 if (item.UserCouponId != null)
                 {
-                    Tuple<bool, decimal> result = await tryApplyCoupon(item.UserCouponId, item.ProductItemId, orderItem.Subtotal);
+                    Tuple<bool, decimal> result = await tryApplyCoupon(item.UserCouponId.Value, item.ProductItemId, orderItem.Subtotal);
                     if (result.Item1 == true)
                     {
                         //CouponApplication couponApplication = new CouponApplication();

@@ -87,7 +87,7 @@ namespace JewelryEC_Backend.Controllers
 
         //    return BadRequest(result);
         //}
-        [HttpPost("addFromCart")]
+        [HttpPost("addfromcart")]
         [Authorize]
         public async Task<IActionResult> AddFromCart([FromBody] CreateNewOrderFromCartDto orderDto)
         {
@@ -132,7 +132,7 @@ namespace JewelryEC_Backend.Controllers
 
             return BadRequest(result);
         }
-        [HttpGet("PaymentCallBack")]
+        [HttpGet("paymentcallback")]
         public async  Task <IActionResult> PaymentCallBack ([FromQuery(Name = "vnp_OrderInfo")] string vnpOrderInfo)
         {
             try
@@ -160,7 +160,7 @@ namespace JewelryEC_Backend.Controllers
             }
 
         }
-        [HttpPost("getbyuser/{userId}")]
+        [HttpGet("getbyuser/{userId}")]
         public async Task<IActionResult> GetByUserId([FromRoute] Guid userId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var result = await _orderService.GetOrdersByUserId(userId,pageNumber, pageSize );
