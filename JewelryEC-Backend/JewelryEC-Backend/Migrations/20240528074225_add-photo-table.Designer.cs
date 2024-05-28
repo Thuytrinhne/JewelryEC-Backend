@@ -3,6 +3,7 @@ using System;
 using JewelryEC_Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JewelryEC_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240528074225_add-photo-table")]
+    partial class addphototable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,10 +60,6 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("AvatarUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -97,10 +96,6 @@ namespace JewelryEC_Backend.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("PublicId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -419,6 +414,33 @@ namespace JewelryEC_Backend.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("JewelryEC_Backend.Models.Photos.Entity.Photo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Photo");
+                });
+
             modelBuilder.Entity("JewelryEC_Backend.Models.Products.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -729,6 +751,17 @@ namespace JewelryEC_Backend.Migrations
                     b.Navigation("UserCoupon");
                 });
 
+            modelBuilder.Entity("JewelryEC_Backend.Models.Photos.Entity.Photo", b =>
+                {
+                    b.HasOne("JewelryEC_Backend.Models.Auths.Entities.ApplicationUser", "User")
+                        .WithMany("Photos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("JewelryEC_Backend.Models.Products.Product", b =>
                 {
                     b.HasOne("JewelryEC_Backend.Models.Catalogs.Entities.Catalog", "Catalog")
@@ -838,6 +871,11 @@ namespace JewelryEC_Backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("JewelryEC_Backend.Models.Auths.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Photos");
                 });
 
             modelBuilder.Entity("JewelryEC_Backend.Models.Orders.Order", b =>

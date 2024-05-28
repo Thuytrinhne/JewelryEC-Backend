@@ -24,6 +24,7 @@ using Newtonsoft.Json.Serialization;
 using JewelryEC_Backend.Enum;
 using System.Configuration;
 using Newtonsoft.Json.Converters;
+using JewelryEC_Backend.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,9 +70,14 @@ builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPhotoCloudService, PhotoCloudService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IProductCouponService, ProductCouponService>();
 builder.Services.AddTransient<IUserCouponService, UserCouponService>();
+
+
 
 builder.Services.AddControllers(options =>
 {
@@ -133,6 +139,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.Configure<CloudinarySettingsKey>(
+        builder.Configuration.GetSection("CloudinarySettings")
+    ); 
 
 var app = builder.Build();
 

@@ -127,13 +127,15 @@ namespace JewelryEC_Backend.Service
                         throw new AuthenticationException("Người dùng không có quyền truy cập.");
                     }
                     var token = _jwtTokenGenerator.GenerateToken(user, roles);
+                    // Lấy role của người dùng
+                    var userRoles = await _userService.GetRolesAsync(user);
 
                     var userDTO = _mapper.Map<UserDto>(user);
-
+                    userDTO.Roles = userRoles.ToList();
                     LoginResponseDto loginResponseDto = new LoginResponseDto()
                     {
                         User = userDTO,
-                        Token = token
+                        Token = token                                        
                     };
                     return loginResponseDto;
                 }

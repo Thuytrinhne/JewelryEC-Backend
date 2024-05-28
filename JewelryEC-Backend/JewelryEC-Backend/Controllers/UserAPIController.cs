@@ -1,4 +1,5 @@
 using AutoMapper;
+using JewelryEC_Backend.Extensions;
 using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Auths.Dto;
 using JewelryEC_Backend.Models.Auths.Entities;
@@ -6,8 +7,11 @@ using JewelryEC_Backend.Models.Users.Dto;
 using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.WebSockets;
 using System.Security.Claims;
 
 namespace JewelryEC_Backend.Controllers
@@ -20,11 +24,17 @@ namespace JewelryEC_Backend.Controllers
         private ResponseDto _response;
         private IMapper _mapper;
         private IUserService _userService;
-        public UserAPIController(IMapper mapper, IUserService userService)
+        private IPhotoCloudService _photoCloudService;
+        private IPhotoService _photoService;
+
+        public UserAPIController(IMapper mapper, IUserService userService,
+            IPhotoCloudService photoCloudService, IPhotoService photoService)
         {
             _mapper = mapper;
             _response = new ResponseDto();
             _userService = userService;
+            _photoCloudService = photoCloudService;
+            _photoService  = photoService;
         }
         
         [HttpGet]
@@ -66,12 +76,12 @@ namespace JewelryEC_Backend.Controllers
             }
        
         }
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<ResponseDto>> GetById([FromRoute] Guid userId)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ResponseDto>> GetById([FromRoute] Guid id)
         {
             try
             {
-                var user = _userService.GetUserById(userId);
+                var user = _userService.GetUserById(id);
                 if(user != null)
                 {
                    
@@ -98,19 +108,18 @@ namespace JewelryEC_Backend.Controllers
             }
         }
         [Authorize]
-        [HttpPatch("{userId}")]
-        [Authorize]
+        [HttpPatch("{id}")]
 
-        public async Task<ActionResult<ResponseDto>> Patch(Guid userId, [FromBody] UpdateUserDto updateUser)
+        public async Task<ActionResult<ResponseDto>> Patch(Guid id, [FromBody] UpdateUserDto updateUser)
         {
             try
             {
-                if (checkValidUserId(userId))
+                if (checkValidUserId(id))
                 {
-                    var user = _userService.GetUserById(userId);
+                    var user = _userService.GetUserById(id);
                     if (user != null)
                     {                  
-                        _userService.EditProfile(userId, updateUser);
+                        _userService.EditProfile(id, updateUser);
                         _response.Result = _mapper.Map<UpdateUserResponseDto>(user);
                         return Ok(_response);
                     }
@@ -135,12 +144,18 @@ namespace JewelryEC_Backend.Controllers
             return true;
         }
 
-        [HttpPost("{userId}/assignRole")]
+        [HttpPost("{id}/role")]
         [Authorize(Roles = "ADMIN")]
 
-        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto, Guid userId)
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto, Guid id)
         {
-            var assignRoleSuccessful = await _userService.AssignRole(userId, assignRoleDto.RoleId);
+            if (!checkValidUserId(id))
+            {
+                _response.IsSuccess = false;
+                _response.Message = "UserId is invalid.";
+                return BadRequest(_response);
+            }
+            var assignRoleSuccessful = await _userService.AssignRole(id, assignRoleDto.RoleId);
             if (!assignRoleSuccessful)
             {
                 _response.IsSuccess = false;
@@ -150,7 +165,67 @@ namespace JewelryEC_Backend.Controllers
             return Ok(_response);
 
         }
+        [HttpPost("{id}/avatar")]
+        [Authorize]
 
+        public async Task<IActionResult> UpsertPhoto(IFormFile file, Guid id)
+        {
+            // check userId trùng token?
+            if (!checkValidUserId(id))
+            {
+                _response.IsSuccess = false;
+                _response.Message = "UserId is invalid.";
+                return BadRequest(_response);
+            }
+            var user = _userService.GetUserById(id);        
+
+            if (!string.IsNullOrEmpty( user.AvatarUrl ))
+            {
+                await _photoCloudService.DeletePhotoAsync(user.PublicId);
+            }
+            var result = await _photoCloudService.AddPhotoAsync(file);
+            if (result.Error is not null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = result.Error.Message;
+                return BadRequest(_response);
+            }
+            var imgUrl = result.SecureUri.AbsoluteUri;
+             _photoService.AddPhotoAsync(id, imgUrl, result.PublicId);
+
+
+            _response.Result = imgUrl;
+            return Ok(_response);
+
+        }
+        [HttpDelete("{id}/avatar")]
+        [Authorize]
+        public async Task<IActionResult> DeletePhoto(Guid id)
+        {
+            // check userId trùng token?
+            if (!checkValidUserId(id))
+            {
+                _response.IsSuccess = false;
+                _response.Message = "UserId is invalid.";
+                return BadRequest(_response);
+            }
+            var user = _userService.GetUserById(id);
+
+            if (!string.IsNullOrEmpty(user.AvatarUrl))
+            {
+               var result =  await _photoCloudService.DeletePhotoAsync(user.PublicId);
+                if (result.Error is not null)
+                {
+                    _response.IsSuccess = false;
+                    _response.Message = result.Error.Message;
+                    return BadRequest(_response);
+                }
+            }
+
+             _photoService.DeletePhotoAsync(id);
+            return Ok(_response);
+
+        }
 
     }
 }

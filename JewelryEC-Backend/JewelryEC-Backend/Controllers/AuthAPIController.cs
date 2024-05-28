@@ -16,16 +16,17 @@ namespace JewelryEC_Backend.Controllers
     [Route("api/auth")]
 
 
-    public class AuthAPIController : ControllerBase
+    public class AuthAPIController  : ControllerBase
     {       
         private readonly IAuthService _authService;
+
         private ResponseDto _response;
 
-        public AuthAPIController(IAuthService authService, IEmailSender emailSender)
+
+        public AuthAPIController(IAuthService authService)
         {
             _authService = authService;
             _response = new ResponseDto();
-     
         }
 
         [HttpPost("register")]
@@ -63,6 +64,7 @@ namespace JewelryEC_Backend.Controllers
                     _response.Message = "Username or password is incorrect";
                     return BadRequest(_response);
                 }
+         
                 _response.Result = loginResponse;
                 return Ok(_response);
             }
