@@ -1,6 +1,9 @@
+using JewelryEC_Backend.Core.Pagination;
 using JewelryEC_Backend.Data;
+using JewelryEC_Backend.Models.Catalogs.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Net.WebSockets;
 
 namespace JewelryEC_Backend.Core.Repository.EntityFramework
 {
@@ -28,6 +31,37 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
         {
             return _context.Set<TEntity>().ToList();
         }
+        public async Task <PaginationResult<TEntity>> GetAllPagination(PaginationRequest pagination)
+        {
+            var totalCount = await _context.Set<TEntity>().LongCountAsync();
+
+            var entities =   await  _context.Set<TEntity>().Skip(pagination.PageSize * pagination.PageIndex)
+                                       .Take(pagination.PageSize)
+                                       .ToListAsync();
+
+            return new PaginationResult<TEntity>(
+                    pagination.PageIndex,
+                    pagination.PageSize,
+                    totalCount,
+                    entities);
+        }
+        public async Task<PaginationResult<TEntity>> FindPagination(PaginationRequest pagination, Expression<Func<TEntity, bool>> expression)
+        {
+            var totalCount = await _context.Set<TEntity>().LongCountAsync();
+
+            var entities = await _context.Set<TEntity>()
+                                       .Where(expression)
+                                       .Skip(pagination.PageSize * pagination.PageIndex)
+                                       .Take(pagination.PageSize)
+                                       .ToListAsync();
+
+            return new PaginationResult<TEntity>(
+                    pagination.PageIndex,
+                    pagination.PageSize,
+                    totalCount,
+                    entities);
+        }
+
         public TEntity GetById(Guid id)
         {
             return _context.Set<TEntity>().Find(id);

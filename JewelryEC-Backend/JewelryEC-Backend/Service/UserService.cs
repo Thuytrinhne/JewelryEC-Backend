@@ -1,8 +1,11 @@
+using JewelryEC_Backend.Core.Pagination;
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Models.Users.Dto;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace JewelryEC_Backend.Service
 {
@@ -56,11 +59,46 @@ namespace JewelryEC_Backend.Service
             return _unitOfWork.Users.GetUserById(idUser);
         }
 
-        public async  Task<IEnumerable<ApplicationUser>> ListUsers(Guid roleId )
-        {
-            if(roleId == Guid.Empty)
+        public async  Task<IEnumerable<ApplicationUser>> GetUsers()
+        {    
                 return _unitOfWork.Users.GetAll();
-            return await _unitOfWork.Users.GetUsersByRoleAsync(roleId);
         }
+        public async Task<PaginationResult<ApplicationUser> >GetUsersPagination(PaginationRequest request)
+        {
+            return await _unitOfWork.Users.GetAllPagination(request);
+        }
+        public async Task<IEnumerable<ApplicationUser>> GetUsersByRoleId(Guid roleId)
+        {
+            return await _unitOfWork.Users.GetUsersByRoleAsync(roleId);
+
+        }
+
+        public async Task<PaginationResult<ApplicationUser>> GetUsersByRoleIdPagination(Guid roleId, PaginationRequest request)
+        {
+            return await _unitOfWork.Users.GetUsersByRoleAsyncPagination(request, roleId);
+
+        }
+
+        public  async Task<bool> UpdatePassword(ApplicationUser user,string currentPass, string newPass )
+        {
+            if (user is not null)
+            {
+
+                var result = await _unitOfWork.Users.ChangePassword(user, currentPass, newPass);
+                if (result.Succeeded)
+                    return true;
+            }
+            return false;
+        }
+        public async Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request,Guid roleId ,  string keyword=null, string name = null, string phone = null)
+        {
+            return await  _unitOfWork.Users.SearchRecordsAsyncPagination(request, roleId, keyword, name, phone);
+        }
+
+
     }
+
+
+  
+
 }

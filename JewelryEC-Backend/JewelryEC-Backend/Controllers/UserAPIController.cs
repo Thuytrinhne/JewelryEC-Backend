@@ -1,4 +1,5 @@
 using AutoMapper;
+using JewelryEC_Backend.Core.Pagination;
 using JewelryEC_Backend.Extensions;
 using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Auths.Dto;
@@ -36,27 +37,43 @@ namespace JewelryEC_Backend.Controllers
             _photoCloudService = photoCloudService;
             _photoService  = photoService;
         }
-        
+        //[HttpGet("search")]
+        //public async Task<ActionResult<ResponseDto>> Search ([FromQuery] string? keyword)
+        //{
+        //    if(!string.IsNullOrEmpty(keyword))
+        //    { 
+        //         var result =  await  _userService.SearchRecordsAsync(keyword);
+        //        if (result.Count != 0)
+        //        {
+        //            _response.Result = _mapper;
+        //            return Ok(_response);
+
+        //        }
+        //    }
+          
+        //    _response.IsSuccess = false;
+        //    _response.Message = $"Don't have any users match with {keyword}";
+
+        //    return NotFound();
+
+        //}
         [HttpGet]
-        public async Task<ActionResult<ResponseDto>> Get([FromQuery] Guid ? roleId)
+        public async Task<ActionResult<ResponseDto>> Get([FromQuery]PaginationRequest paginationRequest,
+            [FromQuery] Guid ? roleId, [FromQuery] string ?keyword)
         {
             try
             {
-                IEnumerable<ApplicationUser> users;
-                if (roleId.HasValue)
-                {
-                     users = await _userService.ListUsers(roleId.Value);
-                }
-                else
-                {
-                     users = await _userService.ListUsers(Guid.Empty);
-                }
-                    if (users == null || users.Count() == 0)
+                    PaginationResult<ApplicationUser> result  = await _userService.SearchRecordsAsyncPagination(paginationRequest, roleId.Value, keyword);
+               
+                    if (result.Data == null || result.Data.Count() == 0)
                     {
-                        return NotFound("No users found [with the specified role].");
+                        _response.IsSuccess = false;
+                        _response.Message = $"Not found user";
+
+                        return NotFound(_response);
                     }
                     var GetUsersDto = new List<GetUserResponseDto>();
-                    foreach (var user in users)
+                    foreach (var user in result.Data)
                     {
 
                         // Lấy role của người dùng
@@ -193,7 +210,6 @@ namespace JewelryEC_Backend.Controllers
             var imgUrl = result.SecureUri.AbsoluteUri;
              _photoService.AddPhotoAsync(id, imgUrl, result.PublicId);
 
-
             _response.Result = imgUrl;
             return Ok(_response);
 
@@ -227,5 +243,28 @@ namespace JewelryEC_Backend.Controllers
 
         }
 
+        [HttpPatch("{id}/password")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePassword(Guid id, ChangePasswordDto changePasswordDto) 
+        {
+            // check userId trùng token?
+            if (!checkValidUserId(id))
+            {
+                _response.IsSuccess = false;
+                _response.Message = "UserId is invalid.";
+                return BadRequest(_response);
+            }
+            var user = _userService.GetUserById(id);
+            if (await _userService.UpdatePassword(user, changePasswordDto.CurrentPassword, changePasswordDto.NewPassword))
+            {
+                return Ok(_response);
+
+            }
+            _response.IsSuccess = false;
+            _response.Message = "Can not change your password. Please try again. ";
+
+            return BadRequest(_response);
+
+        }
     }
 }
