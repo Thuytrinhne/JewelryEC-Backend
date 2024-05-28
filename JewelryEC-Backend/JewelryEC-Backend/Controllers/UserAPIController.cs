@@ -59,12 +59,19 @@ namespace JewelryEC_Backend.Controllers
         //}
         [HttpGet]
         public async Task<ActionResult<ResponseDto>> Get([FromQuery]PaginationRequest paginationRequest,
-            [FromQuery] Guid ? roleId, [FromQuery] string ?keyword)
+            [FromQuery] Guid  ?roleId , [FromQuery] string ?keyword, string name = null, string phone = null)
         {
             try
             {
-                    PaginationResult<ApplicationUser> result  = await _userService.SearchRecordsAsyncPagination(paginationRequest, roleId.Value, keyword);
-               
+                PaginationResult<ApplicationUser> result;
+                if (roleId.HasValue)
+                {
+                    result = await _userService.SearchRecordsAsyncPagination
+                    (paginationRequest, roleId.Value, keyword);
+                }
+                    else result = await _userService.SearchRecordsAsyncPagination
+                    (paginationRequest, keyword: keyword);
+
                     if (result.Data == null || result.Data.Count() == 0)
                     {
                         _response.IsSuccess = false;
@@ -72,6 +79,9 @@ namespace JewelryEC_Backend.Controllers
 
                         return NotFound(_response);
                     }
+
+
+                    
                     var GetUsersDto = new List<GetUserResponseDto>();
                     foreach (var user in result.Data)
                     {
@@ -83,8 +93,17 @@ namespace JewelryEC_Backend.Controllers
                         GetUserDto.Roles = userRoles.ToList();
                         GetUsersDto.Add(GetUserDto);
                     }
-                _response.Result = GetUsersDto;
-                return Ok(_response);
+
+                PaginationResult<GetUserResponseDto> resultResponse = new PaginationResult<GetUserResponseDto>(
+                          result.PageIndex,
+                          result.PageSize,
+                          result.Count,
+                          GetUsersDto
+                        );
+
+
+                _response.Result = resultResponse;
+                        return Ok(_response);
             } catch (Exception ex)
             {
                 _response.IsSuccess = false;

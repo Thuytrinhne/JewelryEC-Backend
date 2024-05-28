@@ -90,7 +90,7 @@ namespace JewelryEC_Backend.Service
             }
             return false;
         }
-        public async Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request,Guid roleId ,  string keyword=null, string name = null, string phone = null)
+        public async Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request,Guid roleId =default ,  string keyword=null, string name = null, string phone = null)
         {
             return await  _unitOfWork.Users.SearchRecordsAsyncPagination(request, roleId, keyword, name, phone);
         }

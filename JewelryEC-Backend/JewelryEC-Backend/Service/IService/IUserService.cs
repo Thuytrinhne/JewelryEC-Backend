@@ -21,6 +21,6 @@ namespace JewelryEC_Backend.Service.IService
       
         Task<IEnumerable<ApplicationUser>> GetUsersByRoleId(Guid roleId);
 
-        Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request, Guid roleId, string keyword = null, string name = null, string phone = null);
+        Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request, Guid roleId = default, string keyword = null, string name = null, string phone = null);
     }
 }

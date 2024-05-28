@@ -134,7 +134,7 @@ namespace JewelryEC_Backend.Repository
 
             return user; 
         }
-        public async Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request, Guid roleId, string keyword, string name = null, string phone = null)
+        public async Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request, Guid roleId = default!, string keyword = null, string name = null, string phone = null)
         {
             // Bắt đầu từ một biểu thức đúng với tất cả các phần tử
             Expression<Func<ApplicationUser, bool>> userExpression = user => true;
@@ -160,10 +160,9 @@ namespace JewelryEC_Backend.Repository
 
             // Tạo truy vấn từ biểu thức tìm kiếm
             var query = _context.ApplicationUsers
-                               
                                 .Where(userExpression);
 
-            //// Nếu có điều kiện cho bảng Role
+            ////// Nếu có điều kiện cho bảng Role
             //if (roleId.HasValue)
             //{
             //    query = query.Where(user => user.UserRoles.Any(ur => ur.RoleId == roleId.Value));

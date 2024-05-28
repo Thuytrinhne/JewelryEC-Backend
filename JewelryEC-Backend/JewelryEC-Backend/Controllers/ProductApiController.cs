@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Service.IService;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using JewelryEC_Backend.Core.Filter;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace JewelryEC_Backend.Controllers
