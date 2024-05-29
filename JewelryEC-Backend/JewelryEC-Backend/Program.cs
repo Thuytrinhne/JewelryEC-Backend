@@ -144,9 +144,24 @@ builder.Services.Configure<CloudinarySettingsKey>(
         builder.Configuration.GetSection("CloudinarySettings")
     ); 
 
+
+builder.Services
+    .AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy", policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .SetIsOriginAllowedToAllowWildcardSubdomains();
+        });
+    });
+
 var app = builder.Build();
 
-
+app.UseCors("CorsPolicy");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
