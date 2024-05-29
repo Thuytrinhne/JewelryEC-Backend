@@ -1,6 +1,7 @@
 using JewelryEC_Backend.Core.Repository.EntityFramework;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Models.Orders;
+using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -37,6 +38,15 @@ namespace JewelryEC_Backend.Repository
                 throw;
             }
 
+        }
+        public async Task<long> GetTotalCount(Expression<Func<Order, bool>> filter)
+        {
+            if(filter == null)
+            {
+                return await _context.Orders.LongCountAsync();
+
+            }
+            else return await _context.Orders.Where(filter).LongCountAsync();
         }
 
     }
