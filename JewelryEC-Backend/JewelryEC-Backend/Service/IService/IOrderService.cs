@@ -1,8 +1,10 @@
 ﻿using JewelryEC_Backend.Enum;
 using JewelryEC_Backend.Models;
+using JewelryEC_Backend.Models.Orders;
 using JewelryEC_Backend.Models.Orders.Dto;
 using JewelryEC_Backend.Models.Products;
 using JewelryEC_Backend.Models.Products.Dto;
+using System.Linq.Expressions;
 
 namespace JewelryEC_Backend.Service.IService
 {
@@ -14,5 +16,6 @@ namespace JewelryEC_Backend.Service.IService
         Task<ResponseDto> AddFromCart(CreateNewOrderFromCartDto orderDto);
         Task<ResponseDto> UpdateOrderStatus(Guid order, OrderStatus orderStatus);
         Task<ResponseDto> GetOrdersByUserId(Guid userId, int pageNumber, int pageSize);
+
     }
 }

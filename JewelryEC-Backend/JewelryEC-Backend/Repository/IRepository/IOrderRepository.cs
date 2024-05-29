@@ -9,5 +9,7 @@ namespace JewelryEC_Backend.Repository.IRepository
     {
         Task<List<Order>> GetOrders(int pageNumber, int pageSize,Expression < Func<Order, bool>> filter = null);
         Task<Order> GetOrder(Expression<Func<Order, bool>> filter);
+        Task<long> GetTotalCount(Expression<Func<Order, bool>> filter);
+
     }
 }
