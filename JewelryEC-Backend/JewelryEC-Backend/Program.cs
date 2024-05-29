@@ -1,30 +1,23 @@
-using FluentValidation.WebApi;
+using JewelryEC_Backend.Core.Repository;
+using JewelryEC_Backend.Core.Repository.EntityFramework;
 using JewelryEC_Backend.Data;
 using JewelryEC_Backend.Extensions;
 using JewelryEC_Backend.Filters;
 using JewelryEC_Backend.Models.Auths;
 using JewelryEC_Backend.Models.Auths.Entities;
-using JewelryEC_Backend.Repository.IRepository;
+using JewelryEC_Backend.Models.Roles.Entities;
 using JewelryEC_Backend.Repository;
+using JewelryEC_Backend.Repository.IRepository;
 using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
+using JewelryEC_Backend.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using JewelryEC_Backend.Models.Roles.Entities;
-using Asp.Versioning;
-using JewelryEC_Backend.Core.Repository;
-using JewelryEC_Backend.Core.Repository.EntityFramework;
-using Newtonsoft.Json.Serialization;
-using JewelryEC_Backend.Enum;
-using System.Configuration;
 using Newtonsoft.Json.Converters;
-using JewelryEC_Backend.Utility;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +31,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-        .AddEntityFrameworkStores<AppDbContext>()  
+        .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
 builder.Services.AddControllers(options =>
@@ -142,7 +135,21 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<CloudinarySettingsKey>(
         builder.Configuration.GetSection("CloudinarySettings")
-    ); 
+    );
+
+builder.Services
+    .AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy", policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .SetIsOriginAllowedToAllowWildcardSubdomains();
+        });
+    });
 
 var app = builder.Build();
 
@@ -160,5 +167,5 @@ app.UseAuthentication();
 
 
 app.MapControllers();
-
+app.UseCors("CorsPolicy");
 app.Run();
