@@ -20,7 +20,7 @@ namespace JewelryEC_Backend.Repository.IRepository
         Task<ApplicationUser> UpdateUser(ApplicationUser user);
         Task<IdentityResult> ChangePassword(ApplicationUser user, string currentPass, string newPass);
 
-        Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request, Guid roleId, string keyword, string name = null, string phone = null);
+        Task<PaginationResult<ApplicationUser>> SearchRecordsAsyncPagination(PaginationRequest request, Guid roleId = default!, string keyword = null, string name = null, string phone = null);
 
 
     }
