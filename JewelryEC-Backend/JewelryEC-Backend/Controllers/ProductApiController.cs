@@ -34,9 +34,8 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
         [HttpGet("")]
-        public async Task<IActionResult> Get([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> Get([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string filter = "")
         {
-            string filter = HttpContext.Request.Query["filter"];
             var filterResult = new RootFilter();
 
             if (!string.IsNullOrEmpty(filter))

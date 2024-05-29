@@ -15,6 +15,7 @@ using JewelryEC_Backend.Repository.IRepository;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
 using NuGet.Protocol;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace JewelryEC_Backend.Service
@@ -39,7 +40,14 @@ namespace JewelryEC_Backend.Service
         //get orders
         public async Task<ResponseDto> GetAll(int pageNumber, int pageSize)
         {
-            return new SuccessDataResult<List<Order>>(await _orderRe.GetOrders(pageNumber, pageSize));
+
+            var response = new
+            {
+                Data = await _orderRe.GetOrders(pageNumber, pageSize),
+                TotalCount = await _orderRe.GetTotalCount(null)
+            };
+            return new SuccessDataResult<object>(response);
+
         }
         //add new order
         //public async Task<ResponseDto> Add(CreateNewOrderDto orderDto)
@@ -102,6 +110,7 @@ namespace JewelryEC_Backend.Service
         //get orders by user id
         public async Task<ResponseDto> GetOrdersByUserId(Guid userId, int pageNumber, int pageSize)
         {
+
             List<Order> orders = _orderRe.GetOrders(pageNumber, pageSize,order => order.UserId == userId).Result.ToList();
             return new SuccessDataResult<List<Order>>(orders);
         }
@@ -245,6 +254,11 @@ namespace JewelryEC_Backend.Service
                 userCoupon.RemainingUsage = 0;
                 userCoupon.Status = CouponStatus.USED;
             }
+        }
+
+        public Task<long> GetTotalCount(Expression<Func<Order, bool>> filter)
+        {
+            throw new NotImplementedException();
         }
     }
 }
