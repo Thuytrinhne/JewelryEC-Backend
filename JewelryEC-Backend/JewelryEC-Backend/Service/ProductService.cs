@@ -50,8 +50,13 @@ namespace JewelryEC_Backend.Service
             long totalCount = 0;
             if (filters != null)
             {
-                totalCount =await _productDal.GetTotalCount(CompositeFilter<Product>.ApplyFilter(filters));
-               productList = await _productDal.GetProducts(pageNumber, pageSize,  CompositeFilter<Product>.ApplyFilter(filters));
+                totalCount = await _productDal.GetTotalCount(CompositeFilter<Product>.ApplyFilter(filters));
+                productList = await _productDal.GetProducts(pageNumber, pageSize, CompositeFilter<Product>.ApplyFilter(filters));
+            }
+            else
+            {
+                totalCount = await _productDal.GetTotalCount(null);
+                productList = await _productDal.GetProducts(pageNumber, pageSize);
             }
             var response = new
             {

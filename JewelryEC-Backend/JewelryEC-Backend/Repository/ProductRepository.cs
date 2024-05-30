@@ -41,9 +41,10 @@ namespace JewelryEC_Backend.Repository
 
         }
 
-        public async Task<long> GetTotalCount(Expression<Func<Product, bool>> filter)
+        public async Task<long> GetTotalCount(Expression<Func<Product, bool>>? filter)
         {
-            return await _context.Products.Where(filter).LongCountAsync();
+            return filter != null ?
+             await _context.Products.Where(filter).LongCountAsync() : await _context.Products.LongCountAsync();
         }
     }
 

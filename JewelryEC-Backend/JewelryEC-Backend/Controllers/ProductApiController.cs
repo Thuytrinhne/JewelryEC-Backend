@@ -22,24 +22,25 @@ namespace JewelryEC_Backend.Controllers
             _productService = productService;
         }
 
-        [HttpGet("getall")]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        {
-            var result = await _productService.GetAll(pageNumber, pageSize);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
+        //[HttpGet("getall")]
+        //public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        //{
+        //    var result = await _productService.GetAll(pageNumber, pageSize);
+        //    if (result.IsSuccess)
+        //    {
+        //        return Ok(result);
+        //    }
 
-            return BadRequest(result);
-        }
+        //    return BadRequest(result);
+        //}
         [HttpGet("")]
-        public async Task<IActionResult> Get([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string filter = "")
+        public async Task<IActionResult> Get([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? filter = "")
         {
-            var filterResult = new RootFilter();
+            RootFilter? filterResult = null;
 
             if (!string.IsNullOrEmpty(filter))
             {
+                
                 filterResult = JsonConvert.DeserializeObject<RootFilter>(filter);
             }
             var result= await  _productService.Get(filterResult, pageNumber, pageSize);
