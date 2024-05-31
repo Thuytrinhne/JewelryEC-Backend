@@ -1,6 +1,7 @@
 using JewelryEC_Backend.Models.Auths;
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Service.IService;
+using JewelryEC_Backend.Utility;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -38,7 +39,7 @@ namespace JewelryEC_Backend.Service
                 Audience = _jwtOptions.Audience,
                 Issuer = _jwtOptions.Issuer,
                 Subject = new ClaimsIdentity(claimList),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(SD.AccessTokenValidTime_Days), // actually 5 min, here is  only for development 
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

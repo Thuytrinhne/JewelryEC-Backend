@@ -6,7 +6,7 @@ namespace JewelryEC_Backend.Repository.IRepository
 {
     public interface ICatalogRepository : IGenericRepository<Catalog>
     {
-        Task<PaginationResult<Catalog>> GetCatalogsByPage(PaginationRequest request);
+        Task<PaginationResult<Catalog>> GetCatalogsByPage(PaginationRequest request, Guid? parentId = null, string name = null);
 
     }
 }

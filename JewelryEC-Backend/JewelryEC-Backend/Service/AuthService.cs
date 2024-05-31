@@ -6,6 +6,7 @@ using JewelryEC_Backend.Models.Catalogs.Dto;
 using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
+using JewelryEC_Backend.Utility;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -23,18 +24,20 @@ namespace JewelryEC_Backend.Service
         private IMapper _mapper;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IService.IEmailSender _emailSender;
-        private readonly IUnitOfWork _unitOfWork; 
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService  _userService;
 
         public AuthService(
             IMapper mapper, IJwtTokenGenerator jwtTokenGenerator,
             IService.IEmailSender emailSender,
-            IUnitOfWork unitOfWork)
-        {
-          
+            IUnitOfWork unitOfWork,
+            IUserService userService)
+        {          
             _mapper = mapper;
             _jwtTokenGenerator = jwtTokenGenerator;
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
+            _userService = userService;
         }
 
 
@@ -51,7 +54,7 @@ namespace JewelryEC_Backend.Service
                     if (result.Succeeded)
                     {
                         Guid userRoleId = new Guid("10ebc6bb-244f-4180-8804-bb1afd208866");
-                        await AssignRole(applicationUser.Id, userRoleId);
+                        await _userService.AssignRole(applicationUser.Id, userRoleId);
                         return true;
                     }
                     else
@@ -103,7 +106,7 @@ namespace JewelryEC_Backend.Service
         private bool checkExpiryOTP(DateTime created_at)
         {
             var currentTime = DateTime.UtcNow;
-            if (created_at.AddMinutes(30) >= currentTime)
+            if (created_at.AddMinutes(SD.OTPValidTime_Mins) >= currentTime)
             {
                 return true;
             }
@@ -124,13 +127,15 @@ namespace JewelryEC_Backend.Service
                         throw new AuthenticationException("Người dùng không có quyền truy cập.");
                     }
                     var token = _jwtTokenGenerator.GenerateToken(user, roles);
+                    // Lấy role của người dùng
+                    var userRoles = await _userService.GetRolesAsync(user);
 
                     var userDTO = _mapper.Map<UserDto>(user);
-
+                    userDTO.Roles = userRoles.ToList();
                     LoginResponseDto loginResponseDto = new LoginResponseDto()
                     {
                         User = userDTO,
-                        Token = token
+                        Token = token,                                         
                     };
                     return loginResponseDto;
                 }
@@ -139,29 +144,17 @@ namespace JewelryEC_Backend.Service
             throw new AuthenticationException("Email hoặc mật khẩu không chính xác.");
 
         }
-        public async Task<bool> AssignRole(Guid userId, Guid roleId)
-        {
-            try
-            {
-                var user = _unitOfWork.Users.GetUserById(userId);
-                if (user is not null)
-                {
-                    if (await _unitOfWork.Users.AssignRoleForUser(user, roleId))
-                        return true;
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while assigning role: " + ex.Message, ex);
-            }
-
-        }
+       
 
         public async Task<bool> SendingOTP(string email)
         {
             try
             {
+                var user = await  _unitOfWork.Users.GetUserByEmail(email);
+                if (user is not null)
+                {
+                    return false;
+                }
                 string otp = GenerateOTP();
                 await SendOTPEmail(email, otp);
                 await SaveEmailVerification(email, otp);
@@ -180,8 +173,8 @@ namespace JewelryEC_Backend.Service
         }
         private async Task SendOTPEmail(string email, string otp)
         {
-            string subject = "Sending OTP";
-            string message = "Your OTP is " + otp;
+            string subject = "JewelryStore- Sending OTP";
+            string message = $"Your OTP is {otp}.\n Note that this OTP is valid within {SD.OTPValidTime_Mins.ToString()} mins.";
             await _emailSender.SendEmailAsync(email, subject, message);
         }
         private async Task SaveEmailVerification(string email, string otp)
@@ -228,7 +221,7 @@ namespace JewelryEC_Backend.Service
         {
             try
             {
-                var message = $"Click the following link to reset your password: https://yourapp.com/reset-password?token={resetToken}";
+                var message = $"[Valid within {SD.ResetPassValidTime_Mins.ToString()} mins] Click the following link to reset your password: https://yourapp.com/reset-password?token={resetToken}";
                 await _emailSender.SendEmailAsync(email, "Reset Password", message);
             }
             catch (Exception ex)

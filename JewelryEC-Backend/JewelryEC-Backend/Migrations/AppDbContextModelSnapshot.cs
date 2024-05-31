@@ -57,6 +57,10 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -93,6 +97,10 @@ namespace JewelryEC_Backend.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -156,7 +164,7 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<Guid>("ProductItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserCouponId")
+                    b.Property<Guid?>("UserCouponId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -174,9 +182,6 @@ namespace JewelryEC_Backend.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("IsPayed")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -374,7 +379,7 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid>("UserCouponId")
+                    b.Property<Guid?>("UserCouponId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -402,6 +407,9 @@ namespace JewelryEC_Backend.Migrations
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -716,9 +724,7 @@ namespace JewelryEC_Backend.Migrations
 
                     b.HasOne("JewelryEC_Backend.Models.Voucher.UserCoupon", "UserCoupon")
                         .WithMany("OrderItems")
-                        .HasForeignKey("UserCouponId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserCouponId");
 
                     b.Navigation("UserCoupon");
                 });

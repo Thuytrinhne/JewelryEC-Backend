@@ -14,13 +14,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Web.Http.Results;
+using System.Xml.Linq;
 
 
 namespace JewelryEC_Backend.Controllers
 {
     [Route("api/catalogs")]
     [ApiController]
-    [Authorize]
+    
     public class CatalogAPIController : ControllerBase
     {
       
@@ -38,17 +39,17 @@ namespace JewelryEC_Backend.Controllers
 
         [HttpGet]
         public async Task<ActionResult<ResponseDto>> Get
-            ([FromQuery] Guid ? parentId, [FromQuery] string ? name)
+            ([FromQuery] Guid ? parentId, [FromQuery] string ? name, [FromQuery] PaginationRequest request)
         {
             try
             {
-                IEnumerable<Catalog> objList;
-                objList = _catalogService.FilterCatalogs(parentId, name);
-                if(objList is null  ||  objList.Count() == 0)
-                    return NotFound("Parent Id is not valid or no catalog with this parentId");
-                
-
-                _response.Result = _mapper.Map<IEnumerable<GetCatalogResponseDto>>(objList);
+                PaginationResult<Catalog> obj = await _catalogService.GetCatalogsByPage(request, parentId, name);
+                if (obj == null)
+                {
+                    _response.IsSuccess = false;
+                    return NotFound(_response);
+                }
+                _response.Result = _mapper.Map<PaginationResult<GetCatalogResponseDto>>(obj);
                 return Ok(_response);
 
             }
@@ -60,6 +61,24 @@ namespace JewelryEC_Backend.Controllers
 
             }
         }
+        //[HttpGet("GetByPage")]
+        //public async Task<ActionResult<ResponseDto>> GetCatalogByPage([FromQuery] PaginationRequest request)
+        //{
+        //    try
+        //    {
+
+              
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _response.IsSuccess = false;
+        //        _response.Message = ex.ToString();
+        //        return StatusCode(500, _response); // Trả về 500 Internal Server Error
+
+        //    }
+        //}
+
+
         [HttpGet("{id:Guid}", Name = "GetCatalogById")]
         public async Task<ActionResult<ResponseDto>> Get(Guid id)
         {
@@ -83,35 +102,13 @@ namespace JewelryEC_Backend.Controllers
             return _response;
         }
 
-        [HttpGet("GetByPage")]
-        public async Task<ActionResult<ResponseDto>> GetCatalogByPage([FromQuery]PaginationRequest request)
-        {
-            try
-            {
-
-                PaginationResult<Catalog> obj = await _catalogService.GetCatalogsByPage(request);
-                if (obj == null)
-                {
-                    _response.IsSuccess = false;
-                    return NotFound(_response);
-                }
-                _response.Result = _mapper.Map<PaginationResult<GetCatalogResponseDto>>(obj);
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.Message = ex.ToString();
-                return StatusCode(500, _response); // Trả về 500 Internal Server Error
-
-            }
-        }
+        
 
 
 
         //global exception filter in .net core web api (try catch )
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize (Roles ="ADMIN")]
         public async Task<ActionResult<ResponseDto>> Post([FromBody] CreateCatalogDto CreateCatalogDto)
         {
             try
@@ -130,7 +127,7 @@ namespace JewelryEC_Backend.Controllers
             return _response;
         }
         [HttpPut]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<ResponseDto>> Put([FromBody] UpdateCatalogDto updateCatalogDto)
         {
             try

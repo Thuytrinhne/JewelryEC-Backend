@@ -14,15 +14,10 @@ namespace JewelryEC_Backend.Repository
 
         public Cart GetCartHeader(Guid userId)
         {
-            return Find(c => c.UserId == userId && c.IsPayed == 0).FirstOrDefault();
+            return Find(c => c.UserId == userId).FirstOrDefault();
             
         }
 
-        public void SetStatusForCart(int status, Guid cartId)
-        {
-            Cart cart = GetById(cartId);
-            cart.IsPayed = status;
-            Update(cart);
-        }
+       
     }
 }

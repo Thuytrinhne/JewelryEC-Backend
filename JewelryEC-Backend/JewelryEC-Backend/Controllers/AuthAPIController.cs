@@ -6,27 +6,27 @@ using Microsoft.AspNetCore.Mvc;
 using JewelryEC_Backend.Utility;
 using Asp.Versioning;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using System.Security.Authentication;
 
 
 namespace JewelryEC_Backend.Controllers
 {
 
     [ApiController]
-    // [Route("api/v{version:apiVersion}/auth")]
     [Route("api/auth")]
-    [ApiVersion("1.0")]
 
 
-    public class AuthAPIController : ControllerBase
+    public class AuthAPIController  : ControllerBase
     {       
         private readonly IAuthService _authService;
+
         private ResponseDto _response;
 
-        public AuthAPIController(IAuthService authService, IEmailSender emailSender)
+
+        public AuthAPIController(IAuthService authService)
         {
             _authService = authService;
             _response = new ResponseDto();
-     
         }
 
         [HttpPost("register")]
@@ -55,38 +55,41 @@ namespace JewelryEC_Backend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
-            var loginResponse = await _authService.Login(model);
-            if (loginResponse.User == null)
+            try
+            {
+                var loginResponse = await _authService.Login(model);
+                if (loginResponse.User == null)
+                {
+                    _response.IsSuccess = false;
+                    _response.Message = "Username or password is incorrect";
+                    return BadRequest(_response);
+                }
+         
+                _response.Result = loginResponse;
+                return Ok(_response);
+            }
+            catch (AuthenticationException ex)
             {
                 _response.IsSuccess = false;
-                _response.Message = "Username or password is incorrect";
+                _response.Message = ex.Message;
                 return BadRequest(_response);
             }
-            _response.Result = loginResponse;
-            return Ok(_response);
+           
 
         }
-        [HttpPost("assignRole")]
-        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto)
-        {
-            var assignRoleSuccessful = await _authService.AssignRole(assignRoleDto.UserId, assignRoleDto.RoleId);
-            if (!assignRoleSuccessful)
-            {
-                _response.IsSuccess = false;
-                _response.Message = "Error encountered";
-                return BadRequest(_response);
-            }
-            return Ok(_response);
-
-        }
+       
         [HttpPost("otps")]
         public async Task<IActionResult> sendingOTP(SendOTPDto sendOTPDto)
         {
-             if (!await _authService.SendingOTP(sendOTPDto.Email))
+
+            bool result = await _authService.SendingOTP(sendOTPDto.Email);
+                if(!result)
                 {
-                return BadRequest("Error encountered");
+                    _response.IsSuccess = false;
+                    _response.Message = $"Email {sendOTPDto.Email} is already taken";
+                    return BadRequest(_response);
                 }
-             _response.Message =  "Check your email to get OTP !!!";
+            _response.Message =  "Check your email to get OTP !!!";
             return Ok(_response);
 
         }
@@ -101,6 +104,7 @@ namespace JewelryEC_Backend.Controllers
             }
             else
             {
+                _response.IsSuccess = false;
                 _response.Message = "Email is not existed in system !!! Check again !!!";
                 return BadRequest(_response);
             }
@@ -109,9 +113,12 @@ namespace JewelryEC_Backend.Controllers
        
         public async Task<IActionResult> resetPassword([FromHeader] string token, ResetPasswordDto resetPasswordDto)
         {
+            
             if (await _authService.ResetPassword(token, resetPasswordDto.NewPassword))
            return Ok(_response);
-            return BadRequest("Encounter errors");   
+            _response.IsSuccess = false;
+            _response.Message = "Token is invalid or password is not enough strong.";
+            return BadRequest(_response);   
         }
 
     }

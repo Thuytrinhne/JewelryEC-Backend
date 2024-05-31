@@ -1,5 +1,6 @@
 using JewelryEC_Backend.Core.Entity;
 using Microsoft.EntityFrameworkCore;
+using JewelryEC_Backend.Core.Pagination;
 using System.Linq.Expressions;
 
 namespace JewelryEC_Backend.Core.Repository
@@ -9,6 +10,8 @@ namespace JewelryEC_Backend.Core.Repository
         T GetById(Guid id);
         IEnumerable<T> GetAll();
         IEnumerable<T> Find(Expression<Func<T, bool>> expression);
+        Task<PaginationResult<T>> FindPagination(PaginationRequest pagination, Expression<Func<T, bool>> expression);
+
         void Add(T entity);
         void AddRange(IEnumerable<T> entities);
         void Remove(T entity);
@@ -22,9 +25,8 @@ namespace JewelryEC_Backend.Core.Repository
         Task Delete(T entity);
         Task MultiAddAsync(T[] entities);
         Task MultiDelete(List<T> entities);
-
         Task SaveChangeAsync();
         void Detach(T entity);
-
+        Task<PaginationResult<T>> GetAllPagination(PaginationRequest pagination);
     }
 }

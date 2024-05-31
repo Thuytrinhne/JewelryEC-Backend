@@ -15,7 +15,7 @@ namespace JewelryEC_Backend.Service
         public RedisShoppingCartService(IConfiguration configuration)
         {
             _configuration = configuration;
-         //   connectRedis();
+            connectRedis();
 
         }
 
@@ -57,6 +57,7 @@ namespace JewelryEC_Backend.Service
             var cartKey = $"cart:{userId}_ref";
 
             // Kiểm tra xem mặt hàng đã tồn tại trong giỏ hàng chưa
+           
             if (_cacheDb.HashExists(cartKey, productId.ToString()))
             {
                 // Nếu mặt hàng đã tồn tại, tăng số lượng lên

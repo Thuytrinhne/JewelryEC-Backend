@@ -16,6 +16,8 @@ namespace JewelryEC_Backend.Tests.JewelryEC_Backend.Tests.Service
         private readonly Mock<IJwtTokenGenerator> _mockJwtTokenGenerator;
         private readonly Mock<IEmailSender> _mockEmailSender;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+        private readonly Mock<IUserService> _mockUserService;
+
         private readonly AuthService _authService;
         public AuthServiceTests()
         {
@@ -28,7 +30,8 @@ namespace JewelryEC_Backend.Tests.JewelryEC_Backend.Tests.Service
                 _mockMapper.Object,
                 _mockJwtTokenGenerator.Object,
                 _mockEmailSender.Object,
-                _mockUnitOfWork.Object);
+                _mockUnitOfWork.Object,
+                _mockUserService.Object);
         }
         #region Test case for Register
         [Fact]
@@ -260,90 +263,90 @@ namespace JewelryEC_Backend.Tests.JewelryEC_Backend.Tests.Service
         }
         #endregion
 
-        #region Test case for AssignRole
-        [Fact]
-        public async Task AssignRole_UserExistsAndRoleAssigned_ReturnsTrue()
-        {
-            // Arrange
-            var userId = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200");
-            var roleId = Guid.NewGuid();
-            var applicationUser = new ApplicationUser
-            {
-                Id = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200"),
-                UserName = "username",
-                Email = "username",
-                NormalizedEmail = "username",
-                Name = "Thuy Trinh",
-                PhoneNumber = "0928262522"
-            };
-            mockGetUserById(applicationUser);
-            mockAssignRoleForUser(true);
+        //#region Test case for AssignRole
+        //[Fact]
+        //public async Task AssignRole_UserExistsAndRoleAssigned_ReturnsTrue()
+        //{
+        //    // Arrange
+        //    var userId = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200");
+        //    var roleId = Guid.NewGuid();
+        //    var applicationUser = new ApplicationUser
+        //    {
+        //        Id = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200"),
+        //        UserName = "username",
+        //        Email = "username",
+        //        NormalizedEmail = "username",
+        //        Name = "Thuy Trinh",
+        //        PhoneNumber = "0928262522"
+        //    };
+        //    mockGetUserById(applicationUser);
+        //    mockAssignRoleForUser(true);
 
-            // Act
-            var result = await _authService.AssignRole(userId, roleId);
+        //    // Act
+        //    var result = await _authService.AssignRole(userId, roleId);
 
-            // Assert
-            Assert.True(result);
-        }
+        //    // Assert
+        //    Assert.True(result);
+        //}
 
-        [Fact]
-        public async Task AssignRole_UserExistsAndRoleAssignmentFails_ReturnsFalse()
-        {
-            // Arrange
-            var userId = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200");
-            var roleId = Guid.NewGuid();
-            var applicationUser = new ApplicationUser
-            {
-                Id = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200"),
-                UserName = "username",
-                Email = "username",
-                NormalizedEmail = "username",
-                Name = "Thuy Trinh",
-                PhoneNumber = "0928262522"
-            };
-            mockGetUserById(applicationUser);
-            mockAssignRoleForUser(false);
+        //[Fact]
+        //public async Task AssignRole_UserExistsAndRoleAssignmentFails_ReturnsFalse()
+        //{
+        //    // Arrange
+        //    var userId = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200");
+        //    var roleId = Guid.NewGuid();
+        //    var applicationUser = new ApplicationUser
+        //    {
+        //        Id = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200"),
+        //        UserName = "username",
+        //        Email = "username",
+        //        NormalizedEmail = "username",
+        //        Name = "Thuy Trinh",
+        //        PhoneNumber = "0928262522"
+        //    };
+        //    mockGetUserById(applicationUser);
+        //    mockAssignRoleForUser(false);
 
-            // Act
-            var result = await _authService.AssignRole(userId, roleId);
+        //    // Act
+        //    var result = await _authService.AssignRole(userId, roleId);
 
-            // Assert
-            Assert.False(result);
-        }
+        //    // Assert
+        //    Assert.False(result);
+        //}
 
-        [Fact]
-        public async Task AssignRole_UserDoesNotExist_ReturnsFalse()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var roleId = Guid.NewGuid();
-            mockGetUserById((ApplicationUser)null);
+        //[Fact]
+        //public async Task AssignRole_UserDoesNotExist_ReturnsFalse()
+        //{
+        //    // Arrange
+        //    var userId = Guid.NewGuid();
+        //    var roleId = Guid.NewGuid();
+        //    mockGetUserById((ApplicationUser)null);
 
 
-            // Act
-            var result = await _authService.AssignRole(userId, roleId);
+        //    // Act
+        //    var result = await _authService.AssignRole(userId, roleId);
 
-            // Assert
-            Assert.False(result);
-        }
+        //    // Assert
+        //    Assert.False(result);
+        //}
 
-        [Fact]
-        public async Task AssignRole_WhenAssignRoleThrowException_ShouldThrowsException()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var roleId = Guid.NewGuid();
-            var exceptionMessage = "Database connection failed";
+        //[Fact]
+        //public async Task AssignRole_WhenAssignRoleThrowException_ShouldThrowsException()
+        //{
+        //    // Arrange
+        //    var userId = Guid.NewGuid();
+        //    var roleId = Guid.NewGuid();
+        //    var exceptionMessage = "Database connection failed";
 
-            _mockUnitOfWork.Setup(u => u.Users.GetUserById(userId))
-                           .Throws(new Exception(exceptionMessage));
+        //    _mockUnitOfWork.Setup(u => u.Users.GetUserById(userId))
+        //                   .Throws(new Exception(exceptionMessage));
 
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() => _authService.AssignRole(userId, roleId));
-            Assert.Contains("An error occurred while assigning role:", exception.Message);
-            Assert.Contains(exceptionMessage, exception.InnerException.Message);
-        }
-        #endregion
+        //    // Act & Assert
+        //    var exception = await Assert.ThrowsAsync<Exception>(() => _authService.AssignRole(userId, roleId));
+        //    Assert.Contains("An error occurred while assigning role:", exception.Message);
+        //    Assert.Contains(exceptionMessage, exception.InnerException.Message);
+        //}
+        //#endregion
 
         #region Test case for SendingOTP
         [Fact]

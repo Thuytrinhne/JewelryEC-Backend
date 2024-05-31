@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  jewelryec-backend:
+    image: ${DOCKER_REGISTRY-}jewelryecbackend
+    build:
+      context: .
+      dockerfile: JewelryEC-Backend/Dockerfile
+
+  my-redis:
+    image: redis
+

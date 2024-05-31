@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+   my-redis:
+      container_name: my-redis
+      restart: always
+      ports:
+          - "6379:6379"
+
+   jewelryec-backend:
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_HTTP_PORTS=8080
+        - ASPNETCORE_HTTPS_PORTS=8081
+        - ConnectionStrings__MyRedisConStr=my-redis:6379
+ 
+      ports:
+        - "5002:8080"
+        - "7012:8081"
+      volumes:
+        - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+        - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

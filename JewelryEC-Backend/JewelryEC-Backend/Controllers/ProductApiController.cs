@@ -5,10 +5,8 @@ using JewelryEC_Backend.Service.IService;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using JewelryEC_Backend.Core.Filter;
-using JewelryEC_Backend.Models.Products;
 using Newtonsoft.Json;
-using System.Dynamic;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace JewelryEC_Backend.Controllers
@@ -62,6 +60,8 @@ namespace JewelryEC_Backend.Controllers
         }
 
         [HttpPost("add")]
+        [Authorize(Roles = "ADMIN")]
+
         public async Task<IActionResult> Add([FromBody] CreateProductDto productDto)
         {
             var result = await _productService.Add(productDto);
@@ -73,7 +73,9 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
+
         [HttpPut("update")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Update(
             [FromBody] UpdateProductDto productDto)
         {
@@ -86,7 +88,7 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpDelete("delete/{productId}")]
+        [HttpPost("delete/{productId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid productId)
         {
             var result = await _productService.Delete(productId);

@@ -2,6 +2,7 @@ using JewelryEC_Backend.Core.Pagination;
 using JewelryEC_Backend.Models.Catalogs.Entities;
 using JewelryEC_Backend.Service.IService;
 using JewelryEC_Backend.UnitOfWork;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Xml.Linq;
@@ -87,9 +88,11 @@ namespace JewelryEC_Backend.Service
             }
         }
 
-        public async Task<PaginationResult<Catalog>> GetCatalogsByPage(PaginationRequest request)
+        public async Task<PaginationResult<Catalog>> GetCatalogsByPage(PaginationRequest request, Guid? parentId=null, [FromQuery] string name=null)
         {
-            return await _unitOfWork.Catalogs.GetCatalogsByPage(request);
+           
+
+            return await _unitOfWork.Catalogs.GetCatalogsByPage(request, parentId, name);
         }
 
         public IEnumerable<Catalog> ListCatalogs()

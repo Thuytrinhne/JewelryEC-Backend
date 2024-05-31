@@ -59,21 +59,21 @@ namespace JewelryEC_Backend.Controllers
                         {
                             var productDetail = _cartService.GetCartItemDetail(getCartDto.Items[0].ProductItemId);
                             getCartDto.Items[i].NameProduct = _cartService.GetCartItemName(productDetail.ProductId);
-                        if (productDetail.DiscountPrice is not null)
-                        {
-                            getCartDto.Items[i].DiscountPrice = productDetail.DiscountPercent.Value;
-                            getCartDto.TotalPrice += productDetail.DiscountPrice;
-                        }
-                        else
-                        {
-                            getCartDto.TotalPrice += productDetail.Price;
-                        }
-                        getCartDto.Items[i].SalePrice = productDetail.Price;
+                            if (productDetail.DiscountPrice is not null)
+                            {
+                                getCartDto.Items[i].DiscountPrice = productDetail.DiscountPercent.Value;
+                                getCartDto.TotalPrice += productDetail.DiscountPrice * getCartDto.Items[0].Count;
+                            }
+                            else
+                            {
+                                getCartDto.TotalPrice += productDetail.Price * getCartDto.Items[0].Count;
+                            }
+                            getCartDto.Items[i].SalePrice = productDetail.Price;
 
-                        getCartDto.Items[i].Description = productDetail.Description;
-                        getCartDto.Items[i].Image = productDetail.Image;
+                            getCartDto.Items[i].Description = productDetail.Description;
+                            getCartDto.Items[i].Image = productDetail.Image;
 
-                    }
+                        }
                     _response.Result = getCartDto;
                         return Ok(_response);
                     }

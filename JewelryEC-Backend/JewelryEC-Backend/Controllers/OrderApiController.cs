@@ -3,7 +3,8 @@ using JewelryEC_Backend.Helpers.Payments.VnPay;
 using JewelryEC_Backend.Models.Orders;
 using JewelryEC_Backend.Models.Orders.Dto;
 using JewelryEC_Backend.Service.IService;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization; // 
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using StackExchange.Redis;
@@ -96,6 +97,10 @@ namespace JewelryEC_Backend.Controllers
             if (result.IsSuccess)
             {
                 Order newOrder = (Order)result.Result;
+                #region delete cart items that have been checkout  
+                _cartService.HanldeCartAfterCheckout(new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier)), newOrder.OrderItems.ToList());
+                #endregion
+
                 #region if payment method = vnpay
                 if (orderDto.PaymentMethod == PaymentMethod.VNPAY)
                 {
@@ -104,24 +109,24 @@ namespace JewelryEC_Backend.Controllers
                         Amount = newOrder.TotalPrice,
                         CreatedDate = newOrder.CreateDate,
                         Description = "",
-                        FullName = "Trinh",
+                        FullName = User.FindFirstValue("name").ToString(),
                         OrderId = newOrder.Id,
-                        
                     };
                     // return payment url 
                     return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPaymentModel));
                 }
                 #endregion
-                #region handle cart after checkout
-                //_cartService.HanldeCartAfterCheckout(newOrder.UserId);
-                #endregion
+
                 return Ok(result);
             }
 
             return BadRequest(result);
         }
+      
 
         [HttpPatch("cancel/{orderId}")]
+        [Authorize]
+
         public async Task<IActionResult> Cancel([FromRoute] Guid orderId)
         {
             var result = await _orderService.UpdateOrderStatus(orderId, Enum.OrderStatus.Cancelled);
@@ -149,7 +154,7 @@ namespace JewelryEC_Backend.Controllers
                 var result = await _orderService.UpdateOrderStatus(orderId, Enum.OrderStatus.Processing);
                 if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok("THANH TOÁN THÀNH CÔNG");
                 }
                 else
                     return BadRequest(result);
