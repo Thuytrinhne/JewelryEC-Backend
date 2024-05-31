@@ -20,10 +20,12 @@ namespace JewelryEC_Backend.Service
     public class ProductService: IProductService
     {
         private IProductRepository _productDal;
+        private IProductItemRespository _productItemRespository;
 
         public ProductService(IUnitOfWork unitOfWork)
         {
             _productDal = unitOfWork.Products;
+            _productItemRespository = unitOfWork.ProductItem;
         }
         public async Task<ResponseDto> GetAll(int pageNumber, int pageSize)
         {
@@ -85,9 +87,19 @@ namespace JewelryEC_Backend.Service
         public async Task<ResponseDto> Update( UpdateProductDto productDto )
         {
             Product updateProduct = ProductMapper.ProductFromUpdateProductDto(productDto);
+            await this.deleteProductItemsFromProduct(updateProduct.Id);
             Console.Write(updateProduct);
             _productDal.Update(updateProduct);
-            return new SuccessResult();
+            return await this.GetById(updateProduct.Id);
+        }
+        private async Task deleteProductItemsFromProduct(Guid productId)
+        {
+            Product product = await _productDal.GetProduct(Product => Product.Id == (productId));
+            if(product != null && product.Items.Count > 0)
+            {
+                _productItemRespository.RemoveRange(product.Items);
+            }
+            _productDal.Detach(product);
         }
 
         public async Task<ResponseDto> GetById(Guid id)

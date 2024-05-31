@@ -43,7 +43,7 @@ namespace JewelryEC_Backend.Mapper
             };
             newProduct.Items = productDto.Items.Select(itemDto => new ProductVariant
             {
-                Id = itemDto.Id,    
+                Id = new Guid(),
                 DiscountPrice = itemDto.DiscountPrice,
                 DiscountPercent = itemDto.DiscountPercent,
                 ProductId = newProduct.Id,
