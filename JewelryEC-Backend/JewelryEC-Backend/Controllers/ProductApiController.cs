@@ -75,11 +75,11 @@ namespace JewelryEC_Backend.Controllers
 
 
         [HttpPut("update")]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Update(
             [FromBody] UpdateProductDto productDto)
         {
-            var result = await _productService.Update( productDto);
+            var result = await _productService.Update(productDto);
             if (result.IsSuccess)
             {
                 return Ok(result);

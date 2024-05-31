@@ -74,9 +74,10 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
         {
             _context.Set<TEntity>().RemoveRange(entities);
         }
-        public void Update(TEntity entities)
+        public async Task Update(TEntity entity)
         {
-            _context.Set<TEntity>().Update(entities);
+            _context.Set<TEntity>().Update(entity);
+            await _context.SaveChangesAsync();
         }
         public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
