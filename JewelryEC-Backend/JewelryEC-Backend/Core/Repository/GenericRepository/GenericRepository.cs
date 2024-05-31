@@ -78,7 +78,10 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
         {
             _context.Remove(entity);
         }
-
+        public async Task MultiDelete(List<TEntity> entities)
+        {
+            _context.RemoveRange(entities);
+        }
         public async Task MultiAddAsync(TEntity[] entities)
         {
             await _context.AddRangeAsync(entities);
@@ -86,6 +89,11 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
         public async Task SaveChangeAsync()
         {
             //_context.SaveChangesAsync();
+        }
+
+        public void Detach(TEntity entity)
+        {
+            _context.Entry(entity).State = EntityState.Detached;
         }
     }
 }

@@ -73,7 +73,7 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("update")]
+        [HttpPut("update")]
         public async Task<IActionResult> Update(
             [FromBody] UpdateProductDto productDto)
         {

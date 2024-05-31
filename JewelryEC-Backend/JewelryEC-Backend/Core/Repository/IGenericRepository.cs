@@ -1,3 +1,5 @@
+using JewelryEC_Backend.Core.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace JewelryEC_Backend.Core.Repository
@@ -19,7 +21,10 @@ namespace JewelryEC_Backend.Core.Repository
         Task AddAsync(T entity);
         Task Delete(T entity);
         Task MultiAddAsync(T[] entities);
+        Task MultiDelete(List<T> entities);
+
         Task SaveChangeAsync();
+        void Detach(T entity);
 
     }
 }
