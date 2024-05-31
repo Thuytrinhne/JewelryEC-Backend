@@ -73,9 +73,9 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("update")]
-        [Authorize(Roles = "ADMIN")]
 
+        [HttpPut("update")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Update(
             [FromBody] UpdateProductDto productDto)
         {

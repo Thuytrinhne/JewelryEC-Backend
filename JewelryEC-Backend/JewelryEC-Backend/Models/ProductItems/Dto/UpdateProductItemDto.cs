@@ -5,8 +5,6 @@ namespace JewelryEC_Backend.Models.Products.Dto
 {
     public class UpdateProductItemDto
     {
-        [Required(ErrorMessage = "Product ID is required.")]
-        public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Price is required.")]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive value.")]
