@@ -89,7 +89,7 @@ namespace JewelryEC_Backend.Service
             Product updateProduct = ProductMapper.ProductFromUpdateProductDto(productDto);
             await this.deleteProductItemsFromProduct(updateProduct.Id);
             Console.Write(updateProduct);
-            _productDal.Update(updateProduct);
+            await _productDal.Update(updateProduct);
             return await this.GetById(updateProduct.Id);
         }
         private async Task deleteProductItemsFromProduct(Guid productId)
