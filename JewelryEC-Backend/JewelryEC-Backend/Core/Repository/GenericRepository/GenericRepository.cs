@@ -112,6 +112,7 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
         public async Task Delete(TEntity entity)
         {
             _context.Remove(entity);
+            _context.SaveChanges();
         }
         public async Task MultiDelete(List<TEntity> entities)
         {

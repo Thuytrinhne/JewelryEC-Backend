@@ -55,10 +55,9 @@ namespace JewelryEC_Backend.Service
         public async Task<ResponseDto> Update(UpdateProductCouponDto couponDto)
         {
             ProductCoupon productCoupon = _mapper.Map<ProductCoupon>(couponDto);
-            _productCouponDal.Update(productCoupon);
+            await _productCouponDal.Update(productCoupon);
             await _productCouponDal.SaveChangeAsync();
-            return new SuccessResult("Update productCoupon successfully");
-
+            return await this.GetById(productCoupon.Id);
         }
         public async Task<ResponseDto> Delete(Guid id)
         {

@@ -10,6 +10,7 @@ namespace JewelryEC_Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class ProductCouponApiController : ControllerBase
     {
         private readonly IProductCouponService _productCouponService;
@@ -57,9 +58,8 @@ namespace JewelryEC_Backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("update")]
+        [HttpPut("update")]
         [Authorize(Roles = "ADMIN")]
-
         public async Task<IActionResult> Update(
             [FromBody] UpdateProductCouponDto updateProductCoupon)
         {
@@ -71,7 +71,8 @@ namespace JewelryEC_Backend.Controllers
 
             return BadRequest(result);
         }
-        [HttpPost("delete/{couponId}")]
+
+        [HttpDelete("delete/{couponId}")]
         [Authorize(Roles = "ADMIN")]
 
         public async Task<IActionResult> Delete(
@@ -84,7 +85,6 @@ namespace JewelryEC_Backend.Controllers
                 }
                 return BadRequest(result);
             }
-
     }
 
 }
