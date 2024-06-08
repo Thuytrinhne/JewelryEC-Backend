@@ -79,6 +79,8 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
             _context.Set<TEntity>().Update(entity);
             await _context.SaveChangesAsync();
         }
+
+
         public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
             return await _context.FindAsync<TEntity>(filter);

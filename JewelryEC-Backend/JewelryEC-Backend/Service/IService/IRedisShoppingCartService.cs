@@ -9,6 +9,5 @@ namespace JewelryEC_Backend.Service.IService
         bool RemoveCartHeader(Guid userId);
         void RemoveProductFromCart(Guid userId, Guid productId);
         void SetCartTTL(Guid userId, TimeSpan expiry);
-        void SetCartHeaderNul(Guid userId);
     }
 }
