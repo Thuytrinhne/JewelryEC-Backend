@@ -16,7 +16,7 @@ namespace JewelryEC_Backend.Core.Repository
         void AddRange(IEnumerable<T> entities);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
-        Task Update(T entities);
+        void Update(T entities);
         List<T> GetAll(Expression<Func<T, bool>> filter = null);
         T Get(Expression<Func<T, bool>> filter);
         Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter = null);
