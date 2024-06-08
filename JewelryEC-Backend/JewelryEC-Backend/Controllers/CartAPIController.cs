@@ -52,7 +52,7 @@ namespace JewelryEC_Backend.Controllers
                         return StatusCode(404, _response);
                     }
                     else
-                    {
+                    { 
                         var getCartDto = _mapper.Map<GetCartResponseDto>(cart);
                    
                         for (int i = 0; i < getCartDto.Items.Count; i++)
