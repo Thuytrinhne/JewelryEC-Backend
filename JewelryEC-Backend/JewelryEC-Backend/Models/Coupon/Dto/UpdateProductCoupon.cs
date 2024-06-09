@@ -1,6 +1,4 @@
-﻿using JewelryEC_Backend.Enum;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace JewelryEC_Backend.Models.Coupon.Dto
 {
@@ -9,6 +7,10 @@ namespace JewelryEC_Backend.Models.Coupon.Dto
         [Required(ErrorMessage = "Coupon ID is required.")]
         public Guid Id { get; set; }
 
+        public string Name { get; set; }
+
+        public string Conditions { get; set; }
+
         [Required(ErrorMessage = "Product ID is required.")]
         public Guid ProductId { get; set; }
 
@@ -16,16 +18,7 @@ namespace JewelryEC_Backend.Models.Coupon.Dto
         public double DiscountValue { get; set; }
 
         [Required(ErrorMessage = "Discount unit is required.")]
-        public DiscountUnit DiscountUnit { get; set; }
-
-        [Required(ErrorMessage = "Name is required.")]
-        public string Name { get; set; }
-
-        [Required(ErrorMessage = "Conditions are required.")]
-        public string Conditions { get; set; }
-
-        [Required(ErrorMessage = "Used time is required.")]
-        public int UsedTime { get; set; }
+        public int DiscountUnit { get; set; }
 
         [Required(ErrorMessage = "Created time is required.")]
         public DateTime CreatedTime { get; set; }

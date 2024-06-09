@@ -1,18 +1,12 @@
 using AutoMapper;
 using JewelryEC_Backend.Core.Pagination;
-using JewelryEC_Backend.Extensions;
 using JewelryEC_Backend.Models;
 using JewelryEC_Backend.Models.Auths.Dto;
 using JewelryEC_Backend.Models.Auths.Entities;
 using JewelryEC_Backend.Models.Users.Dto;
-using JewelryEC_Backend.Service;
 using JewelryEC_Backend.Service.IService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.WebSockets;
 using System.Security.Claims;
 
 namespace JewelryEC_Backend.Controllers
@@ -21,7 +15,7 @@ namespace JewelryEC_Backend.Controllers
     [ApiController]
     public class UserAPIController : Controller
     {
-       
+
         private ResponseDto _response;
         private IMapper _mapper;
         private IUserService _userService;
@@ -35,7 +29,7 @@ namespace JewelryEC_Backend.Controllers
             _response = new ResponseDto();
             _userService = userService;
             _photoCloudService = photoCloudService;
-            _photoService  = photoService;
+            _photoService = photoService;
         }
         //[HttpGet("search")]
         //public async Task<ActionResult<ResponseDto>> Search ([FromQuery] string? keyword)
@@ -50,7 +44,7 @@ namespace JewelryEC_Backend.Controllers
 
         //        }
         //    }
-          
+
         //    _response.IsSuccess = false;
         //    _response.Message = $"Don't have any users match with {keyword}";
 
@@ -58,8 +52,8 @@ namespace JewelryEC_Backend.Controllers
 
         //}
         [HttpGet]
-        public async Task<ActionResult<ResponseDto>> Get([FromQuery]PaginationRequest paginationRequest,
-            [FromQuery] Guid  ?roleId , [FromQuery] string ?keyword, string name = null, string phone = null)
+        public async Task<ActionResult<ResponseDto>> Get([FromQuery] PaginationRequest paginationRequest,
+            [FromQuery] Guid? roleId, [FromQuery] string? keyword, string name = null, string phone = null)
         {
             try
             {
@@ -69,30 +63,30 @@ namespace JewelryEC_Backend.Controllers
                     result = await _userService.SearchRecordsAsyncPagination
                     (paginationRequest, roleId.Value, keyword);
                 }
-                    else result = await _userService.SearchRecordsAsyncPagination
-                    (paginationRequest, keyword: keyword);
+                else result = await _userService.SearchRecordsAsyncPagination
+                (paginationRequest, keyword: keyword);
 
-                    if (result.Data == null || result.Data.Count() == 0)
-                    {
-                        _response.IsSuccess = false;
-                        _response.Message = $"Not found user";
+                if (result.Data == null || result.Data.Count() == 0)
+                {
+                    _response.IsSuccess = false;
+                    _response.Message = $"Not found user";
 
-                        return NotFound(_response);
-                    }
+                    return NotFound(_response);
+                }
 
 
-                    
-                    var GetUsersDto = new List<GetUserResponseDto>();
-                    foreach (var user in result.Data)
-                    {
 
-                        // Lấy role của người dùng
-                        var userRoles = await _userService.GetRolesAsync(user);
+                var GetUsersDto = new List<GetUserResponseDto>();
+                foreach (var user in result.Data)
+                {
 
-                        var GetUserDto = _mapper.Map<GetUserResponseDto>(user);
-                        GetUserDto.Roles = userRoles.ToList();
-                        GetUsersDto.Add(GetUserDto);
-                    }
+                    // Lấy role của người dùng
+                    var userRoles = await _userService.GetRolesAsync(user);
+
+                    var GetUserDto = _mapper.Map<GetUserResponseDto>(user);
+                    GetUserDto.Roles = userRoles.ToList();
+                    GetUsersDto.Add(GetUserDto);
+                }
 
                 PaginationResult<GetUserResponseDto> resultResponse = new PaginationResult<GetUserResponseDto>(
                           result.PageIndex,
@@ -103,14 +97,15 @@ namespace JewelryEC_Backend.Controllers
 
 
                 _response.Result = resultResponse;
-                        return Ok(_response);
-            } catch (Exception ex)
+                return Ok(_response);
+            }
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.Message = ex.ToString();
                 return StatusCode(500, _response);
             }
-       
+
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<ResponseDto>> GetById([FromRoute] Guid id)
@@ -118,9 +113,9 @@ namespace JewelryEC_Backend.Controllers
             try
             {
                 var user = _userService.GetUserById(id);
-                if(user != null)
+                if (user != null)
                 {
-                   
+
                     var userRoles = await _userService.GetRolesAsync(user);
                     var userDto = _mapper.Map<GetUserResponseDto>(user);
                     userDto.Roles = userRoles.ToList();
@@ -154,13 +149,13 @@ namespace JewelryEC_Backend.Controllers
                 {
                     var user = _userService.GetUserById(id);
                     if (user != null)
-                    {                  
+                    {
                         _userService.EditProfile(id, updateUser);
                         _response.Result = _mapper.Map<UpdateUserResponseDto>(user);
                         return Ok(_response);
                     }
                 }
-                        return NotFound("No user found"); 
+                return NotFound("No user found");
 
             }
             catch (Exception ex)
@@ -201,6 +196,22 @@ namespace JewelryEC_Backend.Controllers
             return Ok(_response);
 
         }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> GetImgUrl(IFormFile file)
+        {
+            var result = await _photoCloudService.AddPhotoAsync(file);
+            if (result.Error is not null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = result.Error.Message;
+                return BadRequest(_response);
+            }
+            var imgUrl = result.SecureUri.AbsoluteUri;
+            _response.Result = imgUrl;
+            return Ok(_response);
+        }
+
         [HttpPost("{id}/avatar")]
         [Authorize]
 
@@ -213,9 +224,9 @@ namespace JewelryEC_Backend.Controllers
                 _response.Message = "UserId is invalid.";
                 return BadRequest(_response);
             }
-            var user = _userService.GetUserById(id);        
+            var user = _userService.GetUserById(id);
 
-            if (!string.IsNullOrEmpty( user.AvatarUrl ))
+            if (!string.IsNullOrEmpty(user.AvatarUrl))
             {
                 await _photoCloudService.DeletePhotoAsync(user.PublicId);
             }
@@ -227,7 +238,7 @@ namespace JewelryEC_Backend.Controllers
                 return BadRequest(_response);
             }
             var imgUrl = result.SecureUri.AbsoluteUri;
-             _photoService.AddPhotoAsync(id, imgUrl, result.PublicId);
+            _photoService.AddPhotoAsync(id, imgUrl, result.PublicId);
 
             _response.Result = imgUrl;
             return Ok(_response);
@@ -248,7 +259,7 @@ namespace JewelryEC_Backend.Controllers
 
             if (!string.IsNullOrEmpty(user.AvatarUrl))
             {
-               var result =  await _photoCloudService.DeletePhotoAsync(user.PublicId);
+                var result = await _photoCloudService.DeletePhotoAsync(user.PublicId);
                 if (result.Error is not null)
                 {
                     _response.IsSuccess = false;
@@ -257,14 +268,14 @@ namespace JewelryEC_Backend.Controllers
                 }
             }
 
-             _photoService.DeletePhotoAsync(id);
+            _photoService.DeletePhotoAsync(id);
             return Ok(_response);
 
         }
 
         [HttpPatch("{id}/password")]
         [Authorize]
-        public async Task<IActionResult> UpdatePassword(Guid id, ChangePasswordDto changePasswordDto) 
+        public async Task<IActionResult> UpdatePassword(Guid id, ChangePasswordDto changePasswordDto)
         {
             // check userId trùng token?
             if (!checkValidUserId(id))
