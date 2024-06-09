@@ -21,6 +21,7 @@ namespace JewelryEC_Backend.Service
         }
         public CartItem CartUpSert(Guid userId, CartItem cartItem)
         {
+            
 
             if (isUserExist(userId) && isProductExist(cartItem.ProductItemId))
             {
@@ -93,7 +94,7 @@ namespace JewelryEC_Backend.Service
                         if (cartDetailsFromDb.Count <= -cartItem.Count)
                             return null;
                             cartDetailsFromDb.Count += cartItem.Count;
-                        _unitOfWork.CartItems.Update(cartDetailsFromDb);
+                         _unitOfWork.CartItems.Update(cartDetailsFromDb);
                         _unitOfWork.Save();
                         // set data into cache 
                         _cacheService.SetData(userId, cartItem.ProductItemId, cartItem.Count);
@@ -167,17 +168,14 @@ namespace JewelryEC_Backend.Service
                         // Gọi phương thức SetCartTTL với thời gian sống là 15 phút
                         TimeSpan expiry = TimeSpan.FromMinutes(15);
                         _cacheService.SetCartTTL(userId, expiry);
-                        if (CartFrmDb.Items.Count() == 0)
+                        if (CartFrmDb.Items.Count() != 0)
                         {
-                            _cacheService.SetCartHeaderNul(userId);
+                        foreach (var item in CartFrmDb.Items)
+                        {
+                            _cacheService.SetData(userId, item.ProductItemId, item.Count);
                         }
-                        else
-                        {
-                            foreach (var item in CartFrmDb.Items)
-                            {
-                                _cacheService.SetData(userId, item.ProductItemId, item.Count);
                             }
-                        }
+                     
                     }
                     var expiryTime = DateTimeOffset.Now.AddMinutes(15);
                     return CartFrmDb;

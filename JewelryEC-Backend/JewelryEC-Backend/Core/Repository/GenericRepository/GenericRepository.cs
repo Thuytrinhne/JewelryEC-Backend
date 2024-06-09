@@ -74,11 +74,12 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
         {
             _context.Set<TEntity>().RemoveRange(entities);
         }
-        public async Task Update(TEntity entity)
+        public void Update(TEntity entity)
         {
             _context.Set<TEntity>().Update(entity);
-            await _context.SaveChangesAsync();
         }
+
+
         public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
             return await _context.FindAsync<TEntity>(filter);
@@ -112,6 +113,7 @@ namespace JewelryEC_Backend.Core.Repository.EntityFramework
         public async Task Delete(TEntity entity)
         {
             _context.Remove(entity);
+            _context.SaveChanges();
         }
         public async Task MultiDelete(List<TEntity> entities)
         {

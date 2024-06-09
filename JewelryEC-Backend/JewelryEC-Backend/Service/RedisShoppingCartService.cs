@@ -27,8 +27,7 @@ namespace JewelryEC_Backend.Service
 
         public Dictionary<Guid, int> GetData(Guid userId)
         {
-
-            var cartKey = $"cart:{userId}_ref";
+            var cartKey = $"cart:{userId}_ref"; 
 
             // Lấy tất cả các mặt hàng từ hashset và chuyển đổi chúng thành dictionary
             var cartItemsHashEntries = _cacheDb.HashGetAll(cartKey);
@@ -98,11 +97,6 @@ namespace JewelryEC_Backend.Service
             _cacheDb.KeyExpire(cartKey, expiry);
         }
 
-        public void SetCartHeaderNul(Guid userId)
-        {
-            var cartKey = $"cart:{userId}_ref";
-            _cacheDb.HashSet(cartKey, "", "");
-
-        }
+        
     }
 }
